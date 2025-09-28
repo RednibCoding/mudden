@@ -1,7 +1,11 @@
 {
-  "title": "Forest Entrance",
+  "name": "Forest Entrance",
   "description": "The edge of a dark, mysterious forest. Ancient trees tower overhead, their branches creating a canopy that blocks much of the sunlight. Strange sounds echo from within the depths.",
   "items": ["wooden_stick"],
   "npcs": [],
-  "enemies": ["wolf"]
+  "enemies": ["wolf"],
+  "exits": {
+    "north": "town_area.town_square",
+    "south": "forest_area.forest_clearing"
+  }
 }

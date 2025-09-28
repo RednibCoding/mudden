@@ -1,0 +1,422 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background: #000;
+    color: #c0c0c0;
+    line-height: 1.4;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Header */
+header {
+    background: #111;
+    padding: 10px 20px;
+    border-bottom: 1px solid #333;
+    flex-shrink: 0;
+}
+
+header h1 {
+    color: #90c0c0;
+    font-size: 1.5em;
+    display: inline-block;
+}
+
+.player-info {
+    float: right;
+    color: #c0c090;
+    font-size: 0.9em;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logout-btn {
+    background: #444;
+    color: #c0c090;
+    border: 1px solid #666;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9em;
+    border-radius: 3px;
+    transition: all 0.2s;
+}
+
+.logout-btn:hover {
+    background: #555;
+    border-color: #888;
+}
+
+/* Main game area */
+.game-area {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    padding: 20px;
+    gap: 15px;
+}
+
+.console-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.game-output {
+    flex: 1;
+    padding: 15px 20px;
+    overflow-y: auto;
+    background: #000;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    min-height: 300px;
+    color: #c0c0c0;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+}
+
+.game-output::-webkit-scrollbar {
+    width: 8px;
+}
+
+.game-output::-webkit-scrollbar-track {
+    background: #111;
+}
+
+.game-output::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+
+.game-output::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Message types */
+.system-message {
+    color: #70a0a0;
+    margin: 10px 0;
+}
+
+.command-echo {
+    color: #a0a070;
+    margin: 5px 0;
+}
+
+.error-message {
+    color: #a07070;
+    margin: 5px 0;
+}
+
+.combat-message {
+    color: #a08850;
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+/* Input area */
+.input-area {
+    background: #111;
+    padding: 10px 15px;
+    border-top: 1px solid #333;
+    flex-shrink: 0;
+}
+
+/* Main menu styles */
+.main-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.menu-container {
+    text-align: center;
+}
+
+.menu-container h3 {
+    color: #90c0c0;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-width: 250px;
+}
+
+.menu-buttons button {
+    background: #333;
+    color: #c0c0c0;
+    border: 1px solid #555;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1em;
+    border-radius: 5px;
+    transition: all 0.2s;
+}
+
+.menu-buttons button:hover {
+    background: #444;
+    border-color: #666;
+}
+
+/* Form styles */
+.login-form, .create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.form-header h4 {
+    color: #90c0c0;
+    margin: 0;
+}
+
+.back-btn {
+    background: #555;
+    color: #c0c0c0;
+    border: 1px solid #666;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9em;
+    border-radius: 3px;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: #666;
+    border-color: #777;
+}
+
+.login-input-container,
+.password-input-container,
+.create-input-container,
+.create-password-container,
+.create-confirm-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.login-info, .create-info {
+    color: #888;
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
+.command-area {
+    display: flex;
+    flex-direction: column;
+}
+
+.controls-area {
+    flex-shrink: 0;
+}
+
+.quick-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 5px;
+}
+
+.quick-buttons button {
+    background: #222;
+    color: #c0c0c0;
+    border: 1px solid #444;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85em;
+    border-radius: 3px;
+    transition: all 0.2s;
+    min-width: 50px;
+}
+
+.quick-buttons button:hover {
+    background: #333;
+    border-color: #666;
+}
+
+.login-input-container,
+.password-input-container,
+.command-input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.prompt {
+    color: #888;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+input[type="text"], input[type="password"] {
+    flex: 1;
+    background: #000;
+    color: #c0c0c0;
+    border: 1px solid #333;
+    padding: 8px 12px;
+    font-family: inherit;
+    font-size: 1em;
+    border-radius: 3px;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    outline: none;
+    border-color: #666;
+    box-shadow: 0 0 5px rgba(192, 192, 192, 0.3);
+}
+
+button {
+    background: #333;
+    color: #c0c0c0;
+    border: 1px solid #555;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-family: inherit;
+    border-radius: 3px;
+    transition: all 0.2s;
+}
+
+button:hover {
+    background: #444;
+    border-color: #666;
+}
+
+button:active {
+    background: #222;
+}
+
+
+
+/* Footer */
+footer {
+    background: #111;
+    padding: 5px 20px;
+    border-top: 1px solid #333;
+    font-size: 0.8em;
+    color: #666;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+#connection-status {
+    color: #90c090; /* Soft green for connected */
+}
+
+#connection-status.disconnected {
+    color: #c09090; /* Soft red for disconnected */
+}
+
+#connection-status.connecting {
+    color: #c0c090; /* Soft yellow for connecting */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .game-area {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .player-info {
+        float: none;
+        display: block;
+        margin-top: 10px;
+        font-size: 0.8em;
+    }
+    
+    .quick-buttons {
+        gap: 5px;
+    }
+    
+    .quick-buttons button {
+        padding: 4px 8px;
+        font-size: 0.8em;
+        min-width: 40px;
+    }
+}
+
+/* Animation for new messages */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.new-message {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Glowing text effect for special messages */
+.glow {
+    text-shadow: 0 0 10px currentColor;
+}
+
+/* Combat state styling */
+.in-combat .console-container {
+    border-color: #ff8800;
+    box-shadow: 0 0 10px rgba(255, 136, 0, 0.3);
+}
+
+.in-combat .player-info {
+    background: rgba(255, 136, 0, 0.1);
+    border-radius: 3px;
+    padding: 5px;
+}
+
+/* Loading animation */
+.loading::after {
+    content: '';
+    animation: loading 1s infinite;
+}
+
+@keyframes loading {
+    0%, 33% { content: '.'; }
+    34%, 66% { content: '..'; }
+    67%, 100% { content: '...'; }
+}

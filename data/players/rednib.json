@@ -1,0 +1,51 @@
+{
+  "name": "rednib",
+  "passwordHash": {
+    "salt": "45a1642b3a0adc1364256effe9637900716f03b2824f9b0ab51d99b2b6e57e07",
+    "hash": "8c1af5ef7e81bb573120e391a61824523cc370d72d92630efea99c55f5443f16b4d8f19eeaf7a02b1f680d7180df1a655c443d6b20b8197b21f3ff2b2ec92ca1"
+  },
+  "health": 100,
+  "maxHealth": 100,
+  "level": 1,
+  "experience": 0,
+  "gold": 50,
+  "currentArea": "town_area",
+  "currentRoom": "inn",
+  "inventory": [
+    {
+      "id": "healing_potion",
+      "quantity": 1
+    },
+    {
+      "name": "Mug of Ale",
+      "description": "A frothy mug of ale, still warm from the tap.",
+      "type": "consumable",
+      "value": 5,
+      "weight": 1,
+      "canTake": true,
+      "canUse": true,
+      "effects": {
+        "health": 5,
+        "stamina": 10
+      },
+      "id": "ale"
+    }
+  ],
+  "equipment": {
+    "main_hand": "wooden_stick",
+    "chest": null,
+    "legs": null,
+    "head": null,
+    "feet": null,
+    "hands": null,
+    "off_hand": null
+  },
+  "stats": {
+    "strength": 10,
+    "defense": 5,
+    "speed": 8
+  },
+  "quests": [],
+  "combat": null,
+  "lastSaved": "2025-09-28T23:40:45.021Z"
+}

@@ -1,7 +1,10 @@
 {
-  "title": "The Prancing Pony Inn",
-  "description": "A cozy inn with wooden tables and chairs scattered around a large fireplace. The smell of ale and roasted meat fills the air. Travelers and locals alike gather here to share stories and rest.",
+  "name": "The Prancing Pony Inn",
+  "description": "A cozy tavern filled with the warm glow of flickering candles. The air is thick with the aroma of roasted meat and ale. Travelers and locals alike gather here to share stories and enjoy hearty meals.",
   "items": ["ale"],
   "npcs": ["innkeeper"],
-  "enemies": []
+  "enemies": [],
+  "exits": {
+    "south": "town_area.town_square"
+  }
 }

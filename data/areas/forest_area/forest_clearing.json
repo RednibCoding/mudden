@@ -1,7 +1,11 @@
 {
-  "title": "Forest Clearing",
+  "name": "Forest Clearing",
   "description": "A small clearing in the forest where sunlight filters through. Wildflowers grow here, and you can hear birds singing overhead.",
   "items": ["berries"],
   "npcs": ["hermit"],
-  "enemies": []
+  "enemies": [],
+  "exits": {
+    "north": "forest_area.forest_entrance",
+    "south": "forest_area.deep_forest"
+  }
 }
