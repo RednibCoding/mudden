@@ -1,0 +1,33 @@
+{
+  "title": "Advanced Forging Techniques",
+  "description": "The blacksmith wants to teach you advanced forging techniques, but first you must prove your dedication.",
+  "questGiver": "blacksmith",
+  "type": "gather",
+  "levelRequired": 2,
+  "objectives": {
+    "gather": [
+      {
+        "item": "steel_ingot",
+        "quantity": 5,
+        "description": "Gather 5 Steel Ingots"
+      },
+      {
+        "item": "coal",
+        "quantity": 10,
+        "description": "Gather 10 pieces of Coal"
+      }
+    ]
+  },
+  "rewards": {
+    "gold": 150,
+    "xp": 300,
+    "items": ["steel_sword", "smithing_hammer"]
+  },
+  "questText": "I see you've proven yourself capable with basic materials. Now I'd like to teach you advanced forging techniques! But first, I need you to gather some premium materials - 5 steel ingots and 10 pieces of coal. This will be much more challenging than iron ore!",
+  "completionText": "Outstanding! You've shown real dedication to the craft. Here are some advanced tools and a steel sword I forged myself. You're ready for the advanced techniques now!",
+  "repeatable": false,
+  "requirements": {
+    "level": 2,
+    "completedQuests": ["blacksmith_first_weapon"]
+  }
+}

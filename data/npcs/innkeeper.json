@@ -1,0 +1,25 @@
+{
+  "name": "Jolly Innkeeper",
+  "description": "A portly, cheerful man with a bushy beard and apron stained with ale.",
+  "dialogue": {
+    "greeting": "Welcome to The Prancing Pony! What can I get you?",
+    "responses": {
+      "hello": "Good day to you! We have the finest ale in the kingdom.",
+      "room": "A room for the night costs 10 gold pieces. Interested?",
+      "ale": "Our ale is brewed fresh daily! Would you like a mug?",
+      "food": "We have hearty stew and fresh bread. Perfect for weary travelers.",
+      "bye": "Come back anytime, friend!"
+    }
+  },
+  "quests": ["innkeeper_delivery"],
+  "shop": {
+    "items": ["ale"],
+    "services": ["room_rental"]
+  },
+  "hostile": false,
+  "stats": {
+    "health": 50,
+    "strength": 8,
+    "defense": 5
+  }
+}

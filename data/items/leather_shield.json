@@ -1,0 +1,13 @@
+{
+  "name": "Leather Shield",
+  "description": "A round shield made of hardened leather with iron studs.",
+  "type": "armor",
+  "slot": "off_hand",
+  "value": 25,
+  "weight": 3,
+  "canTake": true,
+  "canUse": true,
+  "effects": {
+    "defense": 5
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "areaId": "town_area",
+  "name": "Town Area",
+  "description": "The central town area with shops and the main square",
+  "gridSize": {
+    "width": 3,
+    "height": 2
+  },
+  "rooms": {
+    "1,0": {
+      "id": "town_square",
+      "title": "Town Square",
+      "description": "You are standing in the center of a bustling medieval town. The cobblestone square is surrounded by various shops and buildings. A fountain bubbles merrily in the center, and townspeople go about their daily business.",
+      "items": ["town_notice"],
+      "npcs": ["town_guard"],
+      "enemies": []
+    },
+    "1,1": {
+      "id": "inn",
+      "title": "The Prancing Pony Inn",
+      "description": "A cozy inn with wooden tables and chairs scattered around a large fireplace. The smell of ale and roasted meat fills the air. Travelers and locals alike gather here to share stories and rest.",
+      "items": ["ale"],
+      "npcs": ["innkeeper"],
+      "enemies": []
+    },
+    "2,0": {
+      "id": "weapon_shop",
+      "title": "Blade & Steel Weapons",
+      "description": "A well-stocked weapons shop with gleaming swords, sturdy shields, and sharp daggers displayed on the walls. The blacksmith works at his forge in the back.",
+      "items": ["iron_sword", "leather_shield"],
+      "npcs": ["blacksmith"],
+      "enemies": []
+    },
+    "0,0": {
+      "id": "magic_shop",
+      "title": "Mystical Enchantments",
+      "description": "A mysterious shop filled with glowing crystals, ancient tomes, and bubbling potions. The air crackles with magical energy.",
+      "items": ["healing_potion", "magic_scroll"],
+      "npcs": ["wizard"],
+      "enemies": []
+    }
+  },
+  "connections": {
+    "south": {
+      "toArea": "forest_area",
+      "fromCoord": "1,1",
+      "toCoord": "2,0"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Chain Mail",
+  "description": "A shirt of interlocking metal rings that provides good protection.",
+  "type": "armor",
+  "slot": "chest",
+  "value": 150,
+  "weight": 12,
+  "canTake": true,
+  "canUse": true,
+  "effects": {
+    "defense": 10
+  }
+}

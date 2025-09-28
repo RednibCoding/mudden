@@ -1,0 +1,13 @@
+{
+  "name": "Mug of Ale",
+  "description": "A frothy mug of ale, still warm from the tap.",
+  "type": "consumable",
+  "value": 5,
+  "weight": 1,
+  "canTake": true,
+  "canUse": true,
+  "effects": {
+    "health": 5,
+    "stamina": 10
+  }
+}

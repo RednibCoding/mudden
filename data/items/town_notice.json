@@ -1,0 +1,10 @@
+{
+  "name": "Town Notice",
+  "description": "A weathered notice posted on the fountain. It reads: 'WANTED: Brave adventurers to explore the mysterious forest and rid it of dangerous creatures. Reward: 100 gold pieces.'",
+  "type": "readable",
+  "value": 0,
+  "weight": 0,
+  "canTake": false,
+  "canUse": true,
+  "effects": {}
+}

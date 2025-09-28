@@ -1,0 +1,25 @@
+{
+  "name": "Ancient Wizard",
+  "description": "An elderly wizard with a long white beard and robes decorated with mystical symbols. His eyes glow with arcane knowledge.",
+  "dialogue": {
+    "greeting": "Greetings, young one. Seek you the mysteries of magic?",
+    "responses": {
+      "hello": "Welcome to my humble shop of wonders and enchantments.",
+      "magic": "Magic is the force that binds all things. Would you like to learn?",
+      "potions": "I brew potions of healing and power. Very useful for adventurers.",
+      "spells": "Ancient spells written on sacred scrolls. Use them wisely.",
+      "bye": "May the arcane forces guide your path."
+    }
+  },
+  "shop": {
+    "items": ["healing_potion", "magic_scroll"],
+    "services": ["spell_teaching", "enchantment"]
+  },
+  "hostile": false,
+  "stats": {
+    "health": 60,
+    "strength": 5,
+    "defense": 8,
+    "magic": 25
+  }
+}

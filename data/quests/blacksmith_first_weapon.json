@@ -1,0 +1,28 @@
+{
+  "title": "A Smith's Request",
+  "description": "The blacksmith needs you to gather materials for a special weapon order.",
+  "questGiver": "blacksmith",
+  "type": "gather",
+  "levelRequired": 1,
+  "objectives": {
+    "gather": [
+      {
+        "item": "iron_ore",
+        "quantity": 3,
+        "description": "Gather 3 pieces of Iron Ore"
+      }
+    ]
+  },
+  "rewards": {
+    "gold": 50,
+    "xp": 100,
+    "items": ["iron_sword"]
+  },
+  "questText": "I've got a special order for a weapon, but I'm running low on iron ore. Could you gather 3 pieces of iron ore for me? You can find them in the forest or mines. I'll reward you well for your help!",
+  "completionText": "Excellent! This iron ore is perfect quality. Here's your reward - take this sword I crafted specially for you!",
+  "repeatable": true,
+  "requirements": {
+    "level": 1,
+    "completedQuests": []
+  }
+}

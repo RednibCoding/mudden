@@ -1,0 +1,27 @@
+{
+  "title": "Forest Patrol",
+  "description": "The town guard needs help clearing dangerous creatures from the forest paths.",
+  "questGiver": "town_guard",
+  "type": "kill",
+  "levelRequired": 2,
+  "objectives": {
+    "kill": [
+      {
+        "enemy": "forest_wolf",
+        "quantity": 5,
+        "description": "Eliminate 5 Forest Wolves"
+      }
+    ]
+  },
+  "rewards": {
+    "gold": 75,
+    "xp": 150
+  },
+  "questText": "The forest paths have become dangerous with wolves prowling about. Travelers are afraid to venture out. Could you help us by eliminating 5 of these forest wolves? The safety of our town depends on it.",
+  "completionText": "Well done, adventurer! The forest paths are much safer now. Here's your reward for serving the town so well.",
+  "repeatable": true,
+  "requirements": {
+    "level": 2,
+    "completedQuests": []
+  }
+}
