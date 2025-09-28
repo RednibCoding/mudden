@@ -30,9 +30,21 @@ CREATE TABLE IF NOT EXISTS player_inventory (
     player_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
     item_id TEXT NOT NULL,
     quantity INTEGER DEFAULT 1 CHECK (quantity > 0),
-    equipped BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(player_id, item_id)
+);
+
+-- Player equipment table for equipped items with slots
+CREATE TABLE IF NOT EXISTS player_equipment (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    player_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+    slot_type TEXT NOT NULL CHECK (slot_type IN ('main_hand', 'off_hand', 'chest', 'legs', 'head', 'feet', 'hands', 'accessory', 'ring', 'necklace')),
+    item_id TEXT NOT NULL,
+    equipped_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    
+    -- Each player can only have one item equipped per slot
+    UNIQUE(player_id, slot_type)
 );
 
 -- Game actions/logs table for tracking player activities
@@ -72,6 +84,8 @@ CREATE INDEX IF NOT EXISTS idx_player_locations_online ON player_locations(is_on
 CREATE INDEX IF NOT EXISTS idx_player_locations_position ON player_locations(current_area, position_x, position_y);
 CREATE INDEX IF NOT EXISTS idx_player_inventory_player_id ON player_inventory(player_id);
 CREATE INDEX IF NOT EXISTS idx_player_inventory_item_id ON player_inventory(item_id);
+CREATE INDEX IF NOT EXISTS idx_player_equipment_player_id ON player_equipment(player_id);
+CREATE INDEX IF NOT EXISTS idx_player_equipment_slot ON player_equipment(player_id, slot_type);
 CREATE INDEX IF NOT EXISTS idx_game_actions_player_id ON game_actions(player_id);
 CREATE INDEX IF NOT EXISTS idx_game_actions_action_type ON game_actions(action_type);
 CREATE INDEX IF NOT EXISTS idx_game_actions_created_at ON game_actions(created_at);
@@ -166,6 +180,21 @@ CREATE TRIGGER update_player_quests_updated_at
     BEFORE UPDATE ON player_quests
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+
+-- Migration: Update slot_type constraint to include actual slot names used by items
+-- This is safe to run multiple times
+DO $$ 
+BEGIN
+    -- Drop the old constraint if it exists
+    ALTER TABLE player_equipment DROP CONSTRAINT IF EXISTS player_equipment_slot_type_check;
+    
+    -- Add the new constraint with proper slot names
+    ALTER TABLE player_equipment ADD CONSTRAINT player_equipment_slot_type_check 
+    CHECK (slot_type IN ('main_hand', 'off_hand', 'chest', 'legs', 'head', 'feet', 'hands', 'accessory', 'ring', 'necklace'));
+EXCEPTION WHEN OTHERS THEN
+    -- Constraint already exists or other error, ignore
+    NULL;
+END $$;
 
 -- Row Level Security (RLS) is DISABLED for Service Role authentication
 -- Authorization is handled at the API level in Nuxt server routes

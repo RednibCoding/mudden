@@ -235,22 +235,12 @@ export class DatabaseService {
     }
   }
 
-  // Equipment operations
+  // Equipment operations using new player_equipment table
   static async getEquippedItems(playerId: string) {
     const { data, error } = await supabase
-      .from('player_inventory')
-      .select(`
-        *,
-        items!inner(
-          id,
-          name,
-          type,
-          slot,
-          effects
-        )
-      `)
+      .from('player_equipment')
+      .select('*')
       .eq('player_id', playerId)
-      .eq('equipped', true)
 
     if (error) throw error
     return data || []
@@ -270,45 +260,49 @@ export class DatabaseService {
 
   static async checkPlayerHasItemEquipped(playerId: string, itemId: string) {
     const { data, error } = await supabase
-      .from('player_inventory')
+      .from('player_equipment')
       .select('*')
       .eq('player_id', playerId)
       .eq('item_id', itemId)
-      .eq('equipped', true)
       .single()
 
     if (error && error.code !== 'PGRST116') throw error // PGRST116 is "no rows found"
     return data
   }
 
-  static async findEquippedItemInSlot(playerId: string, slot: string) {
+  static async findEquippedItemInSlot(playerId: string, slotType: string) {
     const { data, error } = await supabase
-      .from('player_inventory')
-      .select(`
-        *,
-        items!inner(
-          id,
-          name,
-          type,
-          slot,
-          effects
-        )
-      `)
+      .from('player_equipment')
+      .select('*')
       .eq('player_id', playerId)
-      .eq('equipped', true)
-      .eq('items.slot', slot)
+      .eq('slot_type', slotType)
       .single()
 
     if (error && error.code !== 'PGRST116') throw error // PGRST116 is "no rows found"
     return data
   }
 
-  static async equipItem(playerId: string, itemId: string) {
+  static async equipItem(playerId: string, itemId: string, slotType: string) {
+    // First check if player owns the item
+    const inventoryItem = await this.checkPlayerHasItem(playerId, itemId)
+    if (!inventoryItem) {
+      throw new Error('Item not found in inventory')
+    }
+
+    // Unequip any existing item in this slot
+    const existingItem = await this.findEquippedItemInSlot(playerId, slotType)
+    if (existingItem) {
+      await this.unequipItemFromSlot(playerId, slotType)
+    }
+
+    // Equip the new item
     const { data, error } = await supabase
-      .from('player_inventory')
-      .update({ equipped: true })
-      .eq('player_id', playerId)
-      .eq('item_id', itemId)
+      .from('player_equipment')
+      .insert({
+        player_id: playerId,
+        item_id: itemId,
+        slot_type: slotType
+      })
       .select()
       .single()
 
@@ -318,12 +312,23 @@ export class DatabaseService {
 
   static async unequipSpecificItem(playerId: string, itemId: string) {
     const { data, error } = await supabase
-      .from('player_inventory')
-      .update({ equipped: false })
+      .from('player_equipment')
+      .delete()
       .eq('player_id', playerId)
       .eq('item_id', itemId)
       .select()
-      .single()
+
+    if (error) throw error
+    return data
+  }
+
+  static async unequipItemFromSlot(playerId: string, slotType: string) {
+    const { data, error } = await supabase
+      .from('player_equipment')
+      .delete()
+      .eq('player_id', playerId)
+      .eq('slot_type', slotType)
+      .select()
 
     if (error) throw error
     return data

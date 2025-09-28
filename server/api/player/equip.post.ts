@@ -54,21 +54,34 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    // Determine equipment slot - all items should have a slot field
-    const equipmentSlot = item.slot || (item.type === 'weapon' ? 'main_hand' : 'armor')
+    // Determine equipment slot - use item.slot or default based on type
+    let equipmentSlot = item.slot
+    if (!equipmentSlot) {
+      // Default slot mapping for items without explicit slot
+      const slotMap: { [key: string]: string } = {
+        'weapon': 'main_hand',
+        'armor': 'chest',
+        'helmet': 'head',
+        'boots': 'feet',
+        'gloves': 'hands'
+      }
+      equipmentSlot = slotMap[item.type] || 'main_hand'
+    }
 
     // Check what's currently equipped in this slot
     const currentEquipped = await DatabaseService.findEquippedItemInSlot(playerId, equipmentSlot)
     let replacedItem = null
     
     if (currentEquipped) {
-      replacedItem = currentEquipped.items
-      // Unequip the item being replaced
-      await DatabaseService.unequipSpecificItem(playerId, currentEquipped.item_id)
+      // Get the replaced item data from content service
+      const replacedItemData = ContentService.getItem(currentEquipped.item_id)
+      if (replacedItemData) {
+        replacedItem = replacedItemData
+      }
     }
 
-    // Equip the new item
-    const result = await DatabaseService.equipItem(playerId, itemId)
+    // Equip the new item (this handles unequipping the old item automatically)
+    const result = await DatabaseService.equipItem(playerId, itemId, equipmentSlot)
     if (!result) {
       return {
         success: false,
@@ -92,12 +105,14 @@ export default defineEventHandler(async (event) => {
         id: itemId,
         name: item.name,
         type: item.type,
+        slot: equipmentSlot,
         effects: item.effects
       },
       replacedItem: replacedItem ? {
         id: replacedItem.id,
         name: replacedItem.name,
-        type: replacedItem.type
+        type: replacedItem.type,
+        slot: replacedItem.slot
       } : null
     }
 

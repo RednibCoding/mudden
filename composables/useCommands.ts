@@ -2,8 +2,25 @@ import type { GameOutput } from './useGameState'
 
 
 
+// Utility function to get user-friendly slot display names
+const getSlotDisplayName = (slot: string): string => {
+  const slotDisplayNames: { [key: string]: string } = {
+    'main_hand': 'Main Hand',
+    'off_hand': 'Off Hand', 
+    'chest': 'Chest',
+    'legs': 'Legs',
+    'head': 'Head',
+    'feet': 'Feet',
+    'hands': 'Hands',
+    'accessory': 'Accessory',
+    'ring': 'Ring',
+    'necklace': 'Necklace'
+  }
+  return slotDisplayNames[slot] || slot
+}
+
 export const useCommands = (
-  addGameOutput: (text: string, type?: GameOutput['type']) => void,
+  addGameOutput: (message: string, type?: string) => void,
   currentRoom: any,
   player: any
 ) => {
@@ -193,7 +210,7 @@ export const useCommands = (
         case 'inventory':
         case 'inv':
         case 'i':
-          handleInventory()
+          await handleInventory()
           break
           
         case 'take':
@@ -256,7 +273,7 @@ export const useCommands = (
           break
           
         case 'stats':
-          handleStats()
+          await handleStats()
           break
           
         default:
@@ -365,8 +382,21 @@ export const useCommands = (
         if (itemData.type) {
           addGameOutput(`Type: ${itemData.type}`)
         }
+        if (itemData.slot) {
+          const displaySlot = getSlotDisplayName(itemData.slot)
+          addGameOutput(`Slot: ${displaySlot}`)
+        }
+        if (itemData.effects && Object.keys(itemData.effects).length > 0) {
+          const effectsText = Object.entries(itemData.effects)
+            .map(([key, value]) => `${key}: +${value}`)
+            .join(', ')
+          addGameOutput(`Effects: ${effectsText}`)
+        }
         if (itemData.value && itemData.value > 0) {
           addGameOutput(`Value: ${itemData.value} gold`)
+        }
+        if (itemData.weight && itemData.weight > 0) {
+          addGameOutput(`Weight: ${itemData.weight} lbs`)
         }
       } else {
         // Fallback
@@ -457,28 +487,52 @@ export const useCommands = (
     }
   }
 
-  const handleInventory = (): void => {
+  const handleInventory = async (): Promise<void> => {
     if (player.value.inventory.length === 0) {
       addGameOutput("Your inventory is empty.")
       return
     }
+
+    // Fetch equipped items to mark them as equipped in inventory display
+    let equippedItemIds: string[] = []
+    try {
+      const equippedResponse = await $fetch('/api/player/equipment') as any
+      if (equippedResponse.success && equippedResponse.equippedItems) {
+        equippedItemIds = equippedResponse.equippedItems.map((item: any) => item.id)
+      }
+    } catch (error) {
+      console.error('Failed to fetch equipped items for inventory display:', error)
+      // Continue without equipped indicators if fetch fails
+    }
     
     addGameOutput("\n=== Your Inventory ===")
     player.value.inventory.forEach((invItem: any) => {
-      // Handle both old string format and new enriched object format
+      // Get item ID for equipped check
+      let itemId: string
+      let itemName: string
+      let quantity = ''
+      
       if (typeof invItem === 'string') {
-        addGameOutput(`- ${invItem}`)
-      } else if (invItem && invItem.item && invItem.item.name) {
-        // Display enriched item with quantity if available - no description
-        const quantity = invItem.quantity > 1 ? ` (${invItem.quantity})` : ''
-        addGameOutput(`- ${invItem.item.name}${quantity}`)
+        itemId = invItem
+        itemName = invItem
+      } else if (invItem && invItem.item && invItem.item.id) {
+        itemId = invItem.item.id
+        itemName = invItem.item.name || invItem.item.id
+        quantity = invItem.quantity > 1 ? ` (${invItem.quantity})` : ''
       } else if (invItem && invItem.name) {
-        // Fallback for direct item format - no description
-        const quantity = invItem.quantity > 1 ? ` (${invItem.quantity})` : ''
-        addGameOutput(`- ${invItem.name}${quantity}`)
+        itemId = invItem.id || invItem.item_id || invItem.name
+        itemName = invItem.name
+        quantity = invItem.quantity > 1 ? ` (${invItem.quantity})` : ''
       } else {
         addGameOutput(`- Unknown item`)
+        return
       }
+      
+      // Check if item is equipped
+      const isEquipped = equippedItemIds.includes(itemId)
+      const equippedIndicator = isEquipped ? ' (equipped)' : ''
+      
+      addGameOutput(`- ${itemName}${quantity}${equippedIndicator}`)
     })
   }
 
@@ -977,7 +1031,7 @@ export const useCommands = (
     addGameOutput("=== Welcome to your adventure! ===")
   }
 
-  const handleStats = (): void => {
+  const handleStats = async (): Promise<void> => {
     addGameOutput("\n=== Character Stats ===")
     addGameOutput(`Name: ${player.value.name}`)
     addGameOutput(`Level: ${player.value.level}`)
@@ -986,23 +1040,23 @@ export const useCommands = (
     addGameOutput(`Gold: ${player.value.gold}`)
     addGameOutput(`Location: ${currentRoom.value?.title || 'Unknown'}`)
     
-    // Show equipped items
-    const equippedItems = player.value.inventory.filter((invItem: any) => {
-      if (typeof invItem === 'string') return false
-      return invItem.equipped === true
-    })
-    
-    if (equippedItems.length > 0) {
-      addGameOutput("\n=== Equipped Items ===")
-      equippedItems.forEach((invItem: any) => {
-        if (invItem.item && invItem.item.name) {
-          const effects = invItem.item.effects || {}
+    // Show equipped items from the new equipment system
+    try {
+      const equippedResponse = await $fetch('/api/player/equipment') as any
+      if (equippedResponse.success && equippedResponse.equippedItems.length > 0) {
+        addGameOutput("\n=== Equipped Items ===")
+        equippedResponse.equippedItems.forEach((equippedItem: any) => {
+          const effects = equippedItem.effects || {}
           const effectsText = Object.entries(effects)
             .map(([key, value]) => `${key}: +${value}`)
             .join(', ')
-          addGameOutput(`${invItem.item.name}${effectsText ? ` (${effectsText})` : ''}`)
-        }
-      })
+          const displaySlot = equippedItem.slot ? getSlotDisplayName(equippedItem.slot) : ''
+          const slotText = displaySlot ? ` [${displaySlot}]` : ''
+          addGameOutput(`${equippedItem.name}${slotText}${effectsText ? ` (${effectsText})` : ''}`)
+        })
+      }
+    } catch (error) {
+      console.error('Failed to load equipped items for stats:', error)
     }
   }
 
@@ -1071,28 +1125,19 @@ export const useCommands = (
         return null
       }
 
-      // Use fuzzy matching to find equipped items
-      const equippedItems = player.value.inventory
-        .filter((invItem: any) => {
-          if (typeof invItem === 'string') return false
-          return invItem.equipped === true
-        })
-        .map((invItem: any) => {
-          try {
-            if (invItem && invItem.item) {
-              return { name: invItem.item.name, item: invItem, itemId: invItem.item.id }
-            }
-            return null
-          } catch (error) {
-            console.warn('Error processing equipped item for unequip:', invItem, error)
-            return null
-          }
-        }).filter(Boolean)
-
-      if (equippedItems.length === 0) {
+      // Get equipped items from the API
+      const equippedResponse = await $fetch('/api/player/equipment') as any
+      if (!equippedResponse.success || !equippedResponse.equippedItems || equippedResponse.equippedItems.length === 0) {
         addGameOutput("You don't have any items equipped.", 'warning')
         return null
       }
+
+      // Use fuzzy matching to find the item to unequip
+      const equippedItems = equippedResponse.equippedItems.map((equippedItem: any) => ({
+        name: equippedItem.name,
+        itemId: equippedItem.id,
+        slot: equippedItem.slot
+      }))
 
       const equippedMatch = findBestMatch(equippedItems, itemName, 'name')
 
@@ -1101,7 +1146,7 @@ export const useCommands = (
         return null
       }
 
-      const itemId = equippedMatch.itemId || equippedMatch.item.id
+      const itemId = equippedMatch.itemId
       const matchedName = equippedMatch.name
 
       // Show feedback if the match wasn't exact
