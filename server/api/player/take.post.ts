@@ -67,7 +67,7 @@ export default defineEventHandler(async (event) => {
 
     if (itemId) {
       // Direct lookup by ID (more efficient when client sends exact ID)
-      foundItem = currentRoom.items.find(id => id === itemId)
+      foundItem = currentRoom.items.find((id: string) => id === itemId)
       if (!foundItem) {
         return {
           success: false,
@@ -77,7 +77,7 @@ export default defineEventHandler(async (event) => {
     } else {
       // Fallback: Find the item by name (case-insensitive, partial match)
       const normalizedItemName = itemName!.toLowerCase().trim()
-      foundItem = currentRoom.items.find(id => {
+      foundItem = currentRoom.items.find((id: string) => {
         const itemData = ContentService.getItem(id)
         if (!itemData) return false
         

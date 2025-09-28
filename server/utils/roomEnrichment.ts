@@ -81,8 +81,9 @@ export async function enrichRoom(
   } else {
     // Search for room by ID in the area
     for (const [coord, room] of Object.entries(areaData.rooms)) {
-      if (room.id === roomId) {
-        currentRoom = room
+      const roomData = room as any
+      if (roomData.id === roomId) {
+        currentRoom = roomData
         roomCoord = coord
         break
       }
@@ -151,7 +152,7 @@ export async function enrichRoom(
       description: itemData.description,
       canTake: itemData.canTake !== false
     } : null
-  }).filter(item => item !== null)
+  }).filter((item): item is NonNullable<typeof item> => item !== null)
 
   // Get enriched NPC data for room NPCs
   const enrichedNpcs = []
