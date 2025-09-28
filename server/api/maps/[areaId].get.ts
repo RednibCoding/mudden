@@ -1,6 +1,8 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
+import ContentService from '../../database/content'
+
 export default defineEventHandler(async (event) => {
   const areaId = getRouterParam(event, 'areaId')
   
@@ -12,18 +14,29 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const mapPath = join(process.cwd(), 'data', 'maps', `${areaId}.json`)
-    const mapData = JSON.parse(readFileSync(mapPath, 'utf-8'))
+    const mapData = ContentService.getCompleteAreaData(areaId)
+    
+    if (!mapData) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: `Area not found: ${areaId}`
+      })
+    }
     
     return {
       success: true,
       data: mapData
     }
-  } catch (error) {
-    console.error('Error loading map:', error)
+  } catch (error: any) {
+    console.error('Error loading area:', error)
+    
+    if (error.statusCode) {
+      throw error
+    }
+    
     throw createError({
-      statusCode: 404,
-      statusMessage: `Map not found for area: ${areaId}`
+      statusCode: 500,
+      statusMessage: `Failed to load area: ${areaId}`
     })
   }
 })

@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
     )
 
     // Get area data for client
-    const areaData = ContentService.getAreaMap(currentLocation.current_area)
+    const areaData = ContentService.getCompleteAreaData(currentLocation.current_area)
 
     return {
       ...enrichedRoomData,

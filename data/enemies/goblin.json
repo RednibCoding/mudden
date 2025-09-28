@@ -1,0 +1,37 @@
+{
+  "id": "goblin",
+  "name": "Sneaky Goblin",
+  "description": "A small, green-skinned creature with pointed ears and yellowed teeth. It carries a rusty dagger and grins maliciously.",
+  "stats": {
+    "health": 20,
+    "maxHealth": 20,
+    "strength": 6,
+    "defense": 2,
+    "speed": 15,
+    "experience": 10
+  },
+  "attacks": [
+    {
+      "name": "dagger_stab",
+      "damage": 6,
+      "accuracy": 80,
+      "description": "The goblin thrusts with its rusty dagger!"
+    },
+    {
+      "name": "dirty_trick",
+      "damage": 3,
+      "accuracy": 95,
+      "description": "The goblin throws dirt in your eyes and attacks!"
+    }
+  ],
+  "loot": {
+    "gold": [1, 5],
+    "items": ["rusty_dagger"],
+    "dropRate": 40
+  },
+  "behavior": {
+    "aggressive": true,
+    "fleeThreshold": 3,
+    "packAnimal": false
+  }
+}

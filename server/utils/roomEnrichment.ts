@@ -61,8 +61,8 @@ export async function enrichRoom(
   playerPosition?: { x: number, y: number },
   playerId?: string
 ): Promise<EnrichedRoom> {
-  // Get area data for room lookup and exit calculation
-  const areaData = ContentService.getAreaMap(areaId)
+  // Get complete area data for room lookup and exit calculation
+  const areaData = ContentService.getCompleteAreaData(areaId)
   if (!areaData) {
     throw createError({
       statusCode: 404,

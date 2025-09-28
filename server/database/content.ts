@@ -15,16 +15,6 @@ interface Item {
   [key: string]: any
 }
 
-interface Room {
-  id: string
-  title: string
-  description: string
-  items?: string[]
-  npcs?: string[]
-  enemies?: string[]
-  [key: string]: any
-}
-
 interface NPC {
   id: string
   name: string
@@ -86,20 +76,17 @@ interface Enemy {
 }
 
 interface AreaMap {
-  areaId: string
   name: string
   description: string
   gridSize: {
     width: number
     height: number
   }
-  rooms: Record<string, Room>
-  connections?: Record<string, any>
+  layout: Record<string, string>
 }
 
 // Global caches for loaded content
 let itemsCache: Record<string, Item> | null = null
-let roomsCache: Record<string, Room> | null = null
 let npcsCache: Record<string, NPC> | null = null
 let enemiesCache: Record<string, Enemy> | null = null
 let mapsCache: Record<string, AreaMap> | null = null
@@ -174,42 +161,54 @@ export class ContentService {
     return Object.keys(this.getItems())
   }
   
-  // === ROOMS ===
+  // === AREAS & ROOMS ===
   
-  static getRooms(): Record<string, Room> {
-    if (!roomsCache) {
-      try {
-        const roomsDir = join(process.cwd(), 'data', 'rooms')
-        const roomFiles = readdirSync(roomsDir).filter(file => file.endsWith('.json'))
-        
-        roomsCache = {}
-        
-        for (const file of roomFiles) {
-          try {
-            const roomPath = join(roomsDir, file)
-            const roomData = JSON.parse(readFileSync(roomPath, 'utf-8'))
-            const roomId = this.sanitizeFilenameToId(file)
-            
-            // Add sanitized ID from filename to the room object
-            roomData.id = roomId
-            roomsCache[roomId] = roomData
-          } catch (fileError) {
-            console.error(`Error loading room file ${file}:`, fileError)
-          }
-        }
-        
-        console.log(`Loaded ${Object.keys(roomsCache).length} rooms from individual files`)
-      } catch (error) {
-        console.error('Error loading rooms directory:', error)
-        roomsCache = {}
-      }
+  /**
+   * Get a specific room from an area
+   * @param areaId - The area ID containing the room
+   * @param roomId - The room ID to retrieve
+   * @returns Room data or null if not found
+   */
+  static getAreaRoom(areaId: string, roomId: string): any | null {
+    try {
+      const roomPath = join(process.cwd(), 'data', 'areas', areaId, `${roomId}.json`)
+      const roomData = JSON.parse(readFileSync(roomPath, 'utf-8'))
+      return roomData
+    } catch (error) {
+      console.error(`Error loading room ${roomId} from area ${areaId}:`, error)
+      return null
     }
-    return roomsCache!
   }
-  
-  static getRoom(roomId: string): Room | null {
-    const rooms = this.getRooms()
-    return rooms[roomId] || null
+
+  /**
+   * Get all rooms for a specific area
+   * @param areaId - The area ID
+   * @returns Record of room ID to room data
+   */
+  static getAreaRooms(areaId: string): Record<string, any> {
+    const rooms: Record<string, any> = {}
+    
+    try {
+      const areaDir = join(process.cwd(), 'data', 'areas', areaId)
+      const roomFiles = readdirSync(areaDir).filter(file => file.endsWith('.json') && file !== 'area.json')
+      
+      for (const file of roomFiles) {
+        try {
+          const roomPath = join(areaDir, file)
+          const roomData = JSON.parse(readFileSync(roomPath, 'utf-8'))
+          const roomId = this.sanitizeFilenameToId(file)
+          
+          roomData.id = roomId
+          rooms[roomId] = roomData
+        } catch (fileError) {
+          console.error(`Error loading room file ${file} in area ${areaId}:`, fileError)
+        }
+      }
+    } catch (error) {
+      console.error(`Error loading rooms for area ${areaId}:`, error)
+    }
+    
+    return rooms
   }
   
   // === NPCS ===
@@ -277,20 +276,25 @@ export class ContentService {
     if (!mapsCache) {
       mapsCache = {}
       try {
-        // Load all map files from data/maps/ directory
-        const mapsDir = join(process.cwd(), 'data', 'maps')
-        const mapFiles = readdirSync(mapsDir).filter((file: string) => file.endsWith('.json'))
+        // Load all area files from data/areas/ directory
+        const areasDir = join(process.cwd(), 'data', 'areas')
+        const areaDirs = readdirSync(areasDir, { withFileTypes: true })
+          .filter(dirent => dirent.isDirectory())
+          .map(dirent => dirent.name)
         
-        for (const mapFile of mapFiles) {
-          const mapPath = join(mapsDir, mapFile)
-          const mapData = JSON.parse(readFileSync(mapPath, 'utf-8'))
-          // Use areaId from file if present, otherwise sanitize filename
-          const areaId = mapData.areaId || this.sanitizeFilenameToId(mapFile)
-          mapData.areaId = areaId
-          mapsCache[areaId] = mapData
+        for (const areaDir of areaDirs) {
+          try {
+            const areaPath = join(areasDir, areaDir, 'area.json')
+            const areaData = JSON.parse(readFileSync(areaPath, 'utf-8'))
+            mapsCache[areaDir] = areaData
+          } catch (error) {
+            console.error(`Error loading area ${areaDir}:`, error)
+          }
         }
+        
+        console.log(`Loaded ${Object.keys(mapsCache).length} areas from individual folders`)
       } catch (error) {
-        console.error('Error loading area maps:', error)
+        console.error('Error loading areas directory:', error)
       }
     }
     return mapsCache
@@ -299,6 +303,50 @@ export class ContentService {
   static getAreaMap(areaId: string): AreaMap | null {
     const maps = this.getAreaMaps()
     return maps[areaId] || null
+  }
+
+  /**
+   * Get complete area data with populated rooms (for backward compatibility)
+   * This builds the old format that existing code expects
+   */
+  static getCompleteAreaData(areaId: string): any | null {
+    const areaMetadata = this.getAreaMap(areaId)
+    if (!areaMetadata) {
+      console.error(`Area metadata not found for: ${areaId}`)
+      return null
+    }
+
+    const rooms = this.getAreaRooms(areaId)
+    const roomsWithCoordinates: Record<string, any> = {}
+
+    console.log(`Building complete area data for ${areaId}:`)
+    console.log('Area metadata:', areaMetadata)
+    console.log('Loaded rooms:', Object.keys(rooms))
+
+    // Map rooms to their coordinates based on layout
+    for (const [coord, roomId] of Object.entries(areaMetadata.layout)) {
+      if (rooms[roomId]) {
+        roomsWithCoordinates[coord] = {
+          id: roomId,
+          ...rooms[roomId]
+        }
+        console.log(`Mapped room ${roomId} to coordinate ${coord}`)
+      } else {
+        console.error(`Room ${roomId} not found for coordinate ${coord}`)
+      }
+    }
+
+    const result = {
+      areaId,
+      name: areaMetadata.name,
+      description: areaMetadata.description,
+      gridSize: areaMetadata.gridSize,
+      rooms: roomsWithCoordinates,
+      layout: areaMetadata.layout
+    }
+
+    console.log('Final area data rooms:', Object.keys(result.rooms))
+    return result
   }
   
   // === UTILITY METHODS ===
@@ -333,7 +381,6 @@ export class ContentService {
     // Clear all caches (useful for development)
   static clearCaches() {
     itemsCache = null
-    roomsCache = null
     npcsCache = null
     enemiesCache = null
     mapsCache = null
@@ -391,7 +438,6 @@ export class ContentService {
   static getStats() {
     return {
       items: Object.keys(this.getItems()).length,
-      rooms: Object.keys(this.getRooms()).length,
       npcs: Object.keys(this.getNPCs()).length,
       enemies: Object.keys(this.getEnemies()).length,
       areas: Object.keys(this.getAreaMaps()).length,

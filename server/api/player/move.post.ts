@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Get current area and room data
-    const areaData = ContentService.getAreaMap(currentLocation.current_area)
+    const areaData = ContentService.getCompleteAreaData(currentLocation.current_area)
     if (!areaData) {
       throw createError({
         statusCode: 404,

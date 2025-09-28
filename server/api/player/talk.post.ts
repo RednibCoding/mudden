@@ -56,8 +56,8 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    // Get room data with NPCs (fix: use current_room instead of room_id)
-    const roomData = ContentService.getRoom(currentLocation.current_room)
+    // Get room data with NPCs using new area system
+    const roomData = ContentService.getAreaRoom(currentLocation.current_area, currentLocation.current_room)
     
     if (!roomData || !roomData.npcs || roomData.npcs.length === 0) {
       return {

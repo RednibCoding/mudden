@@ -1,0 +1,14 @@
+{
+  "name": "Town Area",
+  "description": "The central town area with shops and the main square",
+  "gridSize": {
+    "width": 3,
+    "height": 2
+  },
+  "layout": {
+    "1,0": "town_square",
+    "1,1": "inn",
+    "2,0": "weapon_shop",
+    "0,0": "magic_shop"
+  }
+}

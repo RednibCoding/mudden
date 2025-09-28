@@ -1,0 +1,37 @@
+{
+  "id": "orc",
+  "name": "Brutal Orc",
+  "description": "A large, muscular humanoid with green skin and prominent tusks. It wields a massive club and roars threateningly.",
+  "stats": {
+    "health": 50,
+    "maxHealth": 50,
+    "strength": 15,
+    "defense": 8,
+    "speed": 8,
+    "experience": 25
+  },
+  "attacks": [
+    {
+      "name": "club_smash",
+      "damage": 15,
+      "accuracy": 70,
+      "description": "The orc swings its massive club down with crushing force!"
+    },
+    {
+      "name": "headbutt",
+      "damage": 10,
+      "accuracy": 85,
+      "description": "The orc charges forward with a vicious headbutt!"
+    }
+  ],
+  "loot": {
+    "gold": [8, 15],
+    "items": ["orc_club", "healing_potion"],
+    "dropRate": 70
+  },
+  "behavior": {
+    "aggressive": true,
+    "fleeThreshold": 10,
+    "packAnimal": false
+  }
+}
