@@ -138,8 +138,6 @@ export class ContentService {
             console.error(`Error loading item file ${file}:`, fileError)
           }
         }
-        
-        console.log(`Loaded ${Object.keys(itemsCache).length} items from individual files`)
       } catch (error) {
         console.error('Error loading items directory:', error)
         itemsCache = {}
@@ -234,8 +232,6 @@ export class ContentService {
             console.error(`Error loading NPC file ${file}:`, fileError)
           }
         }
-        
-        console.log(`Loaded ${Object.keys(npcsCache).length} NPCs from individual files`)
       } catch (error) {
         console.error('Error loading NPCs directory:', error)
         npcsCache = {}
@@ -291,8 +287,6 @@ export class ContentService {
             console.error(`Error loading area ${areaDir}:`, error)
           }
         }
-        
-        console.log(`Loaded ${Object.keys(mapsCache).length} areas from individual folders`)
       } catch (error) {
         console.error('Error loading areas directory:', error)
       }
@@ -319,10 +313,6 @@ export class ContentService {
     const rooms = this.getAreaRooms(areaId)
     const roomsWithCoordinates: Record<string, any> = {}
 
-    console.log(`Building complete area data for ${areaId}:`)
-    console.log('Area metadata:', areaMetadata)
-    console.log('Loaded rooms:', Object.keys(rooms))
-
     // Map rooms to their coordinates based on layout
     for (const [coord, roomId] of Object.entries(areaMetadata.layout)) {
       if (rooms[roomId]) {
@@ -330,7 +320,6 @@ export class ContentService {
           id: roomId,
           ...rooms[roomId]
         }
-        console.log(`Mapped room ${roomId} to coordinate ${coord}`)
       } else {
         console.error(`Room ${roomId} not found for coordinate ${coord}`)
       }
@@ -344,8 +333,6 @@ export class ContentService {
       rooms: roomsWithCoordinates,
       layout: areaMetadata.layout
     }
-
-    console.log('Final area data rooms:', Object.keys(result.rooms))
     return result
   }
   
@@ -411,7 +398,6 @@ export class ContentService {
           }
         }
         
-        console.log(`Loaded ${Object.keys(questsCache).length} quests from individual files`)
       } catch (error) {
         console.error('Error loading quests directory:', error)
         questsCache = {}

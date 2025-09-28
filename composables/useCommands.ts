@@ -447,7 +447,7 @@ export const useCommands = (
         const npcName = matchedNpc.name || matchedNpc.npc || 'Unknown Person'
         // Show feedback if the match wasn't exact
         if (npcName && npcName.toLowerCase() !== itemName.toLowerCase()) {
-          addGameOutput(`(Looking at "${npcName}" - closest match to "${itemName}")`)
+          addGameOutput(`("${npcName}")`, "input")
         }
         addGameOutput(`You look at the ${npcName}.`)
         addGameOutput("They seem to be going about their business.")
