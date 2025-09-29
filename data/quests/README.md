@@ -16,7 +16,7 @@ Each quest file must contain the following structure:
   "description": "Brief description of the quest",
   "giver": "npc_id_who_gives_quest",
   "turnInNpc": "npc_id_who_receives_quest (optional, defaults to giver)",
-  "type": "kill|collect|delivery|chain|exploration",
+  "type": "kill|collect|chain|exploration",
   "level": 1,
   "prerequisites": {
     "level": 1,
@@ -25,10 +25,11 @@ Each quest file must contain the following structure:
   },
   "objectives": [
     {
-      "type": "kill|collect|deliver|visit",
+      "type": "kill|collect|visit",
       "target": "target_id",
       "quantity": 1,
       "current": 0,
+      "givenByQuestGiver": false,
       "description": "Human-readable objective description"
     }
   ],
@@ -71,6 +72,7 @@ Each objective is an object with:
 - **target**: ID of the target (enemy, item, NPC, or location)
 - **quantity**: How many are needed
 - **current**: Current progress (managed by game system)
+- **givenByQuestGiver**: (Optional) If true, this item is automatically given to the player when they accept the quest. Used for delivery-style quests.
 - **description**: Human-readable description for players
 
 ### Rewards

@@ -7,10 +7,10 @@
   "health": 110,
   "maxHealth": 110,
   "level": 2,
-  "experience": 250,
-  "gold": 170,
+  "experience": 270,
+  "gold": 185,
   "currentArea": "town_area",
-  "currentRoom": "town_square",
+  "currentRoom": "magic_shop",
   "inventory": [
     {
       "id": "ale",
@@ -46,7 +46,7 @@
     },
     {
       "id": "healing_potion",
-      "quantity": 8
+      "quantity": 9
     }
   ],
   "equipment": {
@@ -107,9 +107,25 @@
         }
       ],
       "completedAt": 1759161601049
+    },
+    {
+      "id": "innkeeper_delivery",
+      "status": "completed",
+      "acceptedAt": 1759168264741,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": "special_ale",
+          "quantity": 1,
+          "current": 0,
+          "givenByQuestGiver": true,
+          "description": "Deliver the Special Ale to the Wizard"
+        }
+      ],
+      "completedAt": 1759168295195
     }
   ],
   "combat": null,
   "takenOnetimeItems": [],
-  "lastSaved": "2025-09-29T16:30:54.207Z"
+  "lastSaved": "2025-09-29T17:52:04.571Z"
 }

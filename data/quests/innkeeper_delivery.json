@@ -3,7 +3,7 @@
   "description": "The Innkeeper needs someone to deliver a special ale to the Wizard in the magic shop.",
   "giver": "innkeeper",
   "turnInNpc": "wizard",
-  "type": "delivery",
+  "type": "collect",
   "level": 1,
   "prerequisites": {
     "level": 1,
@@ -12,11 +12,11 @@
   },
   "objectives": [
     {
-      "type": "deliver",
-      "target": "wizard",
-      "item": "special_ale",
+      "type": "collect",
+      "target": "special_ale",
       "quantity": 1,
       "current": 0,
+      "givenByQuestGiver": true,
       "description": "Deliver the Special Ale to the Wizard"
     }
   ],
