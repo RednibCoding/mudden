@@ -9,6 +9,12 @@
     {
       "id": "leather_shield",
       "onetime": true
+    },
+    {
+      "id": "sharpening_stone",
+      "onetime": false,
+      "respawnTime": 12000,
+      "quest": "blacksmith_repair_tools"
     }
   ],
   "npcs": ["blacksmith"],

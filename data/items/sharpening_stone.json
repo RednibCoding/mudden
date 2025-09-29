@@ -1,0 +1,11 @@
+{
+  "name": "Sharpening Stone",
+  "description": "A coarse, rough stone perfect for sharpening metal tools and weapons. The surface shows wear from countless sharpenings.",
+  "type": "material",
+  "value": 8,
+  "weight": 3,
+  "canTake": true,
+  "canUse": false,
+  "stackable": true,
+  "stats": {}
+}

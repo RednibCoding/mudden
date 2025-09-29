@@ -11,7 +11,7 @@
       "bye": "May your blade stay sharp, adventurer!"
     }
   },
-  "quests": ["blacksmith_first_weapon", "blacksmith_advanced_forging"],
+  "quests": ["blacksmith_first_weapon", "blacksmith_repair_tools", "blacksmith_advanced_forging"],
   "shop": {
     "items": ["iron_sword", "leather_shield"],
     "services": ["repair", "upgrade"]
