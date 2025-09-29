@@ -1,0 +1,42 @@
+{
+  "name": "First Weapon",
+  "description": "The Blacksmith has offered to craft you a proper weapon if you bring him some basic materials.",
+  "giver": "blacksmith",
+  "type": "delivery",
+  "level": 1,
+  "prerequisites": {
+    "level": 1,
+    "quests": [],
+    "items": []
+  },
+  "objectives": [
+    {
+      "type": "collect",
+      "target": "iron_ore",
+      "quantity": 2,
+      "current": 0,
+      "description": "Collect 2 pieces of Iron Ore"
+    },
+    {
+      "type": "collect",
+      "target": "wood",
+      "quantity": 1,
+      "current": 0,
+      "description": "Collect 1 piece of Wood for the handle"
+    }
+  ],
+  "rewards": {
+    "experience": 30,
+    "gold": 0,
+    "items": ["steel_sword"]
+  },
+  "dialogue": {
+    "offer": "You look like you could use a proper weapon, young adventurer. Bring me some iron ore and wood, and I'll craft you something special.",
+    "accept": "Good! I need 2 pieces of iron ore and some wood for the handle. You might find ore in the deep parts of the forest.",
+    "decline": "Come back when you're ready for a real weapon.",
+    "progress": "Still gathering materials? Remember, I need iron ore and wood.",
+    "complete": "Perfect materials! Let me craft this for you... There, a fine steel sword! Use it well.",
+    "completed": "That sword I made for you should serve you well in your adventures."
+  },
+  "status": "available"
+}

@@ -1,0 +1,36 @@
+{
+  "name": "Inn Delivery",
+  "description": "The Innkeeper needs someone to deliver a special ale to the Wizard in the magic shop.",
+  "giver": "innkeeper",
+  "type": "delivery",
+  "level": 1,
+  "prerequisites": {
+    "level": 1,
+    "quests": [],
+    "items": []
+  },
+  "objectives": [
+    {
+      "type": "deliver",
+      "target": "wizard",
+      "item": "special_ale",
+      "quantity": 1,
+      "current": 0,
+      "description": "Deliver the Special Ale to the Wizard"
+    }
+  ],
+  "rewards": {
+    "experience": 20,
+    "gold": 15,
+    "items": ["healing_potion"]
+  },
+  "dialogue": {
+    "offer": "I have a special ale that the old wizard ordered, but I can't leave the inn. Could you deliver it for me?",
+    "accept": "Wonderful! Here's the special ale. Take it to the wizard in the magic shop. Be careful not to spill it!",
+    "decline": "No worries, I'll find someone else to help.",
+    "progress": "Have you delivered the ale to the wizard yet? He's waiting for it.",
+    "complete": "Thank you so much! The wizard was pleased, I'm sure. Here's your payment.",
+    "completed": "Thanks again for helping with that delivery. The wizard is a good customer."
+  },
+  "status": "available"
+}

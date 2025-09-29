@@ -379,7 +379,7 @@ const PORT = process.env.PORT || 3000
 server.listen(PORT, () => {
   console.log(`
 =======================================
-   SIMPLE MUD SERVER STARTED
+   MUDDED SERVER STARTED
 =======================================
 Game world loaded with ${gameWorld.areas.size} areas
 Server running on http://localhost:${PORT}

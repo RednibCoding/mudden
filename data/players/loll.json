@@ -1,0 +1,37 @@
+{
+  "name": "loll",
+  "passwordHash": {
+    "salt": "73a777ae51ae47ca9fad9635261993719087eb5c47b61669fa31a0f95e3baf95",
+    "hash": "10f5f66ed1b893d976515798fc20894af2bd7627f376da3484f60e8798a1365381a0ed9d887b712eb6d4460bc19653a1ac67277ca35d6e2b47150a8d4c01a4b7"
+  },
+  "health": 100,
+  "maxHealth": 100,
+  "level": 1,
+  "experience": 0,
+  "gold": 50,
+  "currentArea": "town_area",
+  "currentRoom": "town_square",
+  "inventory": [
+    {
+      "id": "healing_potion",
+      "quantity": 1
+    }
+  ],
+  "equipment": {
+    "main_hand": "wooden_stick",
+    "off_hand": null,
+    "chest": null,
+    "legs": null,
+    "head": null,
+    "feet": null,
+    "hands": null
+  },
+  "stats": {
+    "strength": 10,
+    "defense": 5,
+    "speed": 8
+  },
+  "quests": [],
+  "combat": null,
+  "lastSaved": "2025-09-29T00:25:54.200Z"
+}

@@ -1,0 +1,35 @@
+{
+  "name": "Forest Patrol",
+  "description": "The Town Guard has asked you to patrol the forest and eliminate any dangerous creatures threatening the town.",
+  "giver": "town_guard",
+  "type": "kill",
+  "level": 1,
+  "prerequisites": {
+    "level": 1,
+    "quests": [],
+    "items": []
+  },
+  "objectives": [
+    {
+      "type": "kill",
+      "target": "wolf",
+      "quantity": 3,
+      "current": 0,
+      "description": "Kill 3 Forest Wolves in the woods"
+    }
+  ],
+  "rewards": {
+    "experience": 50,
+    "gold": 25,
+    "items": ["iron_sword"]
+  },
+  "dialogue": {
+    "offer": "The forest has become dangerous lately. Strange creatures are attacking travelers. Would you help us by patrolling the woods and eliminating the threat?",
+    "accept": "Excellent! Be careful out there. The wolves have become unusually aggressive. Return when you've dealt with them.",
+    "decline": "I understand. The forest can be dangerous for inexperienced adventurers.",
+    "progress": "How goes the patrol? I still hear reports of wolf attacks from travelers.",
+    "complete": "Well done! The roads are safer thanks to you. Here's your reward.",
+    "completed": "Thanks to your efforts, the forest is much safer now."
+  },
+  "status": "available"
+}

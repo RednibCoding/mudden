@@ -1,8 +1,8 @@
 {
   "name": "rednib",
   "passwordHash": {
-    "salt": "45a1642b3a0adc1364256effe9637900716f03b2824f9b0ab51d99b2b6e57e07",
-    "hash": "8c1af5ef7e81bb573120e391a61824523cc370d72d92630efea99c55f5443f16b4d8f19eeaf7a02b1f680d7180df1a655c443d6b20b8197b21f3ff2b2ec92ca1"
+    "salt": "5441760d5e022cfe12f8c0565bbbe7b52d782704bf17a0428768f941fc96d8d6",
+    "hash": "a98935bfa81e0c9c4f36506df1b9f3df521f8a13874315b5ad66877731839358e98d31ac0f558f8babeee2851a8dd85cad33392bb0a3bc47729f6ac04ab09d12"
   },
   "health": 100,
   "maxHealth": 100,
@@ -10,7 +10,7 @@
   "experience": 0,
   "gold": 50,
   "currentArea": "town_area",
-  "currentRoom": "inn",
+  "currentRoom": "town_square",
   "inventory": [
     {
       "id": "healing_potion",
@@ -45,7 +45,29 @@
     "defense": 5,
     "speed": 8
   },
-  "quests": [],
+  "quests": [
+    {
+      "id": "blacksmith_first_weapon",
+      "status": "accepted",
+      "acceptedAt": 1759141342298,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": "iron_ore",
+          "quantity": 2,
+          "current": 0,
+          "description": "Collect 2 pieces of Iron Ore"
+        },
+        {
+          "type": "collect",
+          "target": "wood",
+          "quantity": 1,
+          "current": 0,
+          "description": "Collect 1 piece of Wood for the handle"
+        }
+      ]
+    }
+  ],
   "combat": null,
-  "lastSaved": "2025-09-28T23:40:45.021Z"
+  "lastSaved": "2025-09-29T11:00:29.771Z"
 }

@@ -28,6 +28,7 @@ mudden/
 │   ├── Player.js          # Player class and file operations
 │   ├── GameWorld.js       # World state and content loading
 │   ├── CommandManager.js  # Command orchestration and processing
+│   ├── CtxStateManager.js # Contextual state management with automatic cleanup
 │   └── commands/          # Modular command system
 │       ├── BaseCommand.js      # Shared command utilities
 │       ├── MovementCommands.js # Movement and navigation
@@ -161,6 +162,12 @@ User Input → Client → WebSocket → Server → Process Command → Update Ga
 - NPC interactions
 - Simple quest system
 
+### 6. Contextual State Management
+- CtxStateManager handles temporary states that persist across specific command contexts
+- States registered with exception commands that should NOT clear the state
+- Automatic cleanup on command execution unless command is in exception list
+- Scalable architecture prevents manual state cleanup in every command
+
 ## 🔧 Implementation Details
 
 ### Server Architecture
@@ -187,6 +194,13 @@ class CommandManager {
   constructor(gameWorld, players, combatSessions, io)
   processCommand(player, commandString) // Route to appropriate command
   registerCommands() // Load all command modules
+}
+
+class CtxStateManager {
+  registerState(stateKey, exceptionCommands) // Register contextual state with exceptions
+  setState(player, stateKey, value)           // Set state on player
+  getState(player, stateKey)                  // Get state from player
+  resetStatesForCommand(player, command)      // Auto-clear states based on command
 }
 
 class BaseCommand {
@@ -345,6 +359,7 @@ const loadPlayer = (name) => {
 - [x] Clean terminal aesthetic without Unicode symbols
 - [x] Comprehensive help system
 - [x] Admin and system commands
+- [x] CtxStateManager for scalable contextual state management
 
 ## 📈 Scalability Considerations
 
@@ -386,6 +401,23 @@ const loadPlayer = (name) => {
 - **Password Security**: PBKDF2 hashing with salt
 - **Input Validation**: Sanitized user inputs
 - **Error Recovery**: Graceful handling of invalid commands
+- **Scalable State Management**: CtxStateManager eliminates manual cleanup code
+
+### CtxStateManager Usage Example
+```javascript
+// In CommandManager.setupCtxStates()
+this.ctxStateManager.registerState('viewingQuestRewards', [
+  'quest', 'look', 'l', 'examine', 'ex'
+])
+this.ctxStateManager.registerState('viewingShop', ['shop', 'look', 'buy'])
+
+// In any command class
+this.setCtxState(player, 'viewingShop', shopData)      // Set state
+const shopData = this.getCtxState(player, 'viewingShop') // Get state
+this.clearCtxState(player, 'viewingShop')              // Manual clear (optional)
+
+// States automatically cleared when executing commands not in exception list
+```
 
 ## 🔒 Security & Validation
 
