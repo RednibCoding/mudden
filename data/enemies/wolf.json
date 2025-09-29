@@ -24,9 +24,9 @@
     }
   ],
   "loot": {
-    "gold": [3, 8],
-    "items": ["wolf_pelt"],
-    "dropRate": 60
+    "gold": [3, 10],
+    "items": ["wolf_pelt", "healing_potion"],
+    "dropRate": 65
   },
   "behavior": {
     "aggressive": true,

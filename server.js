@@ -21,6 +21,16 @@ const activePlayers = new Map() // socketId -> player
 const combatSessions = new Map() // playerId -> combat state
 const commandManager = new CommandManager(gameWorld, activePlayers, combatSessions, io)
 
+// Add helper function to get player socket by name
+global.getPlayerSocket = (playerName) => {
+  for (const [socketId, player] of activePlayers) {
+    if (player && player.name === playerName) {
+      return io.sockets.sockets.get(socketId)
+    }
+  }
+  return null
+}
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')))
 
@@ -293,7 +303,7 @@ io.on('connection', (socket) => {
           location: room ? room.name : 'Unknown',
           currentArea: currentPlayer.currentArea,
           currentRoom: currentPlayer.currentRoom,
-          inCombat: !!currentPlayer.combat
+          inCombat: currentPlayer.inCombat || !!combatSessions.get(currentPlayer.name)
         },
         room: room
       })
@@ -359,9 +369,14 @@ io.on('connection', (socket) => {
       currentPlayer.save()
       
       // Clean up combat session if any
-      if (currentPlayer.combat) {
+      const combat = combatSessions.get(currentPlayer.name)
+      if (combat) {
+        // Clear auto-attack interval
+        if (combat.autoAttackInterval) {
+          clearInterval(combat.autoAttackInterval)
+        }
         combatSessions.delete(currentPlayer.name)
-        currentPlayer.combat = null
+        currentPlayer.inCombat = false
         currentPlayer.save()
       }
     }

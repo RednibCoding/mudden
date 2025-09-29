@@ -17,6 +17,7 @@
     "services": ["room_rental"]
   },
   "hostile": false,
+  "homestone": true,
   "stats": {
     "health": 50,
     "strength": 8,

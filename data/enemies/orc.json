@@ -24,9 +24,9 @@
     }
   ],
   "loot": {
-    "gold": [8, 15],
-    "items": ["orc_club", "healing_potion"],
-    "dropRate": 70
+    "gold": [8, 20],
+    "items": ["orc_club", "greater_healing_potion", "ice_shard_scroll"],
+    "dropRate": 75
   },
   "behavior": {
     "aggressive": true,

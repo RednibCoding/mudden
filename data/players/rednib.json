@@ -4,13 +4,13 @@
     "salt": "5441760d5e022cfe12f8c0565bbbe7b52d782704bf17a0428768f941fc96d8d6",
     "hash": "a98935bfa81e0c9c4f36506df1b9f3df521f8a13874315b5ad66877731839358e98d31ac0f558f8babeee2851a8dd85cad33392bb0a3bc47729f6ac04ab09d12"
   },
-  "health": 110,
+  "health": 82,
   "maxHealth": 110,
   "level": 2,
-  "experience": 295,
-  "gold": 195,
+  "experience": 355,
+  "gold": 232,
   "currentArea": "forest_area",
-  "currentRoom": "forest_clearing",
+  "currentRoom": "deep_forest",
   "inventory": [
     {
       "id": "ale",
@@ -47,6 +47,10 @@
     {
       "id": "healing_potion",
       "quantity": 9
+    },
+    {
+      "id": "wolf_pelt",
+      "quantity": 1
     }
   ],
   "equipment": {
@@ -133,7 +137,7 @@
           "type": "kill",
           "target": "wolf",
           "quantity": 3,
-          "current": 0,
+          "current": 3,
           "description": "Kill 3 Forest Wolves in the woods"
         }
       ]
@@ -169,6 +173,8 @@
     }
   ],
   "combat": null,
+  "inCombat": false,
+  "homestone": null,
   "takenOnetimeItems": [],
-  "lastSaved": "2025-09-29T20:10:18.334Z"
+  "lastSaved": "2025-09-29T20:45:13.039Z"
 }

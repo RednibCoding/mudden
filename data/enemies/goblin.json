@@ -24,9 +24,9 @@
     }
   ],
   "loot": {
-    "gold": [1, 5],
-    "items": ["rusty_dagger"],
-    "dropRate": 40
+    "gold": [1, 8],
+    "items": ["rusty_dagger", "healing_potion", "fireball_scroll"],
+    "dropRate": 45
   },
   "behavior": {
     "aggressive": true,
