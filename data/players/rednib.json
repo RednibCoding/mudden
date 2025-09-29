@@ -9,8 +9,8 @@
   "level": 2,
   "experience": 295,
   "gold": 195,
-  "currentArea": "town_area",
-  "currentRoom": "town_square",
+  "currentArea": "forest_area",
+  "currentRoom": "deep_forest",
   "inventory": [
     {
       "id": "ale",
@@ -170,5 +170,5 @@
   ],
   "combat": null,
   "takenOnetimeItems": [],
-  "lastSaved": "2025-09-29T18:35:36.749Z"
+  "lastSaved": "2025-09-29T19:00:39.164Z"
 }

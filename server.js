@@ -159,7 +159,9 @@ io.on('connection', (socket) => {
           maxHealth: currentPlayer.maxHealth,
           experience: currentPlayer.experience,
           gold: currentPlayer.gold,
-          location: room ? room.name : 'Unknown'
+          location: room ? room.name : 'Unknown',
+          currentArea: currentPlayer.currentArea,
+          currentRoom: currentPlayer.currentRoom
         },
         room: room
       })
@@ -226,7 +228,9 @@ io.on('connection', (socket) => {
           maxHealth: currentPlayer.maxHealth,
           experience: currentPlayer.experience,
           gold: currentPlayer.gold,
-          location: room ? room.name : 'Unknown'
+          location: room ? room.name : 'Unknown',
+          currentArea: currentPlayer.currentArea,
+          currentRoom: currentPlayer.currentRoom
         },
         room: room
       })
@@ -287,6 +291,8 @@ io.on('connection', (socket) => {
           experience: currentPlayer.experience,
           gold: currentPlayer.gold,
           location: room ? room.name : 'Unknown',
+          currentArea: currentPlayer.currentArea,
+          currentRoom: currentPlayer.currentRoom,
           inCombat: !!currentPlayer.combat
         },
         room: room
@@ -295,6 +301,56 @@ io.on('connection', (socket) => {
     } catch (error) {
       console.error('Command error:', error)
       socket.emit('error', 'Failed to process command')
+    }
+  })
+
+  // Handle area map request
+  socket.on('requestAreaMap', (currentRoom) => {
+    if (!currentPlayer) {
+      socket.emit('error', 'Not logged in')
+      return
+    }
+
+    try {
+      console.log(`Generating area map for ${currentPlayer.name} in ${currentPlayer.currentArea}.${currentPlayer.currentRoom}`)
+      const mapData = generateAreaMap(currentPlayer.currentArea, currentPlayer.currentRoom)
+      console.log(`Map data generated:`, mapData)
+      socket.emit('areaMap', mapData)
+    } catch (error) {
+      console.error('Area map error:', error)
+      socket.emit('error', 'Failed to generate area map')
+    }
+  })
+
+  // Handle room exits request
+  socket.on('requestRoomExits', (roomRequest) => {
+    if (!currentPlayer) {
+      socket.emit('error', 'Not logged in')
+      return
+    }
+
+    try {
+      const room = gameWorld.getRoom(roomRequest.area, roomRequest.room)
+      if (!room || !room.exits) {
+        socket.emit('roomExits', { exits: {} })
+        return
+      }
+
+      // Convert exits to include room names
+      const exitsWithNames = {}
+      for (const [direction, exit] of Object.entries(room.exits)) {
+        const [exitArea, exitRoom] = exit.split('.')
+        const exitRoomData = gameWorld.getRoom(exitArea, exitRoom)
+        exitsWithNames[direction] = {
+          id: exit,
+          name: exitRoomData ? exitRoomData.name : 'Unknown Room'
+        }
+      }
+
+      socket.emit('roomExits', { exits: exitsWithNames })
+    } catch (error) {
+      console.error('Room exits error:', error)
+      socket.emit('error', 'Failed to get room exits')
     }
   })
 
@@ -321,6 +377,128 @@ io.on('connection', (socket) => {
     console.error('Socket error:', error)
   })
 })
+
+// Generate area map for client display
+function generateAreaMap(areaId, currentRoomId) {
+  const area = gameWorld.areas.get(areaId)
+  if (!area) {
+    return { rooms: [], gridSize: { width: 1, height: 1 }, playerPosition: { x: 0, y: 0 } }
+  }
+
+  const rooms = Object.values(area.rooms)
+  if (rooms.length === 0) {
+    return { rooms: [], gridSize: { width: 1, height: 1 }, playerPosition: { x: 0, y: 0 } }
+  }
+
+  // Create a graph of room connections
+  const roomGraph = new Map()
+  const roomPositions = new Map()
+
+  // Initialize graph
+  rooms.forEach(room => {
+    roomGraph.set(room.id, {
+      name: room.name,
+      exits: room.exits || {},
+      visited: false,
+      gridX: 0,
+      gridY: 0
+    })
+  })
+
+  // Start positioning from the current room or first room
+  let startRoom = currentRoomId || rooms[0].id
+  if (!roomGraph.has(startRoom)) {
+    startRoom = rooms[0].id
+  }
+
+  // Position rooms using BFS from start room
+  const queue = [{ roomId: startRoom, x: 0, y: 0 }]
+  roomPositions.set(startRoom, { x: 0, y: 0 })
+  roomGraph.get(startRoom).visited = true
+  roomGraph.get(startRoom).gridX = 0
+  roomGraph.get(startRoom).gridY = 0
+
+  while (queue.length > 0) {
+    const { roomId, x, y } = queue.shift()
+    const room = roomGraph.get(roomId)
+    
+    if (!room || !room.exits) continue
+
+    // Define direction offsets
+    const directions = {
+      north: { dx: 0, dy: -1 },
+      south: { dx: 0, dy: 1 },
+      east: { dx: 1, dy: 0 },
+      west: { dx: -1, dy: 0 },
+      northeast: { dx: 1, dy: -1 },
+      northwest: { dx: -1, dy: -1 },
+      southeast: { dx: 1, dy: 1 },
+      southwest: { dx: -1, dy: 1 }
+    }
+
+    for (const [direction, exit] of Object.entries(room.exits)) {
+      const exitRoomId = exit.split('.')[1] // Remove area prefix
+      if (!roomGraph.has(exitRoomId) || roomGraph.get(exitRoomId).visited) continue
+
+      const dir = directions[direction]
+      if (!dir) continue
+
+      const newX = x + dir.dx
+      const newY = y + dir.dy
+
+      // Check if position is already occupied
+      const occupied = Array.from(roomPositions.values()).some(pos => pos.x === newX && pos.y === newY)
+      if (occupied) continue
+
+      roomPositions.set(exitRoomId, { x: newX, y: newY })
+      roomGraph.get(exitRoomId).visited = true
+      roomGraph.get(exitRoomId).gridX = newX
+      roomGraph.get(exitRoomId).gridY = newY
+
+      queue.push({ roomId: exitRoomId, x: newX, y: newY })
+    }
+  }
+
+  // Calculate grid bounds
+  let minX = 0, maxX = 0, minY = 0, maxY = 0
+  for (const pos of roomPositions.values()) {
+    minX = Math.min(minX, pos.x)
+    maxX = Math.max(maxX, pos.x)
+    minY = Math.min(minY, pos.y)
+    maxY = Math.max(maxY, pos.y)
+  }
+
+  // Normalize positions to start from 0,0
+  const normalizedRooms = []
+  let playerPosition = { x: 0, y: 0 }
+
+  for (const [roomId, room] of roomGraph) {
+    if (!room.visited) continue
+
+    const normalizedX = room.gridX - minX
+    const normalizedY = room.gridY - minY
+
+    normalizedRooms.push({
+      id: roomId,
+      name: room.name,
+      gridX: normalizedX,
+      gridY: normalizedY
+    })
+
+    if (roomId === currentRoomId) {
+      playerPosition = { x: normalizedX, y: normalizedY }
+    }
+  }
+
+  return {
+    rooms: normalizedRooms,
+    gridSize: {
+      width: maxX - minX + 1,
+      height: maxY - minY + 1
+    },
+    playerPosition
+  }
+}
 
 // Game loop for periodic tasks (optional)
 setInterval(() => {
