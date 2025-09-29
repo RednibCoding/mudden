@@ -8,6 +8,8 @@ Each quest file should be named with the quest ID (e.g., `guard_forest_patrol.js
 
 ## Quest Schema
 
+Quest types and statuses are defined as constants in `lib/constants/QuestConstants.js` for consistency across the codebase.
+
 Each quest file must contain the following structure:
 
 ```json
@@ -16,7 +18,7 @@ Each quest file must contain the following structure:
   "description": "Brief description of the quest",
   "giver": "npc_id_who_gives_quest",
   "turnInNpc": "npc_id_who_receives_quest (optional, defaults to giver)",
-  "type": "kill|collect|chain|exploration",
+  "type": "kill|collect|visit",
   "level": 1,
   "prerequisites": {
     "level": 1,
@@ -57,7 +59,7 @@ Each quest file must contain the following structure:
 - **description**: Brief summary of what the quest involves
 - **giver**: NPC ID who offers this quest
 - **turnInNpc**: (Optional) NPC ID who receives the completed quest. If not specified, defaults to the quest giver. Useful for delivery quests where you get the quest from one NPC but turn it in to another.
-- **type**: Category of quest for UI organization
+- **type**: Category of quest (kill, collect, or visit)
 - **level**: Recommended player level
 - **status**: Current quest state (managed by game system)
 
@@ -136,20 +138,33 @@ Each objective is an object with:
 }
 ```
 
-### Chain Quests
+### Quest Chaining
+Quest chains are created using the `prerequisites.quests` field, not a separate "chain" type:
+
 ```json
 {
-  "type": "chain",
+  "name": "Advanced Smithing",
+  "type": "collect", 
   "prerequisites": {
-    "quests": ["previous_quest_id"]
-  }
+    "quests": ["blacksmith_first_weapon", "blacksmith_repair_tools"]
+  },
+  "objectives": [
+    {
+      "type": "collect",
+      "target": "rare_ore",
+      "quantity": 5,
+      "description": "Collect 5 pieces of Rare Ore"
+    }
+  ]
 }
 ```
 
-### Exploration Quests
+### Visit/Exploration Quests
+Exploration quests use visit objectives to encourage world discovery:
+
 ```json
 {
-  "type": "exploration",
+  "type": "collect",
   "objectives": [
     {
       "type": "visit",
@@ -171,14 +186,13 @@ Each objective is an object with:
 - **target**: Item ID that must be collected
 - Items can be found, purchased, or obtained from enemies
 
-### Deliver Objectives
-- **target**: NPC ID to deliver to
-- **item**: Item ID that must be delivered
-- Item is typically given when quest is accepted
+
 
 ### Visit Objectives
 - **target**: Room ID that must be visited
-- Player must enter the specified location
+- Progress updates when player enters the room (via movement) or looks at the room
+- Useful for exploration quests that encourage players to discover new areas
+- Example: "Visit the Forest Entrance", "Check the Magic Shop"
 
 ## Quest Flow
 
@@ -240,7 +254,7 @@ Players interact with quests through commands:
 - Simple quests (level 1-2): 20-50 XP
 - Medium quests (level 3-5): 50-100 XP
 - Complex quests (level 6+): 100+ XP
-- Chain quests: Higher XP for final quest
+- Quest series: Higher XP for final quest in a prerequisite chain
 
 ### Gold Rewards
 - Should be meaningful but not game-breaking
@@ -253,7 +267,7 @@ Players interact with quests through commands:
 - Consider player progression curve
 
 ### Prerequisites
-- Don't create impossible quest chains
+- Don't create impossible prerequisite loops
 - Test that required items are obtainable
 - Consider player level progression
 
@@ -261,7 +275,7 @@ Players interact with quests through commands:
 
 - Make quest descriptions engaging and clear
 - Ensure all referenced items and NPCs exist
-- Test quest chains thoroughly
+- Test prerequisite dependencies thoroughly
 - Use consistent dialogue tone for each NPC
 - Balance challenge with rewards
 - Consider multiple solutions when possible

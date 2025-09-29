@@ -10,7 +10,7 @@
       "bye": "Safe travels, adventurer."
     }
   },
-  "quests": ["guard_forest_patrol"],
+  "quests": ["guard_forest_patrol", "guard_patrol_route"],
   "shop": null,
   "hostile": false,
   "stats": {

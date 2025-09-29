@@ -1,0 +1,49 @@
+{
+  "name": "Patrol Route",
+  "description": "The Town Guard needs you to check the patrol route and report back on key locations.",
+  "giver": "town_guard",
+  "type": "visit",
+  "level": 1,
+  "prerequisites": {
+    "level": 1,
+    "quests": [],
+    "items": []
+  },
+  "objectives": [
+    {
+      "type": "visit",
+      "target": "weapon_shop",
+      "quantity": 1,
+      "current": 0,
+      "description": "Visit the Weapon Shop"
+    },
+    {
+      "type": "visit", 
+      "target": "magic_shop",
+      "quantity": 1,
+      "current": 0,
+      "description": "Visit the Magic Shop"
+    },
+    {
+      "type": "visit",
+      "target": "inn",
+      "quantity": 1, 
+      "current": 0,
+      "description": "Visit the Inn"
+    }
+  ],
+  "rewards": {
+    "experience": 25,
+    "gold": 10,
+    "items": []
+  },
+  "dialogue": {
+    "offer": "I need someone to walk the patrol route and check that all the key locations are secure. Can you visit the weapon shop, magic shop, and inn for me?",
+    "accept": "Excellent! Visit each location and report back to me when you're done. Just walking through each place should be enough.",
+    "decline": "No problem, I'll find someone else for the patrol.",
+    "progress": "Have you completed the patrol route yet? I need reports from the weapon shop, magic shop, and inn.",
+    "complete": "Perfect! Your patrol report helps keep our town safe. Here's your payment.",
+    "completed": "Thanks again for helping with the patrol. The town is more secure because of people like you."
+  },
+  "status": "available"
+}

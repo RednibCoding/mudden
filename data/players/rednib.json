@@ -7,10 +7,10 @@
   "health": 110,
   "maxHealth": 110,
   "level": 2,
-  "experience": 270,
-  "gold": 185,
+  "experience": 295,
+  "gold": 195,
   "currentArea": "town_area",
-  "currentRoom": "magic_shop",
+  "currentRoom": "town_square",
   "inventory": [
     {
       "id": "ale",
@@ -123,9 +123,52 @@
         }
       ],
       "completedAt": 1759168295195
+    },
+    {
+      "id": "guard_forest_patrol",
+      "status": "accepted",
+      "acceptedAt": 1759170661288,
+      "objectives": [
+        {
+          "type": "kill",
+          "target": "wolf",
+          "quantity": 3,
+          "current": 0,
+          "description": "Kill 3 Forest Wolves in the woods"
+        }
+      ]
+    },
+    {
+      "id": "guard_patrol_route",
+      "status": "completed",
+      "acceptedAt": 1759170792074,
+      "objectives": [
+        {
+          "type": "visit",
+          "target": "weapon_shop",
+          "quantity": 1,
+          "current": 1,
+          "description": "Visit the Weapon Shop"
+        },
+        {
+          "type": "visit",
+          "target": "magic_shop",
+          "quantity": 1,
+          "current": 1,
+          "description": "Visit the Magic Shop"
+        },
+        {
+          "type": "visit",
+          "target": "inn",
+          "quantity": 1,
+          "current": 1,
+          "description": "Visit the Inn"
+        }
+      ],
+      "completedAt": 1759170908163
     }
   ],
   "combat": null,
   "takenOnetimeItems": [],
-  "lastSaved": "2025-09-29T17:52:04.571Z"
+  "lastSaved": "2025-09-29T18:35:36.749Z"
 }
