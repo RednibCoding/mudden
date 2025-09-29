@@ -20,6 +20,7 @@
   "npcs": ["blacksmith"],
   "enemies": [],
   "exits": {
+    "north": "town_area.training_barracks",
     "west": "town_area.town_square"
   }
 }

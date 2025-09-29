@@ -11,15 +11,17 @@
   },
   "attacks": [
     {
-      "name": "club_smash",
+      "name": "Club Smash",
       "damage": 15,
       "accuracy": 70,
+      "chance": 50,
       "description": "The orc swings its massive club down with crushing force!"
     },
     {
-      "name": "headbutt",
+      "name": "Brutal Headbutt",
       "damage": 10,
       "accuracy": 85,
+      "chance": 50,
       "description": "The orc charges forward with a vicious headbutt!"
     }
   ],

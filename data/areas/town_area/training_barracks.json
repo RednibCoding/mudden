@@ -1,0 +1,16 @@
+{
+  "name": "Training Barracks",
+  "description": "A spacious training facility with wooden practice dummies, weapon racks, and training equipment scattered about. The air smells of leather and sweat from countless hours of combat practice. Several training dummies stand ready for aspiring warriors to test their combat skills.",
+  "items": [
+    {
+      "id": "wooden_stick",
+      "onetime": false,
+      "respawnTime": 30000
+    }
+  ],
+  "npcs": [],
+  "enemies": ["training_dummy"],
+  "exits": {
+    "south": "town_area.weapon_shop"
+  }
+}

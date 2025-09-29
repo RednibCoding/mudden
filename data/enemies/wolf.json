@@ -11,15 +11,17 @@
   },
   "attacks": [
     {
-      "name": "bite",
+      "name": "Savage Bite",
       "damage": 8,
       "accuracy": 85,
+      "chance": 70,
       "description": "The wolf lunges forward with snapping jaws!"
     },
     {
-      "name": "claw",
+      "name": "Claw Swipe",
       "damage": 5,
       "accuracy": 90,
+      "chance": 30,
       "description": "The wolf swipes with its sharp claws!"
     }
   ],

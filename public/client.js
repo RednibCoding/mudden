@@ -543,7 +543,6 @@ class SimpleMUDClient {
     }
 
     handleAreaMap(mapData) {
-        console.log('Received area map data:', mapData)
         this.currentAreaMap = mapData
         this.renderAreaMap()
     }

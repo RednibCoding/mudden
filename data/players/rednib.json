@@ -4,11 +4,11 @@
     "salt": "5441760d5e022cfe12f8c0565bbbe7b52d782704bf17a0428768f941fc96d8d6",
     "hash": "a98935bfa81e0c9c4f36506df1b9f3df521f8a13874315b5ad66877731839358e98d31ac0f558f8babeee2851a8dd85cad33392bb0a3bc47729f6ac04ab09d12"
   },
-  "health": 82,
-  "maxHealth": 110,
-  "level": 2,
-  "experience": 355,
-  "gold": 232,
+  "health": 134,
+  "maxHealth": 140,
+  "level": 5,
+  "experience": 750,
+  "gold": 339,
   "currentArea": "forest_area",
   "currentRoom": "deep_forest",
   "inventory": [
@@ -46,11 +46,15 @@
     },
     {
       "id": "healing_potion",
-      "quantity": 9
+      "quantity": 11
     },
     {
       "id": "wolf_pelt",
-      "quantity": 1
+      "quantity": 4
+    },
+    {
+      "id": "spider_silk",
+      "quantity": 3
     }
   ],
   "equipment": {
@@ -63,9 +67,9 @@
     "hands": null
   },
   "stats": {
-    "strength": 11,
-    "defense": 6,
-    "speed": 9
+    "strength": 14,
+    "defense": 9,
+    "speed": 12
   },
   "quests": [
     {
@@ -176,5 +180,5 @@
   "inCombat": false,
   "homestone": null,
   "takenOnetimeItems": [],
-  "lastSaved": "2025-09-29T20:55:23.848Z"
+  "lastSaved": "2025-09-29T21:55:23.774Z"
 }
