@@ -135,8 +135,8 @@ header h1 {
 
 .room-grid {
     display: grid;
-    gap: 2px;
-    background: #0a0a0a;
+    gap: 4px;
+    background: transparent;
     padding: 10px;
     border-radius: 3px;
 }
@@ -205,6 +205,8 @@ header h1 {
     background: #0a0a0a;
     padding: 12px 15px;
     font-size: 0.85em;
+    height: 120px;
+    flex-shrink: 0;
 }
 
 .room-info-content {
@@ -260,18 +262,7 @@ header h1 {
     color: #a0a070;
 }
 
-.room-cell.exit-cell {
-    background: #2a2a2a;
-    color: #666;
-    border-color: #444;
-    font-size: 8px;
-}
 
-.room-cell.exit-cell:hover {
-    background: #333;
-    border-color: #555;
-    transform: scale(1.05);
-}
 
 .game-output {
     flex: 1;

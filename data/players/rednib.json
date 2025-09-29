@@ -10,7 +10,7 @@
   "experience": 295,
   "gold": 195,
   "currentArea": "forest_area",
-  "currentRoom": "forest_entrance",
+  "currentRoom": "forest_clearing",
   "inventory": [
     {
       "id": "ale",
@@ -170,5 +170,5 @@
   ],
   "combat": null,
   "takenOnetimeItems": [],
-  "lastSaved": "2025-09-29T19:54:01.798Z"
+  "lastSaved": "2025-09-29T20:04:09.828Z"
 }
