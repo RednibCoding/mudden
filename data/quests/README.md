@@ -15,6 +15,7 @@ Each quest file must contain the following structure:
   "name": "Human-readable quest name",
   "description": "Brief description of the quest",
   "giver": "npc_id_who_gives_quest",
+  "turnInNpc": "npc_id_who_receives_quest (optional, defaults to giver)",
   "type": "kill|collect|delivery|chain|exploration",
   "level": 1,
   "prerequisites": {
@@ -54,6 +55,7 @@ Each quest file must contain the following structure:
 - **name**: Display name shown to players (ID is automatically derived from filename)
 - **description**: Brief summary of what the quest involves
 - **giver**: NPC ID who offers this quest
+- **turnInNpc**: (Optional) NPC ID who receives the completed quest. If not specified, defaults to the quest giver. Useful for delivery quests where you get the quest from one NPC but turn it in to another.
 - **type**: Category of quest for UI organization
 - **level**: Recommended player level
 - **status**: Current quest state (managed by game system)
