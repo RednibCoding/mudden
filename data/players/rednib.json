@@ -22,7 +22,7 @@
     },
     {
       "id": "berries",
-      "quantity": 3
+      "quantity": 6
     },
     {
       "id": "mushroom",
@@ -30,6 +30,10 @@
     },
     {
       "id": "steel_sword",
+      "quantity": 1
+    },
+    {
+      "id": "wood",
       "quantity": 1
     }
   ],
@@ -47,30 +51,7 @@
     "defense": 5,
     "speed": 8
   },
-  "quests": [
-    {
-      "id": "blacksmith_first_weapon",
-      "status": "completed",
-      "acceptedAt": 1759141342298,
-      "objectives": [
-        {
-          "type": "collect",
-          "target": "iron_ore",
-          "quantity": 2,
-          "current": 2,
-          "description": "Collect 2 pieces of Iron Ore"
-        },
-        {
-          "type": "collect",
-          "target": "wood",
-          "quantity": 1,
-          "current": 1,
-          "description": "Collect 1 piece of Wood for the handle"
-        }
-      ],
-      "completedAt": 1759145636504
-    }
-  ],
+  "quests": [],
   "combat": null,
-  "lastSaved": "2025-09-29T12:10:02.255Z"
+  "lastSaved": "2025-09-29T12:18:33.560Z"
 }
