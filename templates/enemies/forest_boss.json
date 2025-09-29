@@ -11,24 +11,21 @@
   },
   "attacks": [
     {
-      "name": "crushing_branch",
-      "displayName": "Crushing Branch",
+      "name": "Crushing Branch",
       "description": "The guardian slams down with a massive branch",
       "damage": [25, 35],
       "accuracy": 75,
       "chance": 40
     },
     {
-      "name": "root_entangle",
-      "displayName": "Root Entangle",
+      "name": "Nature's Wrath",
       "description": "Roots burst from the ground to entangle and strike",
       "damage": [20, 30],
       "accuracy": 85,
       "chance": 35
     },
     {
-      "name": "nature_wrath",
-      "displayName": "Nature's Wrath",
+      "name": "Nature's Wrath",
       "description": "The guardian channels the fury of the forest",
       "damage": [30, 45],
       "accuracy": 65,

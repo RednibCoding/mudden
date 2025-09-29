@@ -57,7 +57,7 @@ Each quest file must contain the following structure:
 ### Basic Information
 - **name**: Display name shown to players (ID is automatically derived from filename)
 - **description**: Brief summary of what the quest involves
-- **giver**: NPC ID who offers this quest
+- **giver**: NPC ID who offers this quest (must exist in templates/npcs/)
 - **turnInNpc**: (Optional) NPC ID who receives the completed quest. If not specified, defaults to the quest giver. Useful for delivery quests where you get the quest from one NPC but turn it in to another.
 - **type**: Category of quest (kill, collect, or visit)
 - **level**: Recommended player level
@@ -205,7 +205,7 @@ Exploration quests use visit objectives to encourage world discovery:
 ## Objective Types
 
 ### Kill Objectives
-- **target**: Enemy ID from enemies folder
+- **target**: Enemy ID from templates/enemies/ folder
 - Player must defeat the specified number of enemies
 
 ### Collect Objectives

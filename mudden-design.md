@@ -42,7 +42,8 @@ mudden/
 │   ├── index.html         # Simple web interface
 │   ├── style.css          # Comfortable gray terminal styling
 │   └── client.js          # Client-side game logic
-├── data/                  # Game content (JSON files)
+├── persist/               # Player save files and persistent data
+├── templates/             # Game content templates (JSON files)
 │   ├── players/           # Player save files (auto-generated)
 │   ├── areas/             # Area definitions with rooms
 │   ├── items/             # Item definitions with stats
@@ -83,7 +84,6 @@ mudden/
     "speed": 8
   },
   "quests": [],
-  "combat": null,  // Combat state if in battle
   "inCombat": false,
   "homestone": { "area": "town_area", "room": "inn" },
   "takenOnetimeItems": [],  // Track onetime items taken
@@ -95,12 +95,12 @@ mudden/
 
 ### Game World Structure
 **Current JSON file organization**:
-- `data/areas/` - Area definitions with rooms (organized by area folders)
-- `data/items/` - Individual item JSON files (filename = item ID)
-- `data/enemies/` - Individual enemy JSON files (filename = enemy ID)
-- `data/npcs/` - Individual NPC JSON files (filename = NPC ID)
-- `data/quests/` - Individual quest JSON files (filename = quest ID)
-- `data/players/` - Player save files (auto-generated)
+- `templates/areas/` - Area definitions with rooms (organized by area folders)
+- `templates/items/` - Individual item JSON files (filename = item ID)
+- `templates/enemies/` - Individual enemy JSON files (filename = enemy ID)
+- `templates/npcs/` - Individual NPC JSON files (filename = NPC ID)
+- `templates/quests/` - Individual quest JSON files (filename = quest ID)
+- `persist/players/` - Player save files (auto-generated)
 
 ### Combat State (In-Memory)
 ```javascript
@@ -339,12 +339,12 @@ class SystemCommands extends BaseCommand {
 ```javascript
 // Simple file-based persistence
 const savePlayer = (player) => {
-  const filePath = `./data/players/${player.name}.json`
+  const filePath = `./persist/players/${player.name}.json`
   fs.writeFileSync(filePath, JSON.stringify(player, null, 2))
 }
 
 const loadPlayer = (name) => {
-  const filePath = `./data/players/${name}.json`
+  const filePath = `./persist/players/${name}.json`
   if (fs.existsSync(filePath)) {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'))
   }
@@ -477,7 +477,7 @@ this.clearCtxState(player, 'viewingShop')              // Manual clear (optional
 - File name validation for saves
 
 ### File System Safety
-- Restricted file access to data/ directory
+- Restricted file access to persist/ and templates/ directories
 - JSON parsing error handling
 - Backup system for player files
 - Concurrent write protection

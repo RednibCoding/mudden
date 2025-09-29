@@ -4,13 +4,13 @@
     "salt": "5441760d5e022cfe12f8c0565bbbe7b52d782704bf17a0428768f941fc96d8d6",
     "hash": "a98935bfa81e0c9c4f36506df1b9f3df521f8a13874315b5ad66877731839358e98d31ac0f558f8babeee2851a8dd85cad33392bb0a3bc47729f6ac04ab09d12"
   },
-  "health": 140,
+  "health": 65,
   "maxHealth": 140,
   "level": 5,
-  "experience": 900,
-  "gold": 425,
+  "experience": 935,
+  "gold": 434,
   "currentArea": "forest_area",
-  "currentRoom": "deep_forest",
+  "currentRoom": "forest_clearing",
   "inventory": [
     {
       "id": "ale",
@@ -18,7 +18,7 @@
     },
     {
       "id": "wooden_stick",
-      "quantity": 1
+      "quantity": 3
     },
     {
       "id": "steel_sword",
@@ -49,11 +49,11 @@
       "quantity": 3
     },
     {
-      "id": {
-        "id": "wood",
-        "chance": 90,
-        "quantity": 3
-      },
+      "id": "wood",
+      "quantity": 3
+    },
+    {
+      "id": "berries",
       "quantity": 1
     }
   ],
@@ -176,13 +176,20 @@
       "completedAt": 1759170908163
     }
   ],
-  "combat": null,
   "inCombat": false,
   "homestone": null,
-  "takenOnetimeItems": [],
-  "defeatedOnetimeEnemies": [
-    "forest_area.deep_forest.forest_boss"
+  "takenOnetimeItems": [
+    "forest_area.forest_entrance.wooden_stick"
   ],
-  "recoveryTimer": null,
-  "lastSaved": "2025-09-29T22:42:09.502Z"
+  "defeatedOnetimeEnemies": [],
+  "recoveryTimer": {
+    "_idleTimeout": 5000,
+    "_idlePrev": null,
+    "_idleNext": null,
+    "_idleStart": 359104,
+    "_repeat": 5000,
+    "_destroyed": false
+  },
+  "lastSaved": "2025-09-29T23:41:11.630Z",
+  "combat": null
 }

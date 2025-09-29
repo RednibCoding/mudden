@@ -45,7 +45,7 @@ Each NPC file must contain the following structure:
 - **dialogue**: Conversation system
   - **greeting**: Initial message when players talk to the NPC
   - **responses**: Object mapping topics to responses
-- **quests**: Array of quest IDs this NPC can offer
+- **quests**: Array of quest IDs this NPC can offer (must exist in templates/quests/)
 - **shop**: Optional shop configuration
   - **items**: Items available for purchase
   - **services**: Services offered (repair, upgrade, etc.)

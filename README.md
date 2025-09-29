@@ -48,7 +48,8 @@ mudden/
 │   ├── CommandManager.js  # Command orchestration
 │   ├── CtxStateManager.js # Contextual state management
 │   └── commands/          # Modular command system
-├── data/                  # Game content (JSON files)
+├── persist/               # Player save files
+├── templates/             # Game content templates (JSON files)
 │   ├── areas/             # Area and room definitions
 │   ├── items/             # Item definitions with stats
 │   ├── npcs/              # NPC definitions
@@ -74,13 +75,13 @@ mudden/
 ## 🔧 Adding Content
 
 ### New Areas
-Create JSON files in `data/areas/` with room definitions and connections.
+Create JSON files in `templates/areas/` with room definitions and connections.
 
 ### New Items
-Add item definitions to `data/items/` with stats, descriptions, and effects.
+Add item definitions to `templates/items/` with stats, descriptions, and effects.
 
 ### New Quests
-Create quest files in `data/quests/` with objectives, rewards, and dialogue.
+Create quest files in `templates/quests/` with objectives, rewards, and dialogue.
 
 ### New Commands
 Extend `BaseCommand` and add to appropriate command category file.

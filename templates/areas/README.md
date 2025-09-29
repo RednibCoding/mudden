@@ -42,13 +42,13 @@ Each room file contains (filename = room ID):
 - `name`: Display name shown to players
 - `description`: Detailed room description with atmospheric text
 - `items`: Array of item objects found in the room
-  - `id`: Item ID from data/items/
+  - `id`: Item ID from templates/items/
   - `onetime`: Whether item can only be taken once per player (ignored if quest field is set)
   - `respawnTime`: Time in milliseconds before item respawns (only for onetime: false)
   - `quest`: Optional quest ID - makes item quest-specific (overrides onetime behavior)
 - `npcs`: Array of NPC IDs present in the room (for interaction)
 - `enemies`: Array of enemy objects that can spawn in the room
-  - `id`: Enemy ID from data/enemies/
+  - `id`: Enemy ID from templates/enemies/
   - `onetime`: Whether enemy can only be fought once per player (ignored if quest field is set)
   - `respawnTime`: Time in milliseconds before enemy respawns (only for onetime: false)
   - `quest`: Optional quest ID - makes enemy quest-specific (overrides onetime behavior)
@@ -71,7 +71,7 @@ Each room file contains (filename = room ID):
   - Respawn behavior is unchanged
 
 ### NPCs in Rooms
-- NPCs are simple ID strings referencing data/npcs/ files
+- NPCs are simple ID strings referencing templates/npcs/ files
 - Use `talk [npc]` or `ask [npc] about [topic]` commands
 - NPCs may offer quests, shop services, or information
 

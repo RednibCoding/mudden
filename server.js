@@ -336,9 +336,10 @@ io.on('connection', (socket) => {
         socket.emit('logout')
         
         // Clean up server state
-        if (currentPlayer.combat) {
+        const combat = combatSessions.get(currentPlayer.name)
+        if (combat) {
           combatSessions.delete(currentPlayer.name)
-          currentPlayer.combat = null
+          currentPlayer.inCombat = false
           currentPlayer.save()
         }
         activePlayers.delete(socket.id)
