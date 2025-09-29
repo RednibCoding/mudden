@@ -169,6 +169,22 @@ header h1 {
     visibility: hidden;
 }
 
+.room-cell.exit-cell {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.room-cell.exit-cell:hover {
+    transform: scale(1.2);
+    color: #90c0c0;
+    text-shadow: 0 0 4px rgba(144, 192, 192, 0.8);
+}
+
 .room-info {
     background: #0a0a0a;
     border-top: 1px solid #333;
@@ -227,6 +243,19 @@ header h1 {
 
 .exit-room {
     color: #a0a070;
+}
+
+.room-cell.exit-cell {
+    background: #2a2a2a;
+    color: #666;
+    border-color: #444;
+    font-size: 8px;
+}
+
+.room-cell.exit-cell:hover {
+    background: #333;
+    border-color: #555;
+    transform: scale(1.05);
 }
 
 .game-output {

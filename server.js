@@ -490,13 +490,89 @@ function generateAreaMap(areaId, currentRoomId) {
     }
   }
 
+  // Find cross-area exits and create exit cells
+  const exitCells = []
+  const directions = {
+    north: { dx: 0, dy: -1 },
+    south: { dx: 0, dy: 1 },
+    east: { dx: 1, dy: 0 },
+    west: { dx: -1, dy: 0 },
+    northeast: { dx: 1, dy: -1 },
+    northwest: { dx: -1, dy: -1 },
+    southeast: { dx: 1, dy: 1 },
+    southwest: { dx: -1, dy: 1 }
+  }
+
+  for (const [roomId, room] of roomGraph) {
+    if (!room.visited) continue
+    
+    const roomData = rooms.find(r => r.id === roomId)
+    if (!roomData || !roomData.exits) continue
+    
+    for (const [direction, exit] of Object.entries(roomData.exits)) {
+      const [exitArea, exitRoom] = exit.split('.')
+      if (exitArea !== areaId) {
+        // This is a cross-area exit - create an exit cell
+        const dir = directions[direction]
+        if (dir) {
+          const exitX = room.gridX + dir.dx
+          const exitY = room.gridY + dir.dy
+          exitCells.push({
+            gridX: exitX,
+            gridY: exitY,
+            targetArea: exitArea,
+            direction: direction,
+            fromRoom: roomId
+          })
+          
+          // Expand bounds to include exit cells
+          minX = Math.min(minX, exitX)
+          maxX = Math.max(maxX, exitX)
+          minY = Math.min(minY, exitY)
+          maxY = Math.max(maxY, exitY)
+        }
+      }
+    }
+  }
+
+  // After adding exit cells, recalculate the final normalization
+  // Re-normalize all positions with the expanded bounds
+  const finalNormalizedRooms = []
+  let finalPlayerPosition = { x: 0, y: 0 }
+
+  for (const [roomId, room] of roomGraph) {
+    if (!room.visited) continue
+
+    const normalizedX = room.gridX - minX
+    const normalizedY = room.gridY - minY
+
+    finalNormalizedRooms.push({
+      id: roomId,
+      name: room.name,
+      gridX: normalizedX,
+      gridY: normalizedY
+    })
+
+    if (roomId === currentRoomId) {
+      finalPlayerPosition = { x: normalizedX, y: normalizedY }
+    }
+  }
+
+  // Normalize exit cell positions
+  const normalizedExitCells = exitCells.map(cell => ({
+    ...cell,
+    gridX: cell.gridX - minX,
+    gridY: cell.gridY - minY
+  }))
+
   return {
-    rooms: normalizedRooms,
+    rooms: finalNormalizedRooms,
+    exitCells: normalizedExitCells,
     gridSize: {
       width: maxX - minX + 1,
       height: maxY - minY + 1
     },
-    playerPosition
+    playerPosition: finalPlayerPosition
   }
 }
 

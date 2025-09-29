@@ -567,7 +567,7 @@ class SimpleMUDClient {
         grid.style.gridTemplateColumns = `repeat(${gridSize.width}, 1fr)`
         grid.style.gridTemplateRows = `repeat(${gridSize.height}, 1fr)`
 
-        // Create grid cells
+                // Create grid cells
         for (let y = 0; y < gridSize.height; y++) {
             for (let x = 0; x < gridSize.width; x++) {
                 const cell = document.createElement('div')
@@ -575,6 +575,11 @@ class SimpleMUDClient {
 
                 // Check if there's a room at this position
                 const roomAtPosition = rooms.find(room => room.gridX === x && room.gridY === y)
+                
+                // Check if there's an exit cell at this position
+                const exitAtPosition = this.currentAreaMap.exitCells?.find(exit => 
+                    exit.gridX === x && exit.gridY === y
+                )
                 
                 if (roomAtPosition) {
                     const isCurrentRoom = (playerPosition.x === x && playerPosition.y === y)
@@ -588,6 +593,11 @@ class SimpleMUDClient {
                         cell.title = roomAtPosition.name
                         cell.textContent = '○'
                     }
+                } else if (exitAtPosition) {
+                    cell.className += ' exit-cell'
+                    const areaName = exitAtPosition.targetArea.replace('_', ' ')
+                    cell.title = `Exit to ${areaName}`
+                    cell.textContent = '•'
                 } else {
                     cell.className += ' empty'
                 }
@@ -595,7 +605,7 @@ class SimpleMUDClient {
                 grid.appendChild(cell)
             }
         }
-
+        
         // Clear and update map
         this.mapGrid.innerHTML = ''
         this.mapGrid.appendChild(grid)
@@ -654,6 +664,8 @@ class SimpleMUDClient {
 
         this.roomInfoExits.innerHTML = exitsList || '<div class="exit-item">No exits</div>'
     }
+
+    
 }
 
 // Global functions for HTML onclick handlers
