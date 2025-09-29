@@ -595,7 +595,10 @@ class SimpleMUDClient {
                     }
                 } else if (exitAtPosition) {
                     cell.className += ' exit-cell'
-                    const areaName = exitAtPosition.targetArea.replace('_', ' ')
+                    const areaName = exitAtPosition.targetArea
+                        .split('_')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ')
                     cell.title = `Exit to ${areaName}`
                     cell.textContent = '•'
                 } else {

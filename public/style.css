@@ -166,10 +166,10 @@ header h1 {
 }
 
 .room-cell.current-room {
-    background: #90c0c0;
+    background: #c0c0c0;
     color: #000;
-    border-color: #b0e0e0;
-    box-shadow: 0 0 8px rgba(144, 192, 192, 0.6);
+    border-color: #d0d0d0;
+    box-shadow: 0 0 8px rgba(192, 192, 192, 0.6);
     font-weight: bold;
 }
 
