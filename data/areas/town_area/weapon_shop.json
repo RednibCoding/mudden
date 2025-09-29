@@ -1,7 +1,16 @@
 {
   "name": "Blade & Steel Weapons",
   "description": "A well-stocked weapons shop with gleaming swords, sturdy shields, and sharp daggers displayed on the walls. The blacksmith works at his forge in the back.",
-  "items": ["iron_sword", "leather_shield"],
+  "items": [
+    {
+      "id": "iron_sword",
+      "onetime": true
+    },
+    {
+      "id": "leather_shield",
+      "onetime": true
+    }
+  ],
   "npcs": ["blacksmith"],
   "enemies": [],
   "exits": {

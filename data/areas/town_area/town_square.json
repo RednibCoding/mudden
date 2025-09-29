@@ -1,7 +1,12 @@
 {
   "name": "Town Square",
   "description": "You are standing in the center of a bustling medieval town. The cobblestone square is surrounded by various shops and buildings. A fountain bubbles merrily in the center, and townspeople go about their daily business.",
-  "items": ["town_notice"],
+  "items": [
+    {
+      "id": "town_notice",
+      "onetime": true
+    }
+  ],
   "npcs": ["town_guard"],
   "enemies": [],
   "exits": {

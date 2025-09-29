@@ -7,10 +7,10 @@
   "health": 100,
   "maxHealth": 100,
   "level": 1,
-  "experience": 30,
+  "experience": 60,
   "gold": 50,
-  "currentArea": "forest_area",
-  "currentRoom": "forest_clearing",
+  "currentArea": "town_area",
+  "currentRoom": "weapon_shop",
   "inventory": [
     {
       "id": "ale",
@@ -22,7 +22,7 @@
     },
     {
       "id": "berries",
-      "quantity": 6
+      "quantity": 8
     },
     {
       "id": "mushroom",
@@ -30,11 +30,15 @@
     },
     {
       "id": "steel_sword",
-      "quantity": 1
+      "quantity": 2
     },
     {
       "id": "wood",
-      "quantity": 1
+      "quantity": 2
+    },
+    {
+      "id": "iron_ore",
+      "quantity": 2
     }
   ],
   "equipment": {
@@ -51,7 +55,31 @@
     "defense": 5,
     "speed": 8
   },
-  "quests": [],
+  "quests": [
+    {
+      "id": "blacksmith_first_weapon",
+      "status": "completed",
+      "acceptedAt": 1759150438623,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": "iron_ore",
+          "quantity": 2,
+          "current": 2,
+          "description": "Collect 2 pieces of Iron Ore"
+        },
+        {
+          "type": "collect",
+          "target": "wood",
+          "quantity": 1,
+          "current": 1,
+          "description": "Collect 1 piece of Wood for the handle"
+        }
+      ],
+      "completedAt": 1759150845637
+    }
+  ],
   "combat": null,
-  "lastSaved": "2025-09-29T12:18:33.560Z"
+  "takenOnetimeItems": [],
+  "lastSaved": "2025-09-29T13:00:45.637Z"
 }

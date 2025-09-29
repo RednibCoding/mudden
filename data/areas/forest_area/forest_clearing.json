@@ -1,7 +1,19 @@
 {
   "name": "Forest Clearing",
   "description": "A small clearing in the forest where sunlight filters through. Wildflowers grow here, and you can hear birds singing overhead.",
-  "items": ["berries", "wood"],
+  "items": [
+    {
+      "id": "berries",
+      "onetime": false,
+      "respawnTime": 3000
+    },
+    {
+      "id": "wood",
+      "onetime": false,
+      "respawnTime": 10000,
+      "quest": "blacksmith_first_weapon"
+    }
+  ],
   "npcs": ["hermit"],
   "enemies": [],
   "exits": {

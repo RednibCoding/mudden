@@ -1,7 +1,20 @@
 {
   "name": "Mystical Enchantments",
   "description": "A mysterious shop filled with glowing crystals, ancient tomes, and bubbling potions. The air crackles with magical energy.",
-  "items": ["healing_potion", "magic_scroll", "rare_metal"],
+  "items": [
+    {
+      "id": "healing_potion",
+      "onetime": true
+    },
+    {
+      "id": "magic_scroll",
+      "onetime": true
+    },
+    {
+      "id": "rare_metal",
+      "onetime": true
+    }
+  ],
   "npcs": ["wizard"],
   "enemies": [],
   "exits": {
