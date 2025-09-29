@@ -5,6 +5,17 @@
     box-sizing: border-box;
 }
 
+/* Custom selection color */
+::selection {
+    background: #333;
+    color: #c0c0c0;
+}
+
+::-moz-selection {
+    background: #333;
+    color: #c0c0c0;
+}
+
 body {
     font-family: 'Courier New', monospace;
     background: #000;
@@ -82,7 +93,7 @@ header h1 {
     flex: 3;
     display: flex;
     flex-direction: column;
-    background: #000;
+    background: #0a0a0a;
     border: 1px solid #333;
     border-radius: 5px;
     overflow: hidden;
@@ -100,15 +111,15 @@ header h1 {
 }
 
 .map-header {
-    background: #222;
-    padding: 10px 15px;
+    background: #0a0a0a;
+    padding: 6px 15px;
     border-bottom: 1px solid #333;
     text-align: center;
 }
 
 .map-header h3 {
     color: #90c0c0;
-    font-size: 1em;
+    font-size: 0.8em;
     margin: 0;
 }
 
@@ -119,12 +130,13 @@ header h1 {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    background: #0a0a0a;
 }
 
 .room-grid {
     display: grid;
     gap: 2px;
-    background: #222;
+    background: #0a0a0a;
     padding: 10px;
     border-radius: 3px;
 }
@@ -132,8 +144,8 @@ header h1 {
 .room-cell {
     width: 24px;
     height: 24px;
-    background: #444;
-    border: 1px solid #666;
+    background: #0a0a0a;
+    border: 1px solid #333;
     border-radius: 2px;
     display: flex;
     align-items: center;
@@ -142,6 +154,10 @@ header h1 {
     color: #999;
     transition: all 0.3s;
     cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .room-cell:hover:not(.empty) {
@@ -158,9 +174,9 @@ header h1 {
 }
 
 .room-cell.other-room {
-    background: #333;
+    background: #0a0a0a;
     color: #888;
-    border-color: #555;
+    border-color: #333;
 }
 
 .room-cell.empty {
@@ -187,7 +203,6 @@ header h1 {
 
 .room-info {
     background: #0a0a0a;
-    border-bottom: 1px solid #333;
     padding: 12px 15px;
     font-size: 0.85em;
 }
@@ -262,7 +277,7 @@ header h1 {
     flex: 1;
     padding: 15px 20px;
     overflow-y: auto;
-    background: #000;
+    background: #0a0a0a;
     white-space: pre-wrap;
     word-wrap: break-word;
     min-height: 300px;
@@ -468,7 +483,7 @@ header h1 {
 
 input[type="text"], input[type="password"] {
     flex: 1;
-    background: #000;
+    background: #0a0a0a;
     color: #c0c0c0;
     border: 1px solid #333;
     padding: 8px 12px;

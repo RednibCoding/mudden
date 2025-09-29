@@ -312,9 +312,7 @@ io.on('connection', (socket) => {
     }
 
     try {
-      console.log(`Generating area map for ${currentPlayer.name} in ${currentPlayer.currentArea}.${currentPlayer.currentRoom}`)
       const mapData = generateAreaMap(currentPlayer.currentArea, currentPlayer.currentRoom)
-      console.log(`Map data generated:`, mapData)
       socket.emit('areaMap', mapData)
     } catch (error) {
       console.error('Area map error:', error)
