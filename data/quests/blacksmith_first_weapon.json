@@ -2,7 +2,7 @@
   "name": "First Weapon",
   "description": "The Blacksmith has offered to craft you a proper weapon if you bring him some basic materials.",
   "giver": "blacksmith",
-  "type": "delivery",
+  "type": "collect",
   "level": 1,
   "prerequisites": {
     "level": 1,

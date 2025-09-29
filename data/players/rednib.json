@@ -7,10 +7,10 @@
   "health": 110,
   "maxHealth": 110,
   "level": 2,
-  "experience": 110,
-  "gold": 65,
+  "experience": 250,
+  "gold": 170,
   "currentArea": "town_area",
-  "currentRoom": "weapon_shop",
+  "currentRoom": "town_square",
   "inventory": [
     {
       "id": "ale",
@@ -25,10 +25,6 @@
       "quantity": 8
     },
     {
-      "id": "mushroom",
-      "quantity": 2
-    },
-    {
       "id": "steel_sword",
       "quantity": 3
     },
@@ -37,16 +33,20 @@
       "quantity": 3
     },
     {
-      "id": "iron_ore",
-      "quantity": 3
+      "id": "mushroom",
+      "quantity": 1
     },
     {
       "id": "sharpening_stone",
       "quantity": 1
     },
     {
+      "id": "iron_ore",
+      "quantity": 3
+    },
+    {
       "id": "healing_potion",
-      "quantity": 1
+      "quantity": 8
     }
   ],
   "equipment": {
@@ -89,7 +89,7 @@
     {
       "id": "blacksmith_repair_tools",
       "status": "completed",
-      "acceptedAt": 1759156455167,
+      "acceptedAt": 1759160176421,
       "objectives": [
         {
           "type": "collect",
@@ -102,14 +102,14 @@
           "type": "collect",
           "target": "mushroom",
           "quantity": 2,
-          "current": 2,
+          "current": 1,
           "description": "Collect 2 Mushrooms for tool oil"
         }
       ],
-      "completedAt": 1759156534885
+      "completedAt": 1759161601049
     }
   ],
   "combat": null,
   "takenOnetimeItems": [],
-  "lastSaved": "2025-09-29T14:40:15.744Z"
+  "lastSaved": "2025-09-29T16:00:01.050Z"
 }
