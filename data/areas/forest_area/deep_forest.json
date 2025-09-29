@@ -1,7 +1,7 @@
 {
   "name": "Deep Forest",
   "description": "You are deep within the forest. The trees are ancient and gnarled, their branches intertwining overhead to block out most sunlight. The air is thick with the scent of moss and decay.",
-  "items": ["mushroom"],
+  "items": ["mushroom", "iron_ore"],
   "npcs": [],
   "enemies": ["spider", "wolf"],
   "exits": {

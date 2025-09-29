@@ -1,0 +1,9 @@
+{
+  "name": "Iron Ore",
+  "description": "A chunk of raw iron ore, perfect for forging weapons and tools.",
+  "type": "material",
+  "value": 5,
+  "stackable": true,
+  "effects": {},
+  "stats": {}
+}
