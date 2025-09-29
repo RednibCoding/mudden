@@ -102,10 +102,10 @@ class SimpleMUDClient {
         this.commandInput.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowUp') {
                 e.preventDefault()
-                this.navigateHistory(-1)
+                this.navigateHistory(1)  // Up arrow goes to older commands
             } else if (e.key === 'ArrowDown') {
                 e.preventDefault()
-                this.navigateHistory(1)
+                this.navigateHistory(-1) // Down arrow goes to newer commands
             }
         })
 
