@@ -12,14 +12,14 @@
   "attacks": [
     {
       "name": "Savage Bite",
-      "damage": 8,
+      "damage": [6, 10],
       "accuracy": 85,
       "chance": 70,
       "description": "The wolf lunges forward with snapping jaws!"
     },
     {
       "name": "Claw Swipe",
-      "damage": 5,
+      "damage": [3, 7],
       "accuracy": 90,
       "chance": 30,
       "description": "The wolf swipes with its sharp claws!"
@@ -27,8 +27,18 @@
   ],
   "loot": {
     "gold": [3, 10],
-    "items": ["wolf_pelt", "healing_potion"],
-    "dropRate": 65
+    "items": [
+      {
+        "id": "wolf_pelt",
+        "chance": 70,
+        "quantity": [1, 2]
+      },
+      {
+        "id": "healing_potion",
+        "chance": 40,
+        "quantity": [1, 1]
+      }
+    ]
   },
   "behavior": {
     "aggressive": true,

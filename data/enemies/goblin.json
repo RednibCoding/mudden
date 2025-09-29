@@ -12,23 +12,38 @@
   "attacks": [
     {
       "name": "Dagger Stab",
-      "damage": 6,
+      "damage": [4, 8],
       "accuracy": 80,
       "chance": 60,
       "description": "The goblin thrusts with its rusty dagger!"
     },
     {
-      "name": "Dirty Trick",
-      "damage": 3,
+      "name": "Dirty Fighting",
+      "damage": [2, 6],
       "accuracy": 95,
       "chance": 40,
-      "description": "The goblin throws dirt in your eyes and attacks!"
+      "description": "The goblin fights dirty with kicks and scratches!"
     }
   ],
   "loot": {
     "gold": [1, 8],
-    "items": ["rusty_dagger", "healing_potion", "fireball_scroll"],
-    "dropRate": 45
+    "items": [
+      {
+        "id": "rusty_dagger",
+        "chance": 30,
+        "quantity": [1, 1]
+      },
+      {
+        "id": "healing_potion",
+        "chance": 60,
+        "quantity": [1, 2]
+      },
+      {
+        "id": "fireball_scroll",
+        "chance": 20,
+        "quantity": [1, 1]
+      }
+    ]
   },
   "behavior": {
     "aggressive": true,

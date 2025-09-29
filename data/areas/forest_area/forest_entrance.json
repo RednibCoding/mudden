@@ -8,7 +8,13 @@
     }
   ],
   "npcs": [],
-  "enemies": ["wolf"],
+  "enemies": [
+    {
+      "id": "wolf",
+      "onetime": false,
+      "respawnTime": 150000
+    }
+  ],
   "exits": {
     "north": "town_area.town_square",
     "south": "forest_area.forest_clearing"

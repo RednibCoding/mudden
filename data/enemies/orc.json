@@ -12,14 +12,14 @@
   "attacks": [
     {
       "name": "Club Smash",
-      "damage": 15,
+      "damage": [12, 18],
       "accuracy": 70,
       "chance": 50,
       "description": "The orc swings its massive club down with crushing force!"
     },
     {
       "name": "Brutal Headbutt",
-      "damage": 10,
+      "damage": [8, 12],
       "accuracy": 85,
       "chance": 50,
       "description": "The orc charges forward with a vicious headbutt!"
@@ -27,8 +27,23 @@
   ],
   "loot": {
     "gold": [8, 20],
-    "items": ["orc_club", "greater_healing_potion", "ice_shard_scroll"],
-    "dropRate": 75
+    "items": [
+      {
+        "id": "iron_sword",
+        "chance": 25,
+        "quantity": [1, 1]
+      },
+      {
+        "id": "healing_potion",
+        "chance": 50,
+        "quantity": [1, 3]
+      },
+      {
+        "id": "chain_mail",
+        "chance": 20,
+        "quantity": [1, 1]
+      }
+    ]
   },
   "behavior": {
     "aggressive": true,

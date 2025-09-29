@@ -15,7 +15,23 @@
     }
   ],
   "npcs": [],
-  "enemies": ["spider", "wolf"],
+  "enemies": [
+    {
+      "id": "spider",
+      "onetime": false,
+      "respawnTime": 120000
+    },
+    {
+      "id": "wolf",
+      "onetime": false,
+      "respawnTime": 180000
+    },
+    {
+      "id": "forest_boss",
+      "onetime": true,
+      "respawnTime": 0
+    }
+  ],
   "exits": {
     "north": "forest_area.forest_clearing"
   }

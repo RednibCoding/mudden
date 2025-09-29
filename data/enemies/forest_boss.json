@@ -1,0 +1,53 @@
+{
+  "name": "Ancient Forest Guardian",
+  "description": "A massive, ancient tree-like creature that guards the deepest secrets of the forest. Its bark-covered limbs move with surprising agility, and glowing green eyes peer out from the twisted trunk.",
+  "stats": {
+    "health": 200,
+    "maxHealth": 200,
+    "strength": 18,
+    "defense": 15,
+    "speed": 8,
+    "experience": 150
+  },
+  "attacks": [
+    {
+      "name": "crushing_branch",
+      "displayName": "Crushing Branch",
+      "description": "The guardian slams down with a massive branch",
+      "damage": [25, 35],
+      "accuracy": 75,
+      "chance": 40
+    },
+    {
+      "name": "root_entangle",
+      "displayName": "Root Entangle",
+      "description": "Roots burst from the ground to entangle and strike",
+      "damage": [20, 30],
+      "accuracy": 85,
+      "chance": 35
+    },
+    {
+      "name": "nature_wrath",
+      "displayName": "Nature's Wrath",
+      "description": "The guardian channels the fury of the forest",
+      "damage": [30, 45],
+      "accuracy": 65,
+      "chance": 25
+    }
+  ],
+  "loot": {
+    "gold": [80, 120],
+    "items": [
+      {
+        "id": "rare_metal",
+        "chance": 100,
+        "quantity": [1, 1]
+      },
+      {
+        "id": "wood",
+        "chance": 90,
+        "quantity": [2, 4]
+      }
+    ]
+  }
+}

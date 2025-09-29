@@ -158,6 +158,36 @@ io.on('connection', (socket) => {
       activePlayers.set(socket.id, currentPlayer)
       console.log(`${cleanName} logged in (socket: ${socket.id})`)
       console.log(`Total active players: ${activePlayers.size}`)
+      
+      // Start health recovery for the player
+      currentPlayer.startHealthRecovery((player, message) => {
+        const playerSocket = [...activePlayers.entries()].find(([, p]) => p.name === player.name)?.[0]
+        if (playerSocket) {
+          const socket = io.sockets.sockets.get(playerSocket)
+          if (socket) {
+            if (message) {
+              socket.emit('message', message)
+            }
+            // Always send updated game state to keep client UI in sync
+            const room = gameWorld.getRoom(player.currentArea, player.currentRoom, player)
+            socket.emit('gameState', {
+              player: {
+                name: player.name,
+                level: player.level,
+                health: player.health,
+                maxHealth: player.maxHealth,
+                experience: player.experience,
+                gold: player.gold,
+                location: room ? room.name : 'Unknown',
+                currentArea: player.currentArea,
+                currentRoom: player.currentRoom,
+                inCombat: player.inCombat
+              },
+              room: room
+            })
+          }
+        }
+      })
 
       // Send initial game state
       const room = gameWorld.getRoom(currentPlayer.currentArea, currentPlayer.currentRoom)
@@ -227,6 +257,36 @@ io.on('connection', (socket) => {
       activePlayers.set(socket.id, currentPlayer)
       console.log(`${cleanName} logged in after creation (socket: ${socket.id})`)
       console.log(`Total active players: ${activePlayers.size}`)
+      
+      // Start health recovery for the new player
+      currentPlayer.startHealthRecovery((player, message) => {
+        const playerSocket = [...activePlayers.entries()].find(([, p]) => p.name === player.name)?.[0]
+        if (playerSocket) {
+          const socket = io.sockets.sockets.get(playerSocket)
+          if (socket) {
+            if (message) {
+              socket.emit('message', message)
+            }
+            // Always send updated game state to keep client UI in sync
+            const room = gameWorld.getRoom(player.currentArea, player.currentRoom, player)
+            socket.emit('gameState', {
+              player: {
+                name: player.name,
+                level: player.level,
+                health: player.health,
+                maxHealth: player.maxHealth,
+                experience: player.experience,
+                gold: player.gold,
+                location: room ? room.name : 'Unknown',
+                currentArea: player.currentArea,
+                currentRoom: player.currentRoom,
+                inCombat: player.inCombat
+              },
+              room: room
+            })
+          }
+        }
+      })
 
       // Send initial game state
       const room = gameWorld.getRoom(currentPlayer.currentArea, currentPlayer.currentRoom)
@@ -366,6 +426,10 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     if (currentPlayer) {
       console.log(`${currentPlayer.name} disconnected`)
+      
+      // Stop health recovery timer
+      currentPlayer.stopHealthRecovery()
+      
       currentPlayer.save()
       
       // Clean up combat session if any
