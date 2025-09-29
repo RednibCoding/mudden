@@ -57,6 +57,7 @@ mudden/
 ```javascript
 {
   "name": "Adventurer",
+  "passwordHash": "hashed_password_with_salt",
   "health": 100,
   "maxHealth": 100,
   "level": 1,
@@ -69,7 +70,12 @@ mudden/
   ],
   "equipment": {
     "main_hand": "wooden_stick",
-    "chest": null
+    "off_hand": null,
+    "chest": null,
+    "legs": null,
+    "head": null,
+    "feet": null,
+    "hands": null
   },
   "stats": {
     "strength": 10,
@@ -78,16 +84,23 @@ mudden/
   },
   "quests": [],
   "combat": null,  // Combat state if in battle
+  "inCombat": false,
+  "homestone": { "area": "town_area", "room": "inn" },
+  "takenOnetimeItems": [],  // Track onetime items taken
+  "defeatedOnetimeEnemies": [],  // Track onetime enemies defeated
+  "recoveryTimer": null,  // Health recovery system timer
   "lastSaved": "2025-09-28T20:42:00.000Z"
 }
 ```
 
 ### Game World Structure
-**Reuse existing JSON structure** from current project:
-- `data/areas/` - Area definitions with rooms
-- `data/items/` - Item definitions with stats
-- `data/enemies.json` - Enemy templates
-- `data/npcs/` - NPC definitions
+**Current JSON file organization**:
+- `data/areas/` - Area definitions with rooms (organized by area folders)
+- `data/items/` - Individual item JSON files (filename = item ID)
+- `data/enemies/` - Individual enemy JSON files (filename = enemy ID)
+- `data/npcs/` - Individual NPC JSON files (filename = NPC ID)
+- `data/quests/` - Individual quest JSON files (filename = quest ID)
+- `data/players/` - Player save files (auto-generated)
 
 ### Combat State (In-Memory)
 ```javascript
@@ -111,9 +124,11 @@ mudden/
 ### Connection Flow
 1. Player opens web page
 2. Enters character name (simple prompt)
-3. Server loads/creates player file
-4. Player enters game world
-5. All commands via WebSocket communication
+3. If existing character: enters password for authentication
+4. If new character: creates password (hashed with PBKDF2 + salt)
+5. Server loads/creates player file with duplicate login prevention
+6. Player enters game world with health recovery system active
+7. All commands via WebSocket communication with real-time updates
 
 ### Command Processing Flow
 ```
@@ -145,10 +160,13 @@ User Input → Client → WebSocket → Server → Process Command → Update Ga
 - Item usage (consumables, etc.)
 
 ### 3. Combat System
-- Turn-based combat in memory
-- Player actions: attack, defend, flee
-- Enemy AI with attack patterns
-- Experience and loot rewards
+- Turn-based combat with real-time updates
+- Health recovery system (2% max health every 5 seconds when out of combat)
+- Player actions: attack, defend, flee, auto-attack
+- Enemy damage using [min, max] arrays for consistent randomization
+- Individual item drop chances with quantity ranges [min, max]
+- Experience and gold rewards with enhanced loot generation
+- Onetime enemy tracking to prevent re-spawning
 - State persisted in player file after combat
 
 ### 4. Content Loading
@@ -168,6 +186,19 @@ User Input → Client → WebSocket → Server → Process Command → Update Ga
 - Automatic cleanup on command execution unless command is in exception list
 - Scalable architecture prevents manual state cleanup in every command
 
+### 7. Health Recovery System
+- Automatic health regeneration when out of combat
+- 2% of max health restored every 5 seconds
+- Real-time client updates with gameState synchronization
+- Stops during combat, resumes after combat ends
+- Proper cleanup on player disconnect
+
+### 8. Enhanced Security
+- PBKDF2 password hashing with salt
+- Duplicate login prevention system
+- Session management with automatic cleanup
+- Input validation and sanitization
+
 ## 🔧 Implementation Details
 
 ### Server Architecture
@@ -179,6 +210,7 @@ class SimpleServer {
     this.commandManager = new CommandManager() // Handles all commands
     this.activePlayers = new Map()         // Connected players
     this.combatSessions = new Map()        // Active combat states
+    this.connectedSockets = new Map()      // Socket connections
   }
 }
 
@@ -188,12 +220,14 @@ class GameWorld {
   getItem(id)       // Get item template
   getEnemy(id)      // Get enemy template
   getNPC(id)        // Get NPC template
+  getQuest(id)      // Get quest template
 }
 
 class CommandManager {
   constructor(gameWorld, players, combatSessions, io)
   processCommand(player, commandString) // Route to appropriate command
   registerCommands() // Load all command modules
+  setupCtxStates()  // Configure contextual states
 }
 
 class CtxStateManager {
@@ -204,16 +238,22 @@ class CtxStateManager {
 }
 
 class BaseCommand {
-  constructor(gameWorld, players, combatSessions, io)
-  // Shared utilities: fuzzy matching, player lookup, etc.
+  constructor(gameWorld, players, combatSessions, io, ctxStateManager)
+  // Shared utilities: fuzzy matching, player lookup, gameState updates
+  sendGameStateUpdate(player) // Real-time client synchronization
+  fuzzyMatch(input, items)    // Intelligent matching system
 }
 
 class Player {
   constructor(name)
-  save()             // Write to JSON file
-  static load(name)  // Read from JSON file
-  addItem(id, qty)   // Add item to inventory
+  save()             // Write to JSON file with error handling
+  static load(name)  // Read from JSON file with validation
+  addItem(id, qty)   // Add item to inventory with stacking
   removeItem(id, qty)// Remove item from inventory
+  hashPassword(password) // PBKDF2 password hashing
+  verifyPassword(password) // Password verification
+  startHealthRecovery(callback) // Begin health recovery system
+  stopHealthRecovery()  // Stop health recovery system
 }
 ```
 
@@ -351,15 +391,24 @@ const loadPlayer = (name) => {
 - [x] Equipment stats affecting combat
 - [x] Combat state management
 
-### Phase 4: Polish & Features ✅ COMPLETED
+### Phase 4: Advanced Features ✅ COMPLETED
 - [x] Player-to-player communication
 - [x] Fuzzy command matching system
-- [x] Password protection for characters
+- [x] Password protection with PBKDF2 hashing
 - [x] Comfortable UI with selectable text
 - [x] Clean terminal aesthetic without Unicode symbols
 - [x] Comprehensive help system
 - [x] Admin and system commands
 - [x] CtxStateManager for scalable contextual state management
+
+### Phase 5: Enhanced Combat & Recovery ✅ COMPLETED
+- [x] Health recovery system (2% every 5 seconds out of combat)
+- [x] Real-time client synchronization with gameState updates
+- [x] Standardized damage system with [min, max] arrays
+- [x] Individual loot item chances with quantity ranges
+- [x] Onetime enemy and item tracking system
+- [x] Auto-attack functionality for extended combat
+- [x] Enhanced loot generation with proper item naming
 
 ## 📈 Scalability Considerations
 
@@ -445,9 +494,13 @@ this.clearCtxState(player, 'viewingShop')              // Manual clear (optional
 - ✅ Maintain all content from complex version
 - ✅ Have clean, maintainable command system
 - ✅ Provide comfortable user experience
-- ✅ Support password-protected characters
+- ✅ Support password-protected characters with secure hashing
 - ✅ Use consistent data formats throughout
 - ✅ Have comprehensive help and documentation
+- ✅ Real-time health recovery and combat feedback
+- ✅ Robust loot system with individual item chances
+- ✅ Duplicate login prevention and session management
+- ✅ Scalable contextual state management
 
 ## 🔄 Migration Strategy
 

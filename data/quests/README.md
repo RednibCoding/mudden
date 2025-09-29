@@ -90,6 +90,32 @@ Each objective is an object with:
 - **complete**: What NPC says when quest is turned in
 - **completed**: What NPC says after quest is already finished
 
+## Quest Turn-In System
+
+Quests can be completed with different NPCs than who gave them:
+
+### Same NPC (Default)
+```json
+{
+  "giver": "town_guard",
+  // turnInNpc not specified - defaults to "town_guard"
+}
+```
+
+### Different NPC (Delivery Quests)
+```json
+{
+  "giver": "innkeeper",
+  "turnInNpc": "wizard",
+  "objectives": [
+    {
+      "givenByQuestGiver": true,  // Innkeeper gives item when accepted
+      "target": "special_ale"     // Player delivers to wizard
+    }
+  ]
+}
+```
+
 ## Quest Types
 
 ### Kill Quests

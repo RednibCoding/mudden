@@ -25,15 +25,21 @@ Each enemy file must contain the following structure:
   "attacks": [
     {
       "name": "attack_name",
-      "damage": 8,
+      "damage": [6, 10],
       "accuracy": 85,
+      "chance": 70,
       "description": "Description of the attack"
     }
   ],
   "loot": {
     "gold": [3, 8],
-    "items": ["item_id"],
-    "dropRate": 60
+    "items": [
+      {
+        "id": "item_id",
+        "chance": 60,
+        "quantity": [1, 2]
+      }
+    ]
   },
   "behavior": {
     "aggressive": true,

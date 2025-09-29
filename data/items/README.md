@@ -137,8 +137,18 @@ Common effect properties:
 
 ### Room Items
 - Some items may have `canTake: false` (like notices or fixtures)
-- Interactive items should have `canUse: true`
-- Consider respawn mechanics for consumables
+### Data Format Requirements
+- **Filename = ID**: The JSON filename becomes the item ID automatically
+- **No ID field**: Do not include an "id" field in the JSON content
+- **Consistent naming**: Use lowercase with underscores (e.g., `healing_potion.json`)
+
+## Example Item Files
+
+See existing items for reference:
+- `iron_sword.json` - Basic weapon with damage bonus
+- `chain_mail.json` - Armor with defense bonus
+- `healing_potion.json` - Consumable that restores health
+- `town_notice.json` - Readable item with story content
 
 ## Tips
 
@@ -147,3 +157,5 @@ Common effect properties:
 - Use consistent naming conventions
 - Consider item progression and rarity
 - Test items in-game to ensure proper balance
+- Interactive items should have `canUse: true`
+- Consider respawn mechanics for consumables
