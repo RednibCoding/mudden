@@ -4,13 +4,13 @@
     "salt": "5441760d5e022cfe12f8c0565bbbe7b52d782704bf17a0428768f941fc96d8d6",
     "hash": "a98935bfa81e0c9c4f36506df1b9f3df521f8a13874315b5ad66877731839358e98d31ac0f558f8babeee2851a8dd85cad33392bb0a3bc47729f6ac04ab09d12"
   },
-  "health": 140,
-  "maxHealth": 140,
-  "level": 5,
-  "experience": 990,
-  "gold": 453,
-  "currentArea": "forest_area",
-  "currentRoom": "deep_forest",
+  "health": 150,
+  "maxHealth": 150,
+  "level": 6,
+  "experience": 1175,
+  "gold": 554,
+  "currentArea": "town_area",
+  "currentRoom": "town_square",
   "inventory": [
     {
       "id": "ale",
@@ -38,15 +38,15 @@
     },
     {
       "id": "healing_potion",
-      "quantity": 9
+      "quantity": 8
     },
     {
       "id": "wolf_pelt",
-      "quantity": 6
+      "quantity": 8
     },
     {
       "id": "spider_silk",
-      "quantity": 6
+      "quantity": 8
     },
     {
       "id": "wood",
@@ -54,6 +54,10 @@
     },
     {
       "id": "berries",
+      "quantity": 1
+    },
+    {
+      "id": "rare_metal",
       "quantity": 1
     }
   ],
@@ -67,9 +71,9 @@
     "hands": null
   },
   "stats": {
-    "strength": 14,
-    "defense": 9,
-    "speed": 12
+    "strength": 15,
+    "defense": 10,
+    "speed": 13
   },
   "quests": [
     {
@@ -181,8 +185,10 @@
   "takenOnetimeItems": [
     "forest_area.forest_entrance.wooden_stick"
   ],
-  "defeatedOnetimeEnemies": [],
+  "defeatedOnetimeEnemies": [
+    "forest_area.deep_forest.forest_boss"
+  ],
   "recoveryTimer": null,
-  "lastSaved": "2025-09-29T23:46:39.522Z",
+  "lastSaved": "2025-09-30T06:36:27.703Z",
   "combat": null
 }
