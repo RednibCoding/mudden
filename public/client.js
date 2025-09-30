@@ -546,6 +546,8 @@ class SimpleMUDClient {
             // Request area map if room changed
             if (this.player.currentRoom !== previousRoom) {
                 this.requestAreaMap(this.player.currentRoom)
+                // Also update room info to get exits
+                this.updateRoomInfo()
             }
             
             this.updatePlayerInfo()

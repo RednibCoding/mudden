@@ -4,17 +4,17 @@
     "salt": "108b8783a9f7097e531768a93c0c86e7115d319e367b6724a94661c24ea5cd95",
     "hash": "c32de0f341c9b23898f8a60d3b16bbf440785b8272399f19277f4d1d6d1f2f8022b2a3fcafd98f7db777785b35dd08d8e04ee5f0cf781f8ed2568cf3a97e18e7"
   },
-  "health": 100,
-  "maxHealth": 100,
-  "level": 1,
-  "experience": 145,
-  "gold": 115,
-  "currentArea": "town_area",
-  "currentRoom": "weapon_shop",
+  "health": 110,
+  "maxHealth": 110,
+  "level": 2,
+  "experience": 185,
+  "gold": 128,
+  "currentArea": "forest_area",
+  "currentRoom": "deep_forest",
   "inventory": [
     {
       "id": "healing_potion",
-      "quantity": 5
+      "quantity": 6
     },
     {
       "id": "leather_shield",
@@ -26,7 +26,11 @@
     },
     {
       "id": "spider_silk",
-      "quantity": 3
+      "quantity": 6
+    },
+    {
+      "id": "berries",
+      "quantity": 1
     }
   ],
   "equipment": {
@@ -39,9 +43,9 @@
     "hands": null
   },
   "stats": {
-    "strength": 10,
-    "defense": 5,
-    "speed": 8
+    "strength": 11,
+    "defense": 6,
+    "speed": 9
   },
   "activeQuests": [
     {
@@ -62,7 +66,7 @@
   "completedQuests": [
     "innkeeper_delivery"
   ],
-  "inCombat": false,
+  "inCombat": true,
   "homestone": {
     "area": "town_area",
     "room": "inn"
@@ -72,7 +76,7 @@
   ],
   "defeatedOnetimeEnemies": [],
   "healthRecoveryCallback": null,
-  "lastSaved": "2025-09-30T22:24:18.719Z",
+  "lastSaved": "2025-09-30T22:57:00.140Z",
   "lastTellSender": "Pennor",
   "friends": [
     "Pennor"
