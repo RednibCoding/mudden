@@ -459,8 +459,11 @@ class SimpleMUDClient {
         }
         this.historyIndex = -1
 
-        // Echo command (skip for say and tell commands to reduce verbosity)
-        if (!command.toLowerCase().startsWith('say ') && !command.toLowerCase().startsWith('tell ')) {
+        // Echo command (skip for say, tell, and reply commands to reduce verbosity)
+        if (!command.toLowerCase().startsWith('say ') && 
+            !command.toLowerCase().startsWith('tell ') && 
+            !command.toLowerCase().startsWith('reply ') && 
+            !command.toLowerCase().startsWith('r ')) {
             this.addOutput(`> ${command}`, 'command-echo')
         }
 
