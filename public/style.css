@@ -84,43 +84,69 @@ header h1 {
 
 .game-content {
     display: flex;
+    flex-direction: column;
     flex: 1;
     gap: 15px;
     overflow: hidden;
 }
 
 .console-container {
-    flex: 3;
-    display: flex;
-    flex-direction: column;
-    background: #0a0a0a;
-    border: 1px solid #333;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.map-container {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #111;
+    background: #0a0a0a;
     border: 1px solid #333;
     border-radius: 5px;
     overflow: hidden;
-    min-width: 200px;
 }
 
-.map-header {
+.console-output {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.game-output {
+    flex: 6;
+    padding: 15px 20px;
+    overflow-y: auto;
     background: #0a0a0a;
-    padding: 6px 15px;
-    border-bottom: 1px solid #333;
-    text-align: center;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    min-height: 300px;
+    color: #c0c0c0;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
 }
 
-.map-header h3 {
-    color: #90c0c0;
-    font-size: 0.8em;
-    margin: 0;
+.game-output::-webkit-scrollbar {
+    width: 4px;
+}
+
+.game-output::-webkit-scrollbar-track {
+    background: #111;
+}
+
+.game-output::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+
+.game-output::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.map-container {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    background: #111;
+    border-left: 1px solid #333;
+    overflow: hidden;
+    min-width: 150px;
 }
 
 .map-grid {
@@ -138,19 +164,18 @@ header h1 {
     gap: 4px;
     background: transparent;
     padding: 10px;
-    border-radius: 3px;
 }
 
 .room-cell {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     background: #0a0a0a;
     border: 1px solid #333;
     border-radius: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 9px;
     color: #999;
     transition: all 0.3s;
     cursor: pointer;
@@ -166,7 +191,7 @@ header h1 {
 }
 
 .room-cell.current-room {
-    background: #c0c0c0;
+    background: #999999;
     color: #000;
     border-color: #d0d0d0;
     box-shadow: 0 0 8px rgba(192, 192, 192, 0.6);
@@ -189,7 +214,7 @@ header h1 {
     background: transparent;
     border: none;
     color: white;
-    font-size: 8px;
+    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -204,8 +229,8 @@ header h1 {
 .room-info {
     background: #0a0a0a;
     padding: 12px 15px;
-    font-size: 0.85em;
-    height: 120px;
+    font-size: 0.95em;
+    height: 180px;
     flex-shrink: 0;
 }
 
@@ -218,7 +243,7 @@ header h1 {
 .area-name {
     color: #90c0c0;
     font-weight: bold;
-    font-size: 0.9em;
+    font-size: 1em;
     text-transform: capitalize;
 }
 
@@ -233,7 +258,7 @@ header h1 {
 
 .exits-label {
     color: #a0a0a0;
-    font-size: 0.8em;
+    font-size: 0.85em;
     margin-bottom: 4px;
 }
 
@@ -246,7 +271,7 @@ header h1 {
 
 .exit-item {
     color: #888;
-    font-size: 0.75em;
+    font-size: 0.8em;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -260,40 +285,6 @@ header h1 {
 
 .exit-room {
     color: #a0a070;
-}
-
-
-
-.game-output {
-    flex: 1;
-    padding: 15px 20px;
-    overflow-y: auto;
-    background: #0a0a0a;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    min-height: 300px;
-    color: #c0c0c0;
-    user-select: text;
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-}
-
-.game-output::-webkit-scrollbar {
-    width: 8px;
-}
-
-.game-output::-webkit-scrollbar-track {
-    background: #111;
-}
-
-.game-output::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 4px;
-}
-
-.game-output::-webkit-scrollbar-thumb:hover {
-    background: #555;
 }
 
 /* Message types */
@@ -598,9 +589,9 @@ footer {
     }
     
     .room-cell {
-        width: 20px;
-        height: 20px;
-        font-size: 9px;
+        width: 16px;
+        height: 16px;
+        font-size: 8px;
     }
     
     .room-info {

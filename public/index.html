@@ -23,14 +23,34 @@
         <main class="game-area">
             <div class="game-content">
                 <div class="console-container">
-                    <div class="game-output" id="game-output">
-                        <div class="system-message">
-                            Welcome to Mudden!<br>
-                            Choose an option below to begin your adventure...
+                    <div class="console-output">
+                        <div class="game-output" id="game-output">
+                            <div class="system-message">
+                                Welcome to Mudden!<br>
+                                Choose an option below to begin your adventure...
+                            </div>
+                        </div>
+                        
+                        <div class="map-container" id="map-container" style="display: none;">
+                            <div class="room-info" id="room-info">
+                                <div class="room-info-content">
+                                    <div class="area-name" id="area-name">Loading...</div>
+                                    <div class="room-name" id="room-name">Loading...</div>
+                                    <div class="exits-info" id="exits-info">
+                                        <div class="exits-label">Exits:</div>
+                                        <div class="exits-list" id="exits-list">
+                                            <!-- Exits will be populated dynamically -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="map-grid" id="map-grid">
+                                <!-- Map will be generated dynamically -->
+                            </div>
                         </div>
                     </div>
 
-                <div class="input-area">
+                    <div class="input-area">
                     <!-- Main Menu -->
                     <div class="main-menu" id="main-menu">
                         <div class="menu-container">
@@ -90,28 +110,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="map-container" id="map-container" style="display: none;">
-                <div class="map-header">
-                    <h3>Area Map</h3>
-                </div>
-                <div class="room-info" id="room-info">
-                    <div class="room-info-content">
-                        <div class="area-name" id="area-name">Loading...</div>
-                        <div class="room-name" id="room-name">Loading...</div>
-                        <div class="exits-info" id="exits-info">
-                            <div class="exits-label">Exits:</div>
-                            <div class="exits-list" id="exits-list">
-                                <!-- Exits will be populated dynamically -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="map-grid" id="map-grid">
-                    <!-- Map will be generated dynamically -->
-                </div>
-            </div>
             </div>
 
             <div class="controls-area">
