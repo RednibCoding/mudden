@@ -522,7 +522,7 @@ io.on('connection', (socket) => {
         const combatCommands = commandManager.getCommandInstance('CombatCommands')
         if (combatCommands) {
           // Get all enemies in the room and clean up unused instances
-          const area = gameWorld.getArea(playerArea)
+          const area = gameWorld.templateManager.getArea(playerArea)
           if (area && area.rooms[playerRoom] && area.rooms[playerRoom].enemies) {
             area.rooms[playerRoom].enemies.forEach(enemyConfig => {
               if (typeof enemyConfig === 'object' && enemyConfig.id) {
@@ -546,7 +546,7 @@ io.on('connection', (socket) => {
 
 // Generate area map for client display
 function generateAreaMap(areaId, currentRoomId) {
-  const area = gameWorld.areas.get(areaId)
+  const area = gameWorld.templateManager.getArea(areaId)
   if (!area) {
     return { rooms: [], gridSize: { width: 1, height: 1 }, playerPosition: { x: 0, y: 0 } }
   }
@@ -833,7 +833,7 @@ server.listen(PORT, () => {
 =======================================
    MUDDED SERVER STARTED
 =======================================
-Game world loaded with ${gameWorld.areas.size} areas
+Game world loaded with ${gameWorld.templateManager.areas.size} areas
 Server running on http://localhost:${PORT}
 Players can connect and start adventuring!
 =======================================

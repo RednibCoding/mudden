@@ -4,22 +4,30 @@
     "salt": "108b8783a9f7097e531768a93c0c86e7115d319e367b6724a94661c24ea5cd95",
     "hash": "c32de0f341c9b23898f8a60d3b16bbf440785b8272399f19277f4d1d6d1f2f8022b2a3fcafd98f7db777785b35dd08d8e04ee5f0cf781f8ed2568cf3a97e18e7"
   },
-  "health": 80,
+  "health": 74,
   "maxHealth": 100,
   "level": 1,
-  "experience": 55,
-  "gold": 70,
-  "currentArea": "town_area",
-  "currentRoom": "training_barracks",
+  "experience": 105,
+  "gold": 95,
+  "currentArea": "forest_area",
+  "currentRoom": "forest_entrance",
   "inventory": [
     {
       "id": "healing_potion",
+      "quantity": 5
+    },
+    {
+      "id": "leather_shield",
       "quantity": 1
+    },
+    {
+      "id": "wolf_pelt",
+      "quantity": 4
     }
   ],
   "equipment": {
     "main_hand": null,
-    "off_hand": null,
+    "off_hand": "leather_shield",
     "chest": null,
     "legs": null,
     "head": null,
@@ -41,7 +49,7 @@
           "type": "kill",
           "target": "wolf",
           "quantity": 3,
-          "current": 0,
+          "current": 3,
           "description": "Kill 3 Forest Wolves in the woods"
         }
       ]
@@ -50,15 +58,17 @@
   "completedQuests": [
     "innkeeper_delivery"
   ],
-  "inCombat": true,
+  "inCombat": false,
   "homestone": {
     "area": "town_area",
     "room": "inn"
   },
-  "takenOnetimeItems": [],
+  "takenOnetimeItems": [
+    "town_area.weapon_shop.leather_shield"
+  ],
   "defeatedOnetimeEnemies": [],
   "healthRecoveryCallback": null,
-  "lastSaved": "2025-09-30T15:43:20.075Z",
+  "lastSaved": "2025-09-30T17:14:53.077Z",
   "lastTellSender": "Pennor",
   "friends": [
     "Pennor"
