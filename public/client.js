@@ -168,6 +168,9 @@ class SimpleMUDClient {
                 
                 // All messages in the same channel get the same color
                 this.addOutput(sayMessage, `say-${channelType}`)
+            } else if (message.startsWith('[TELL] ')) {
+                const tellMessage = message.substring(7) // Remove '[TELL] ' prefix
+                this.addOutput(tellMessage, 'tell-private')
             } else {
                 this.addOutput(message)
             }
@@ -456,8 +459,8 @@ class SimpleMUDClient {
         }
         this.historyIndex = -1
 
-        // Echo command (skip for say commands to reduce verbosity)
-        if (!command.toLowerCase().startsWith('say ')) {
+        // Echo command (skip for say and tell commands to reduce verbosity)
+        if (!command.toLowerCase().startsWith('say ') && !command.toLowerCase().startsWith('tell ')) {
             this.addOutput(`> ${command}`, 'command-echo')
         }
 

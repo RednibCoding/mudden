@@ -4,7 +4,7 @@
     "salt": "9467df90834cbdce51532ac3835f30feee17dca5a23b7cea2fa4911197110808",
     "hash": "c4262582f9d689a157d8fcf7836dfe2318435bacaf92fe806daac5bc533f488b59984b5064187cee13cb184dbfe9eb813df6745579e8924b642564181d227359"
   },
-  "health": 33,
+  "health": 100,
   "maxHealth": 100,
   "level": 1,
   "experience": 0,
@@ -36,5 +36,5 @@
   "takenOnetimeItems": [],
   "defeatedOnetimeEnemies": [],
   "healthRecoveryCallback": null,
-  "lastSaved": "2025-09-30T13:13:22.479Z"
+  "lastSaved": "2025-09-30T13:34:47.401Z"
 }
