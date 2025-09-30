@@ -107,14 +107,22 @@ header h1 {
     overflow: hidden;
 }
 
+.console-area {
+    flex: 5; /* Takes the space that game-output used to take */
+    display: flex;
+    flex-direction: column;
+    background: #0a0a0a;
+    min-height: 200px;
+    overflow: hidden;
+}
+
 .game-output {
-    flex: 6;
+    flex: 1; /* Takes most of the console-area space */
     padding: 15px 20px;
     overflow-y: auto;
     background: #0a0a0a;
     white-space: pre-wrap;
     word-wrap: break-word;
-    min-height: 300px;
     color: #c0c0c0;
     user-select: text;
     -webkit-user-select: text;
@@ -149,9 +157,25 @@ header h1 {
     min-width: 150px;
 }
 
+.map-section {
+    flex: 3; /* Takes 3/5 of the vertical space */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-bottom: 1px solid #333;
+}
+
+.context-section {
+    flex: 2; /* Takes 2/5 of the vertical space */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #0f0f0f;
+}
+
 .map-grid {
     flex: 1;
-    padding: 15px;
+    padding: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -232,6 +256,36 @@ header h1 {
     font-size: 0.95em;
     height: 180px;
     flex-shrink: 0;
+}
+
+.context-content {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #0A0A0A;
+    font-size: 1em;
+}
+
+.context-placeholder {
+    color: #888;
+    line-height: 1.5;
+}
+
+.context-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.context-content::-webkit-scrollbar-track {
+    background: #111;
+}
+
+.context-content::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+
+.context-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 .room-info-content {
@@ -436,8 +490,12 @@ header h1 {
 }
 
 .command-area {
+    flex-shrink: 0; /* Don't shrink, maintain fixed height */
     display: flex;
     flex-direction: column;
+    background: #111;
+    border-top: 1px solid #333;
+    padding: 10px 15px;
 }
 
 .controls-area {
@@ -448,11 +506,7 @@ header h1 {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-    justify-content: center;
-    padding: 10px;
-    background: #0a0a0a;
-    border: 1px solid #333;
-    border-radius: 5px;
+    justify-content: end;
 }
 
 .quick-buttons button {
@@ -490,11 +544,17 @@ header h1 {
 }
 
 .login-input-container,
-.password-input-container,
+.password-input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .command-input-container {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin: 0; /* Remove any default margins */
 }
 
 .prompt {
@@ -584,8 +644,20 @@ footer {
     
     .map-container {
         flex: 1;
-        min-height: 150px;
+        display: flex;
+        flex-direction: column;
+        min-height: 300px;
         min-width: unset;
+    }
+    
+    .map-section {
+        flex: 6;
+        min-height: 150px;
+    }
+    
+    .context-section {
+        flex: 4;
+        min-height: 100px;
     }
     
     .room-cell {
@@ -596,6 +668,12 @@ footer {
     
     .room-info {
         padding: 8px 10px;
+        font-size: 0.8em;
+        height: 80px;
+    }
+    
+    .context-content {
+        padding: 10px;
         font-size: 0.8em;
     }
     

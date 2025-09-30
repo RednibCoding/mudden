@@ -10,7 +10,7 @@
   "experience": 145,
   "gold": 115,
   "currentArea": "town_area",
-  "currentRoom": "weapon_shop",
+  "currentRoom": "town_square",
   "inventory": [
     {
       "id": "healing_potion",
@@ -72,7 +72,7 @@
   ],
   "defeatedOnetimeEnemies": [],
   "healthRecoveryCallback": null,
-  "lastSaved": "2025-09-30T19:21:10.323Z",
+  "lastSaved": "2025-09-30T20:49:48.884Z",
   "lastTellSender": "Pennor",
   "friends": [
     "Pennor"
