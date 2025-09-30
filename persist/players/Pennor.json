@@ -4,13 +4,13 @@
     "salt": "9467df90834cbdce51532ac3835f30feee17dca5a23b7cea2fa4911197110808",
     "hash": "c4262582f9d689a157d8fcf7836dfe2318435bacaf92fe806daac5bc533f488b59984b5064187cee13cb184dbfe9eb813df6745579e8924b642564181d227359"
   },
-  "health": 100,
+  "health": 87,
   "maxHealth": 100,
   "level": 1,
-  "experience": 0,
-  "gold": 50,
+  "experience": 10,
+  "gold": 55,
   "currentArea": "town_area",
-  "currentRoom": "town_square",
+  "currentRoom": "training_barracks",
   "inventory": [],
   "equipment": {
     "main_hand": null,
@@ -36,6 +36,6 @@
   "takenOnetimeItems": [],
   "defeatedOnetimeEnemies": [],
   "healthRecoveryCallback": null,
-  "lastSaved": "2025-09-30T14:44:31.869Z",
+  "lastSaved": "2025-09-30T15:42:46.267Z",
   "lastTellSender": "Rednib"
 }

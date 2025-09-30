@@ -26,6 +26,9 @@ const gameTickManager = new GameTickManager()
 // Connect GameWorld to GameTickManager for tick-based operations
 gameWorld.setGameTickManager(gameTickManager)
 
+// Connect CombatManager to GameTickManager for combat processing
+gameTickManager.setCombatManager(commandManager.combatManager)
+
 // Add helper function to get player socket by name
 global.getPlayerSocket = (playerName) => {
   for (const [socketId, player] of activePlayers) {
@@ -740,13 +743,8 @@ function generateAreaMap(areaId, currentRoomId) {
 }
 
 // Initialize game tick system
-gameTickManager.setCombatHandler((tick) => {
-  // Combat happens every 3 ticks
-  const combatCommands = commandManager.getCommandInstance('CombatCommands')
-  if (combatCommands) {
-    combatCommands.processAllCombats(tick)
-  }
-})
+// Set combat manager reference for the tick manager
+gameTickManager.setCombatManager(gameWorld.combatManager)
 
 gameTickManager.setHealthRegenHandler((tick) => {
   // Health regeneration happens every 5 ticks
