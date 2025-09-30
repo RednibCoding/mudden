@@ -66,7 +66,7 @@
   "completedQuests": [
     "innkeeper_delivery"
   ],
-  "inCombat": true,
+  "inCombat": false,
   "homestone": {
     "area": "town_area",
     "room": "inn"
@@ -76,7 +76,7 @@
   ],
   "defeatedOnetimeEnemies": [],
   "healthRecoveryCallback": null,
-  "lastSaved": "2025-09-30T22:57:00.140Z",
+  "lastSaved": "2025-09-30T23:10:02.416Z",
   "lastTellSender": "Pennor",
   "friends": [
     "Pennor"
