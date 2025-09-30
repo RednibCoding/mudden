@@ -7,8 +7,8 @@
   "health": 150,
   "maxHealth": 150,
   "level": 6,
-  "experience": 1175,
-  "gold": 554,
+  "experience": 1200,
+  "gold": 564,
   "currentArea": "town_area",
   "currentRoom": "town_square",
   "inventory": [
@@ -59,6 +59,10 @@
     {
       "id": "rare_metal",
       "quantity": 1
+    },
+    {
+      "id": "magic_scroll",
+      "quantity": 1
     }
   ],
   "equipment": {
@@ -75,119 +79,34 @@
     "defense": 10,
     "speed": 13
   },
-  "quests": [
-    {
-      "id": "blacksmith_first_weapon",
-      "status": "completed",
-      "acceptedAt": 1759156388859,
-      "objectives": [
-        {
-          "type": "collect",
-          "target": "iron_ore",
-          "quantity": 2,
-          "current": 2,
-          "description": "Collect 2 pieces of Iron Ore"
-        },
-        {
-          "type": "collect",
-          "target": "wood",
-          "quantity": 1,
-          "current": 1,
-          "description": "Collect 1 piece of Wood for the handle"
-        }
-      ],
-      "completedAt": 1759156511199
-    },
-    {
-      "id": "blacksmith_repair_tools",
-      "status": "completed",
-      "acceptedAt": 1759160176421,
-      "objectives": [
-        {
-          "type": "collect",
-          "target": "sharpening_stone",
-          "quantity": 1,
-          "current": 1,
-          "description": "Collect 1 Sharpening Stone for tool maintenance"
-        },
-        {
-          "type": "collect",
-          "target": "mushroom",
-          "quantity": 2,
-          "current": 1,
-          "description": "Collect 2 Mushrooms for tool oil"
-        }
-      ],
-      "completedAt": 1759161601049
-    },
-    {
-      "id": "innkeeper_delivery",
-      "status": "completed",
-      "acceptedAt": 1759168264741,
-      "objectives": [
-        {
-          "type": "collect",
-          "target": "special_ale",
-          "quantity": 1,
-          "current": 0,
-          "givenByQuestGiver": true,
-          "description": "Deliver the Special Ale to the Wizard"
-        }
-      ],
-      "completedAt": 1759168295195
-    },
+  "activeQuests": [
     {
       "id": "guard_forest_patrol",
       "status": "accepted",
-      "acceptedAt": 1759170661288,
+      "acceptedAt": 1759225329569,
       "objectives": [
         {
           "type": "kill",
           "target": "wolf",
           "quantity": 3,
-          "current": 3,
+          "current": 0,
           "description": "Kill 3 Forest Wolves in the woods"
         }
       ]
-    },
-    {
-      "id": "guard_patrol_route",
-      "status": "completed",
-      "acceptedAt": 1759170792074,
-      "objectives": [
-        {
-          "type": "visit",
-          "target": "weapon_shop",
-          "quantity": 1,
-          "current": 1,
-          "description": "Visit the Weapon Shop"
-        },
-        {
-          "type": "visit",
-          "target": "magic_shop",
-          "quantity": 1,
-          "current": 1,
-          "description": "Visit the Magic Shop"
-        },
-        {
-          "type": "visit",
-          "target": "inn",
-          "quantity": 1,
-          "current": 1,
-          "description": "Visit the Inn"
-        }
-      ],
-      "completedAt": 1759170908163
     }
+  ],
+  "completedQuests": [
+    "guard_patrol_route"
   ],
   "inCombat": false,
   "homestone": null,
   "takenOnetimeItems": [
-    "forest_area.forest_entrance.wooden_stick"
+    "forest_area.forest_entrance.wooden_stick",
+    "town_area.magic_shop.magic_scroll"
   ],
   "defeatedOnetimeEnemies": [
     "forest_area.deep_forest.forest_boss"
   ],
   "recoveryTimer": null,
-  "lastSaved": "2025-09-30T08:16:46.136Z"
+  "lastSaved": "2025-09-30T09:42:09.569Z"
 }
