@@ -36,6 +36,12 @@
   "takenOnetimeItems": [],
   "defeatedOnetimeEnemies": [],
   "healthRecoveryCallback": null,
-  "lastSaved": "2025-09-30T14:14:12.307Z",
-  "lastTellSender": "Pennor"
+  "lastSaved": "2025-09-30T14:45:49.260Z",
+  "lastTellSender": "Pennor",
+  "friends": [
+    "Pennor"
+  ],
+  "friendNotes": {
+    "pennor": "just a test character"
+  }
 }
