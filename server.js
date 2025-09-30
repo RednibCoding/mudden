@@ -7,6 +7,7 @@ import path from 'path'
 import Player from './lib/Player.js'
 import GameWorld from './lib/GameWorld.js'
 import CommandManager from './lib/CommandManager.js'
+import GameTickManager from './lib/GameTickManager.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -20,6 +21,10 @@ const gameWorld = new GameWorld()
 const activePlayers = new Map() // socketId -> player
 const combatSessions = new Map() // playerId -> combat state
 const commandManager = new CommandManager(gameWorld, activePlayers, combatSessions, io)
+const gameTickManager = new GameTickManager()
+
+// Connect GameWorld to GameTickManager for tick-based operations
+gameWorld.setGameTickManager(gameTickManager)
 
 // Add helper function to get player socket by name
 global.getPlayerSocket = (playerName) => {
@@ -428,7 +433,10 @@ io.on('connection', (socket) => {
     if (currentPlayer) {
       console.log(`${currentPlayer.name} disconnected`)
       
-      // Stop health recovery timer
+      const playerArea = currentPlayer.currentArea
+      const playerRoom = currentPlayer.currentRoom
+      
+      // Stop health recovery
       currentPlayer.stopHealthRecovery()
       
       currentPlayer.save()
@@ -436,14 +444,44 @@ io.on('connection', (socket) => {
       // Clean up combat session if any
       const combat = combatSessions.get(currentPlayer.name)
       if (combat) {
-        // Clear auto-attack interval
-        if (combat.autoAttackInterval) {
-          clearInterval(combat.autoAttackInterval)
-        }
+        // Store enemy info for cleanup
+        const enemyId = combat.defender.enemyId
+        
+        // Combat timers handled by global tick system
         combatSessions.delete(currentPlayer.name)
         currentPlayer.inCombat = false
         currentPlayer.save()
+        
+        // Clean up unused enemy instance after delay
+        if (enemyId) {
+          setTimeout(() => {
+            const combatCommands = commandManager.getCommandInstance('CombatCommands')
+            if (combatCommands) {
+              combatCommands.cleanupUnusedEnemyInstance(
+                currentPlayer.currentArea,
+                currentPlayer.currentRoom,
+                enemyId
+              )
+            }
+          }, 2000) // 2 second delay to allow for quick reconnection
+        }
       }
+      
+      // Check for unused enemy instances in the room the player left
+      setTimeout(() => {
+        const combatCommands = commandManager.getCommandInstance('CombatCommands')
+        if (combatCommands) {
+          // Get all enemies in the room and clean up unused instances
+          const area = gameWorld.getArea(playerArea)
+          if (area && area.rooms[playerRoom] && area.rooms[playerRoom].enemies) {
+            area.rooms[playerRoom].enemies.forEach(enemyConfig => {
+              if (typeof enemyConfig === 'object' && enemyConfig.id) {
+                combatCommands.cleanupUnusedEnemyInstance(playerArea, playerRoom, enemyConfig.id)
+              }
+            })
+          }
+        }
+      }, 1000) // 1 second delay to ensure player is fully disconnected
     }
     
     activePlayers.delete(socket.id)
@@ -654,19 +692,56 @@ function generateAreaMap(areaId, currentRoomId) {
   }
 }
 
-// Game loop for periodic tasks (optional)
-setInterval(() => {
-  // Here you could add periodic game events, combat timers, etc.
-  // For now, just clean up old combat sessions
+// Initialize game tick system
+gameTickManager.setCombatHandler((tick) => {
+  // Combat happens every 3 ticks
+  const combatCommands = commandManager.getCommandInstance('CombatCommands')
+  if (combatCommands) {
+    combatCommands.processAllCombats(tick)
+  }
+})
+
+gameTickManager.setHealthRegenHandler((tick) => {
+  // Health regeneration happens every 5 ticks
+  for (const [socketId, player] of activePlayers) {
+    if (player) {
+      player.processHealthRecoveryTick()
+    }
+  }
+})
+
+gameTickManager.setRespawnHandler((tick) => {
+  // Check for respawns every tick
+  gameWorld.processRespawnTick(tick)
+})
+
+gameTickManager.setCleanupHandler((tick) => {
+  // Cleanup happens every 60 ticks (1 minute)
   const now = Date.now()
   for (const [playerId, combat] of combatSessions) {
     // Auto-abandon combat after 5 minutes of inactivity
     if (combat.lastAction && (now - combat.lastAction) > 300000) {
+      // Store enemy info for cleanup
+      const enemyId = combat.defender.enemyId
+      const areaId = combat.attacker.data.currentArea
+      const roomId = combat.attacker.data.currentRoom
+      
       combatSessions.delete(playerId)
       console.log(`Auto-abandoned combat for ${playerId}`)
+      
+      // Clean up unused enemy instance
+      if (enemyId) {
+        const combatCommands = commandManager.getCommandInstance('CombatCommands')
+        if (combatCommands) {
+          combatCommands.cleanupUnusedEnemyInstance(areaId, roomId, enemyId)
+        }
+      }
     }
   }
-}, 60000) // Check every minute
+})
+
+// Start the global tick system (1 second per tick)
+gameTickManager.start(1000)
 
 // Error handling
 process.on('uncaughtException', (error) => {

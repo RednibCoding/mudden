@@ -4,13 +4,13 @@
     "salt": "73a777ae51ae47ca9fad9635261993719087eb5c47b61669fa31a0f95e3baf95",
     "hash": "10f5f66ed1b893d976515798fc20894af2bd7627f376da3484f60e8798a1365381a0ed9d887b712eb6d4460bc19653a1ac67277ca35d6e2b47150a8d4c01a4b7"
   },
-  "health": 100,
+  "health": 78,
   "maxHealth": 100,
   "level": 1,
-  "experience": 0,
+  "experience": 12,
   "gold": 50,
-  "currentArea": "forest_area",
-  "currentRoom": "forest_clearing",
+  "currentArea": "town_area",
+  "currentRoom": "training_barracks",
   "inventory": [
     {
       "id": "healing_potion",
@@ -37,6 +37,6 @@
   "homestone": null,
   "takenOnetimeItems": [],
   "defeatedOnetimeEnemies": [],
-  "recoveryTimer": null,
-  "lastSaved": "2025-09-30T09:03:14.405Z"
+  "healthRecoveryCallback": null,
+  "lastSaved": "2025-09-30T12:17:33.002Z"
 }

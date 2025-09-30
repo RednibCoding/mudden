@@ -7,10 +7,10 @@
   "health": 150,
   "maxHealth": 150,
   "level": 6,
-  "experience": 1200,
+  "experience": 1237,
   "gold": 564,
   "currentArea": "town_area",
-  "currentRoom": "town_square",
+  "currentRoom": "training_barracks",
   "inventory": [
     {
       "id": "ale",
@@ -104,9 +104,7 @@
     "forest_area.forest_entrance.wooden_stick",
     "town_area.magic_shop.magic_scroll"
   ],
-  "defeatedOnetimeEnemies": [
-    "forest_area.deep_forest.forest_boss"
-  ],
-  "recoveryTimer": null,
-  "lastSaved": "2025-09-30T09:42:09.569Z"
+  "defeatedOnetimeEnemies": [],
+  "healthRecoveryCallback": null,
+  "lastSaved": "2025-09-30T12:16:17.930Z"
 }
