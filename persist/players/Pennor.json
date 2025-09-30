@@ -1,0 +1,37 @@
+{
+  "name": "Pennor",
+  "passwordHash": {
+    "salt": "9467df90834cbdce51532ac3835f30feee17dca5a23b7cea2fa4911197110808",
+    "hash": "c4262582f9d689a157d8fcf7836dfe2318435bacaf92fe806daac5bc533f488b59984b5064187cee13cb184dbfe9eb813df6745579e8924b642564181d227359"
+  },
+  "health": 100,
+  "maxHealth": 100,
+  "level": 1,
+  "experience": 0,
+  "gold": 50,
+  "currentArea": "town_area",
+  "currentRoom": "town_square",
+  "inventory": [],
+  "equipment": {
+    "main_hand": null,
+    "off_hand": null,
+    "chest": null,
+    "legs": null,
+    "head": null,
+    "feet": null,
+    "hands": null
+  },
+  "stats": {
+    "strength": 10,
+    "defense": 5,
+    "speed": 8
+  },
+  "activeQuests": [],
+  "completedQuests": [],
+  "inCombat": false,
+  "homestone": null,
+  "takenOnetimeItems": [],
+  "defeatedOnetimeEnemies": [],
+  "healthRecoveryCallback": null,
+  "lastSaved": "2025-09-30T12:30:23.997Z"
+}

@@ -227,18 +227,37 @@ io.on('connection', (socket) => {
     try {
       const { playerName, password } = creationData
       
-      // Sanitize player name
-      const cleanName = playerName.trim().replace(/[^a-zA-Z0-9_]/g, '').substring(0, 20)
-      if (!cleanName) {
-        socket.emit('error', 'Invalid character name')
+      // Validate character name format
+      const trimmedName = playerName.trim()
+      
+      // Check for empty name
+      if (!trimmedName) {
+        socket.emit('error', 'Character name cannot be empty')
         return
       }
-
-      // Check if character already exists
-      if (Player.characterExists(cleanName)) {
-        socket.emit('error', `Character "${cleanName}" already exists. Use "Login" to access existing characters.`)
+      
+      // Check length (3-12 characters)
+      if (trimmedName.length < 3 || trimmedName.length > 12) {
+        socket.emit('error', 'Character name must be between 3 and 12 characters long')
         return
       }
+      
+      // Check for valid characters only (ASCII letters only, no numbers or special chars)
+      if (!/^[a-zA-Z]+$/.test(trimmedName)) {
+        socket.emit('error', 'Character name can only contain regular letters (no numbers, spaces, or special characters like ä ö ê)')
+        return
+      }
+      
+      // Convert to proper case (first letter uppercase, rest lowercase)
+      const properCaseName = trimmedName.charAt(0).toUpperCase() + trimmedName.slice(1).toLowerCase()
+      
+      // Check for case-insensitive duplicate names
+      if (Player.characterExistsCaseInsensitive(properCaseName)) {
+        socket.emit('error', `A character with that name already exists (case-insensitive). Please choose a different name.`)
+        return
+      }
+      
+      const cleanName = properCaseName
 
       // Validate password
       if (!password || password.trim().length < 3) {

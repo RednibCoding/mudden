@@ -264,8 +264,8 @@ class SimpleMUDClient {
             return
         }
 
-        if (!/^[a-zA-Z0-9_]+$/.test(playerName)) {
-            this.addOutput('Character name can only contain letters, numbers, and underscores', 'error-message')
+        if (!/^[a-zA-Z]+$/.test(playerName)) {
+            this.addOutput('Character name can only contain regular letters (no numbers, spaces, or special characters like ä ö ê)', 'error-message')
             return
         }
 
@@ -356,8 +356,8 @@ class SimpleMUDClient {
             return
         }
 
-        if (!/^[a-zA-Z0-9_]+$/.test(playerName)) {
-            this.createInfo.textContent = 'Character name can only contain letters, numbers, and underscores'
+        if (!/^[a-zA-Z]+$/.test(playerName)) {
+            this.createInfo.textContent = 'Character name can only contain regular letters (no numbers, spaces, or special characters like _ ä ö ê)'
             this.createNameInput.focus()
             return
         }

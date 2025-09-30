@@ -1,24 +1,19 @@
 {
-  "name": "loll",
+  "name": "Rednib",
   "passwordHash": {
-    "salt": "73a777ae51ae47ca9fad9635261993719087eb5c47b61669fa31a0f95e3baf95",
-    "hash": "10f5f66ed1b893d976515798fc20894af2bd7627f376da3484f60e8798a1365381a0ed9d887b712eb6d4460bc19653a1ac67277ca35d6e2b47150a8d4c01a4b7"
+    "salt": "108b8783a9f7097e531768a93c0c86e7115d319e367b6724a94661c24ea5cd95",
+    "hash": "c32de0f341c9b23898f8a60d3b16bbf440785b8272399f19277f4d1d6d1f2f8022b2a3fcafd98f7db777785b35dd08d8e04ee5f0cf781f8ed2568cf3a97e18e7"
   },
-  "health": 78,
+  "health": 100,
   "maxHealth": 100,
   "level": 1,
-  "experience": 12,
+  "experience": 0,
   "gold": 50,
   "currentArea": "town_area",
-  "currentRoom": "training_barracks",
-  "inventory": [
-    {
-      "id": "healing_potion",
-      "quantity": 1
-    }
-  ],
+  "currentRoom": "town_square",
+  "inventory": [],
   "equipment": {
-    "main_hand": "wooden_stick",
+    "main_hand": null,
     "off_hand": null,
     "chest": null,
     "legs": null,
@@ -38,5 +33,5 @@
   "takenOnetimeItems": [],
   "defeatedOnetimeEnemies": [],
   "healthRecoveryCallback": null,
-  "lastSaved": "2025-09-30T12:17:33.002Z"
+  "lastSaved": "2025-09-30T12:26:01.027Z"
 }
