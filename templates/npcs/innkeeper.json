@@ -8,6 +8,7 @@
       "room": "A room for the night costs 10 gold pieces. Interested?",
       "ale": "Our ale is brewed fresh daily! Would you like a mug?",
       "food": "We have hearty stew and fresh bread. Perfect for weary travelers.",
+      "homestone": "You can set your homestone here. When you die, you'll return here.",
       "bye": "Come back anytime, friend!"
     }
   },
