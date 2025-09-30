@@ -32,7 +32,7 @@ Open http://localhost:3000 and start playing!
 
 ### Technical Features
 - **Modular Commands**: Organized in logical categories (Movement, Combat, Social, etc.)
-- **CtxStateManager**: Scalable contextual state management with automatic cleanup
+
 - **Fuzzy Matching**: Intelligent command and item matching
 - **Real-time Communication**: WebSocket connections via Socket.io
 - **Password Protection**: Secure character authentication
@@ -46,7 +46,7 @@ mudden/
 │   ├── Player.js          # Player class and file operations
 │   ├── GameWorld.js       # World state and content loading
 │   ├── CommandManager.js  # Command orchestration
-│   ├── CtxStateManager.js # Contextual state management
+
 │   └── commands/          # Modular command system
 ├── persist/               # Player save files
 ├── templates/             # Game content templates (JSON files)
@@ -69,7 +69,7 @@ mudden/
 ### For Developers
 - **Easy Content Creation**: Add areas, items, NPCs, and quests via JSON files
 - **Modular Architecture**: Commands organized in logical categories
-- **Scalable State Management**: CtxStateManager handles temporary states automatically
+
 - **Clean Codebase**: Modern ES6+ modules with consistent patterns
 
 ## 🔧 Adding Content
