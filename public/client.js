@@ -6,6 +6,7 @@ class SimpleMUDClient {
         this.historyIndex = -1
         this.player = null
         this.isLoggedIn = false
+        this.currentChannel = 'room'
         
         this.initializeElements()
         this.setupEventListeners()
@@ -144,16 +145,29 @@ class SimpleMUDClient {
         })
 
         this.socket.on('output', (message) => {
+            // Check if this is a channel change message
+            if (message.startsWith('Channel set to: ')) {
+                const newChannel = message.substring(16) // Remove 'Channel set to: ' prefix
+                this.currentChannel = newChannel
+                this.updateChannelButtons()
+                this.addOutput(message, 'system-message')
+                return
+            }
+            
             // Check if this is a say message and apply special styling
             if (message.startsWith('[SAY] ')) {
                 const sayMessage = message.substring(6) // Remove '[SAY] ' prefix
                 
-                // Check if this is the current player's own message
-                if (this.player && sayMessage.startsWith('You say: ')) {
-                    this.addOutput(sayMessage, 'me-say-message')
-                } else {
-                    this.addOutput(sayMessage, 'say-message')
+                // Determine channel type from message content
+                let channelType = 'room' // default
+                if (sayMessage.includes(' <area>: ') || sayMessage.includes('You <area>: ')) {
+                    channelType = 'area'
+                } else if (sayMessage.includes(' <world>: ') || sayMessage.includes('You <world>: ')) {
+                    channelType = 'world'
                 }
+                
+                // All messages in the same channel get the same color
+                this.addOutput(sayMessage, `say-${channelType}`)
             } else {
                 this.addOutput(message)
             }
@@ -375,6 +389,9 @@ class SimpleMUDClient {
         document.getElementById('quick-buttons').style.display = 'flex'
         this.isLoggedIn = true
         
+        // Initialize channel buttons
+        this.updateChannelButtons()
+        
         // Focus command input
         setTimeout(() => {
             this.commandInput.focus()
@@ -439,8 +456,10 @@ class SimpleMUDClient {
         }
         this.historyIndex = -1
 
-        // Echo command
-        this.addOutput(`> ${command}`, 'command-echo')
+        // Echo command (skip for say commands to reduce verbosity)
+        if (!command.toLowerCase().startsWith('say ')) {
+            this.addOutput(`> ${command}`, 'command-echo')
+        }
 
         // Send to server
         this.socket.emit('command', command)
@@ -562,6 +581,19 @@ class SimpleMUDClient {
     updateConnectionStatus(status, className = '') {
         this.connectionStatus.textContent = status
         this.connectionStatus.className = className
+    }
+
+    updateChannelButtons() {
+        // Remove active class from all channel buttons
+        document.querySelectorAll('.channel-btn').forEach(btn => {
+            btn.classList.remove('active')
+        })
+        
+        // Add active class to current channel button
+        const activeButton = document.getElementById(`channel-${this.currentChannel}`)
+        if (activeButton) {
+            activeButton.classList.add('active')
+        }
     }
 
     requestAreaMap(currentRoom) {

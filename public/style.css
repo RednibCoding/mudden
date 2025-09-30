@@ -318,14 +318,26 @@ header h1 {
     font-weight: bold;
 }
 
-.say-message {
+/* Channel-specific colors */
+.say-private {
+    color: #a0a0d0;
+    margin: 5px 0;
+    font-style: italic;
+}
+.say-room {
+    color: #b8b8b8;
+    margin: 5px 0;
+    font-style: italic;
+}
+
+.say-area {
     color: #a0b2a0;
     margin: 5px 0;
     font-style: italic;
 }
 
-.me-say-message {
-    color: #a3a0b2;
+.say-world {
+    color: #d0a0a0;
     margin: 5px 0;
     font-style: italic;
 }
@@ -468,6 +480,22 @@ header h1 {
 .quick-buttons button:hover {
     background: #333;
     border-color: #666;
+}
+
+.channel-btn {
+    background: #2a2a40 !important;
+    border-color: #505070 !important;
+}
+
+.channel-btn:hover {
+    background: #3a3a50 !important;
+    border-color: #707090 !important;
+}
+
+.channel-btn.active {
+    background: #4a4a70 !important;
+    border-color: #8080a0 !important;
+    color: #e0e0ff !important;
 }
 
 .login-input-container,
