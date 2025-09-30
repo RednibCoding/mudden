@@ -7,11 +7,16 @@
   "health": 100,
   "maxHealth": 100,
   "level": 1,
-  "experience": 25,
-  "gold": 50,
+  "experience": 45,
+  "gold": 65,
   "currentArea": "town_area",
-  "currentRoom": "inn",
-  "inventory": [],
+  "currentRoom": "town_square",
+  "inventory": [
+    {
+      "id": "healing_potion",
+      "quantity": 1
+    }
+  ],
   "equipment": {
     "main_hand": null,
     "off_hand": null,
@@ -26,8 +31,25 @@
     "defense": 5,
     "speed": 8
   },
-  "activeQuests": [],
-  "completedQuests": [],
+  "activeQuests": [
+    {
+      "id": "guard_forest_patrol",
+      "status": "accepted",
+      "acceptedAt": 1759244812374,
+      "objectives": [
+        {
+          "type": "kill",
+          "target": "wolf",
+          "quantity": 3,
+          "current": 0,
+          "description": "Kill 3 Forest Wolves in the woods"
+        }
+      ]
+    }
+  ],
+  "completedQuests": [
+    "innkeeper_delivery"
+  ],
   "inCombat": false,
   "homestone": {
     "area": "town_area",
@@ -36,7 +58,7 @@
   "takenOnetimeItems": [],
   "defeatedOnetimeEnemies": [],
   "healthRecoveryCallback": null,
-  "lastSaved": "2025-09-30T15:00:45.346Z",
+  "lastSaved": "2025-09-30T15:08:14.783Z",
   "lastTellSender": "Pennor",
   "friends": [
     "Pennor"
