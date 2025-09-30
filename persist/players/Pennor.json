@@ -10,7 +10,7 @@
   "experience": 10,
   "gold": 55,
   "currentArea": "town_area",
-  "currentRoom": "weapon_shop",
+  "currentRoom": "town_square",
   "inventory": [],
   "equipment": {
     "main_hand": null,
@@ -36,6 +36,6 @@
   "takenOnetimeItems": [],
   "defeatedOnetimeEnemies": [],
   "healthRecoveryCallback": null,
-  "lastSaved": "2025-09-30T20:19:22.352Z",
+  "lastSaved": "2025-09-30T21:15:08.980Z",
   "lastTellSender": "Rednib"
 }

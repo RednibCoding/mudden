@@ -39,6 +39,8 @@ global.getPlayerSocket = (playerName) => {
   return null
 }
 
+
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')))
 
@@ -457,7 +459,8 @@ io.on('connection', (socket) => {
           gold: currentPlayer.gold,
           location: room ? room.name : 'Unknown',
           currentArea: currentPlayer.currentArea,
-          currentRoom: currentPlayer.currentRoom
+          currentRoom: currentPlayer.currentRoom,
+          inCombat: currentPlayer.inCombat
         },
         room: room
       })
@@ -548,7 +551,8 @@ io.on('connection', (socket) => {
           gold: currentPlayer.gold,
           location: room ? room.name : 'Unknown',
           currentArea: currentPlayer.currentArea,
-          currentRoom: currentPlayer.currentRoom
+          currentRoom: currentPlayer.currentRoom,
+          inCombat: currentPlayer.inCombat
         },
         room: room
       })

@@ -44,12 +44,12 @@ class SimpleMUDClient {
         this.playerHealthSpan = document.getElementById('player-health')
         this.playerMaxHealthSpan = document.getElementById('player-max-health')
         this.playerGoldSpan = document.getElementById('player-gold')
-        this.playerLocationSpan = document.getElementById('player-location')
         this.mapContainer = document.getElementById('map-container')
         this.mapGrid = document.getElementById('map-grid')
         this.roomInfoArea = document.getElementById('area-name')
         this.roomInfoName = document.getElementById('room-name')
         this.roomInfoExits = document.getElementById('exits-list')
+        this.contextContent = document.getElementById('context-content')
         
         // These elements were removed in the layout redesign
         // this.roomTitle = document.getElementById('room-title')
@@ -326,6 +326,9 @@ class SimpleMUDClient {
             this.updatePlayerInfo()
         }
         
+        // Update context information
+        this.updateContextInfo(state)
+        
         this.updateConnectionStatus('Connected', 'connected')
     }
 
@@ -561,21 +564,111 @@ class SimpleMUDClient {
         this.playerHealthSpan.textContent = this.player.health
         this.playerMaxHealthSpan.textContent = this.player.maxHealth
         this.playerGoldSpan.textContent = this.player.gold
-        this.playerLocationSpan.textContent = this.player.location
-
-        // Visual feedback for combat state
-        if (this.player.inCombat) {
-            document.body.classList.add('in-combat')
-            this.playerLocationSpan.textContent = `${this.player.location} [COMBAT]`
-        } else {
-            document.body.classList.remove('in-combat')
-            this.playerLocationSpan.textContent = this.player.location
-        }
 
         // Request area map update if location changed
         if (this.isLoggedIn && this.player && this.player.currentRoom) {
             this.requestAreaMap(this.player.currentRoom)
         }
+    }
+
+    updateContextInfo(state) {
+        if (!this.contextContent) return
+
+        let contextHtml = ''
+        
+        // Show combat information if in combat
+        if (state.combatInfo && state.combatInfo.enemies && state.combatInfo.enemies.length > 0) {
+            // Show player health first
+            contextHtml += '<div class="context-header-text">Combat Status:</div>'
+            contextHtml += '<div class="context-list">'
+            
+            // Add player info at the top
+            if (state.player) {
+                const playerHealthPercent = Math.round((state.player.health / state.player.maxHealth) * 100)
+                let playerHealthColor = '#90c090' // green
+                if (playerHealthPercent < 30) playerHealthColor = '#c09090' // red
+                else if (playerHealthPercent < 70) playerHealthColor = '#c0c090' // yellow
+                
+                contextHtml += `<div class="context-item player-item">`
+                contextHtml += `<span class="player-name">${state.player.name} (You)</span>`
+                contextHtml += `<span class="player-health" style="color: ${playerHealthColor}">${state.player.health}/${state.player.maxHealth}</span>`
+                contextHtml += `</div>`
+            }
+            
+            contextHtml += '</div>'
+            
+            // Show enemies
+            contextHtml += '<div class="context-header-text">Enemies:</div>'
+            contextHtml += '<div class="context-list">'
+            
+            state.combatInfo.enemies.forEach(enemy => {
+                const healthPercent = Math.round((enemy.currentHealth / enemy.maxHealth) * 100)
+                let healthColor = '#90c090' // green
+                if (healthPercent < 30) healthColor = '#c09090' // red
+                else if (healthPercent < 70) healthColor = '#c0c090' // yellow
+                
+                contextHtml += `<div class="context-item enemy-item">`
+                contextHtml += `<span class="enemy-name">${enemy.combatName || enemy.name}</span>`
+                contextHtml += `<span class="enemy-health" style="color: ${healthColor}">${enemy.currentHealth}/${enemy.maxHealth}</span>`
+                contextHtml += `</div>`
+            })
+            
+            contextHtml += '</div>'
+            
+            // Show other players in combat session if any
+            if (state.combatInfo.players && state.combatInfo.players.length > 1) {
+                contextHtml += '<div class="context-header-text">Combat Allies:</div>'
+                contextHtml += '<div class="context-list">'
+                
+                state.combatInfo.players.forEach(playerName => {
+                    if (playerName !== this.player.name) {
+                        contextHtml += `<div class="context-item player-item">`
+                        contextHtml += `<span class="player-name">${playerName}</span>`
+                        contextHtml += `</div>`
+                    }
+                })
+                
+                contextHtml += '</div>'
+            }
+        }
+        // Show useful player information when not in combat
+        else if (state.player) {
+            contextHtml += '<div class="context-header-text">Player Status:</div>'
+            contextHtml += '<div class="context-list">'
+            
+            // Show player name
+            contextHtml += `<div class="context-item">`
+            contextHtml += `<span class="player-name">Name</span>`
+            contextHtml += `<span class="player-level">${state.player.name}</span>`
+            contextHtml += `</div>`
+            
+            // Show level
+            contextHtml += `<div class="context-item">`
+            contextHtml += `<span class="player-name">Level</span>`
+            contextHtml += `<span class="player-level">${state.player.level}</span>`
+            contextHtml += `</div>`
+            
+            // Show health in format 232/430
+            const healthPercent = Math.round((state.player.health / state.player.maxHealth) * 100)
+            let healthColor = '#90c090' // green
+            if (healthPercent < 30) healthColor = '#c09090' // red
+            else if (healthPercent < 70) healthColor = '#c0c090' // yellow
+            
+            contextHtml += `<div class="context-item">`
+            contextHtml += `<span class="player-name">Health</span>`
+            contextHtml += `<span class="player-health" style="color: ${healthColor}">${state.player.health}/${state.player.maxHealth}</span>`
+            contextHtml += `</div>`
+            
+            // Show gold
+            contextHtml += `<div class="context-item">`
+            contextHtml += `<span class="player-name">Gold</span>`
+            contextHtml += `<span class="player-level">${state.player.gold}</span>`
+            contextHtml += `</div>`
+            
+            contextHtml += '</div>'
+        }
+        
+        this.contextContent.innerHTML = contextHtml
     }
 
     updateRoomInfo(room) {
