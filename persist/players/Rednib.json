@@ -9,8 +9,8 @@
   "level": 1,
   "experience": 145,
   "gold": 115,
-  "currentArea": "forest_area",
-  "currentRoom": "deep_forest",
+  "currentArea": "town_area",
+  "currentRoom": "weapon_shop",
   "inventory": [
     {
       "id": "healing_potion",
@@ -72,7 +72,7 @@
   ],
   "defeatedOnetimeEnemies": [],
   "healthRecoveryCallback": null,
-  "lastSaved": "2025-09-30T19:04:05.599Z",
+  "lastSaved": "2025-09-30T19:18:41.823Z",
   "lastTellSender": "Pennor",
   "friends": [
     "Pennor"

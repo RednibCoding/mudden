@@ -684,30 +684,10 @@ io.on('connection', (socket) => {
       
       currentPlayer.save()
       
-      // Clean up combat session if any
-      const combat = combatSessions.get(currentPlayer.name)
-      if (combat) {
-        // Store enemy info for cleanup
-        const enemyId = combat.defender.enemyId
-        
-        // Combat timers handled by global tick system
-        combatSessions.delete(currentPlayer.name)
-        currentPlayer.inCombat = false
-        currentPlayer.save()
-        
-        // Clean up unused enemy instance after delay
-        if (enemyId) {
-          setTimeout(() => {
-            const combatCommands = commandManager.getCommandInstance('CombatCommands')
-            if (combatCommands) {
-              combatCommands.cleanupUnusedEnemyInstance(
-                currentPlayer.currentArea,
-                currentPlayer.currentRoom,
-                enemyId
-              )
-            }
-          }, 2000) // 2 second delay to allow for quick reconnection
-        }
+      // Clean up combat session if any (using new CombatManager)
+      if (commandManager.combatManager.isPlayerInCombat(currentPlayer.name)) {
+        // Remove player from combat session with disconnect reason (this will notify other players)
+        commandManager.combatManager.removePlayerFromCombat(currentPlayer.name, 'disconnect')
       }
       
       // Check for unused enemy instances in the room the player left
