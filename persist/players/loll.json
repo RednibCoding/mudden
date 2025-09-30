@@ -32,6 +32,11 @@
     "speed": 8
   },
   "quests": [],
-  "combat": null,
-  "lastSaved": "2025-09-29T00:25:54.200Z"
+  "inCombat": false,
+  "homestone": null,
+  "takenOnetimeItems": [],
+  "defeatedOnetimeEnemies": [],
+  "recoveryTimer": null,
+  "lastSaved": "2025-09-30T07:15:30.823Z",
+  "combat": null
 }

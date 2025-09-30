@@ -134,6 +134,9 @@ class SimpleMUDClient {
         this.socket.on('disconnect', () => {
             this.updateConnectionStatus('Disconnected', 'disconnected')
             this.addOutput('Disconnected from server', 'error-message')
+            
+            // Always reset to login UI when disconnected
+            this.logout()
         })
 
         this.socket.on('gameState', (data) => {
@@ -141,7 +144,19 @@ class SimpleMUDClient {
         })
 
         this.socket.on('output', (message) => {
-            this.addOutput(message)
+            // Check if this is a say message and apply special styling
+            if (message.startsWith('[SAY] ')) {
+                const sayMessage = message.substring(6) // Remove '[SAY] ' prefix
+                
+                // Check if this is the current player's own message
+                if (this.player && sayMessage.startsWith('You say: ')) {
+                    this.addOutput(sayMessage, 'me-say-message')
+                } else {
+                    this.addOutput(sayMessage, 'say-message')
+                }
+            } else {
+                this.addOutput(message)
+            }
         })
 
         this.socket.on('error', (message) => {
@@ -435,8 +450,28 @@ class SimpleMUDClient {
     }
 
     sendQuickCommand(command) {
-        // Only allow commands when logged in (except logout)
-        if (!this.isLoggedIn && command !== 'logout') {
+        // Handle logout specially - always reset UI regardless of server response
+        if (command === 'logout') {
+            // Try to send logout command to server if connected
+            if (this.socket.connected) {
+                this.commandInput.value = command
+                this.sendCommand()
+            }
+            // Always reset UI to login state immediately
+            this.logout()
+            
+            // If disconnected, attempt to reconnect after logout
+            if (!this.socket.connected) {
+                setTimeout(() => {
+                    console.log('Attempting to reconnect after logout...')
+                    this.socket.connect()
+                }, 500)
+            }
+            return
+        }
+        
+        // Only allow other commands when logged in
+        if (!this.isLoggedIn) {
             return
         }
         
