@@ -26,16 +26,18 @@ Open http://localhost:3000 and start playing!
 ### Core Systems
 - **Movement**: Navigate between rooms using cardinal directions
 - **Inventory**: Pick up, drop, examine, and equip items
-- **Combat**: Turn-based fighting with NPCs
-- **Quests**: JSON-driven quest system with automatic progression tracking
-- **Social**: Player communication and NPC interactions
+- **Combat**: Turn-based fighting with NPCs and automatic health recovery
+- **Quests**: JSON-driven quest system with progression tracking and reward inspection
+- **Friends**: Add friends, track online status, and add personal notes
+- **Social**: Player communication, messaging system, and NPC interactions
 
 ### Technical Features
-- **Modular Commands**: Organized in logical categories (Movement, Combat, Social, etc.)
-
+- **Modular Commands**: Organized in 8 logical categories (Movement, Combat, Social, Friends, etc.)
+- **Global Tick System**: Centralized timing for combat and health recovery
 - **Fuzzy Matching**: Intelligent command and item matching
 - **Real-time Communication**: WebSocket connections via Socket.io
-- **Password Protection**: Secure character authentication
+- **Password Protection**: Secure character authentication with PBKDF2
+- **Duplicate Login Prevention**: Robust session management
 
 ## 📁 Project Structure
 
@@ -46,15 +48,15 @@ mudden/
 │   ├── Player.js          # Player class and file operations
 │   ├── GameWorld.js       # World state and content loading
 │   ├── CommandManager.js  # Command orchestration
-
-│   └── commands/          # Modular command system
+│   ├── GameTickManager.js # Global tick system management
+│   └── commands/          # Modular command system (8 categories)
 ├── persist/               # Player save files
 ├── templates/             # Game content templates (JSON files)
 │   ├── areas/             # Area and room definitions
 │   ├── items/             # Item definitions with stats
 │   ├── npcs/              # NPC definitions
 │   ├── quests/            # Quest definitions
-│   └── players/           # Player save files (auto-generated)
+│   └── enemies/           # Enemy definitions with loot tables
 └── public/               # Client-side files
 ```
 
@@ -62,15 +64,18 @@ mudden/
 
 ### For Players
 - **Rich World**: Explore areas, collect items, fight enemies
-- **Quest System**: Discover and complete quests through NPC interactions
+- **Quest System**: Discover and complete quests, inspect reward items
 - **Character Progression**: Level up, gain stats, equip better gear
-- **Social Features**: Chat with other players, interact with NPCs
+- **Friends System**: Add friends, track online status, add personal notes
+- **Social Features**: Tell/reply messaging, chat with players, interact with NPCs
+- **Automatic Recovery**: Health regenerates automatically when not in combat
 
 ### For Developers
-- **Easy Content Creation**: Add areas, items, NPCs, and quests via JSON files
-- **Modular Architecture**: Commands organized in logical categories
-
+- **Easy Content Creation**: Add areas, items, NPCs, quests, and enemies via JSON files
+- **Modular Architecture**: Commands organized in 8 logical categories
+- **Global Tick System**: Centralized timing system for all game mechanics
 - **Clean Codebase**: Modern ES6+ modules with consistent patterns
+- **Simple State Management**: File-based persistence without complex abstractions
 
 ## 🔧 Adding Content
 
