@@ -118,7 +118,7 @@ Each enemy file must contain the following structure:
 2. Name it with the enemy ID (e.g., `dragon.json`)
 3. Follow the schema above
 4. Add the enemy ID to appropriate room files
-5. The enemy will be automatically loaded by the GameWorld
+5. The enemy will be automatically loaded by the WorldManager
 
 ## Balancing Guidelines
 

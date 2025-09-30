@@ -46,7 +46,7 @@ mudden/
 ├── server.js              # Main server file
 ├── lib/
 │   ├── Player.js          # Player class and file operations
-│   ├── GameWorld.js       # World state and content loading
+│   ├── WorldManager.js    # World state and content loading
 │   ├── CommandManager.js  # Command orchestration
 │   ├── GameTickManager.js # Global tick system management
 │   └── commands/          # Modular command system (8 categories)

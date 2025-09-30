@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 import path from 'path'
 
 import Player from './lib/Player.js'
-import GameWorld from './lib/GameWorld.js'
+import WorldManager from './lib/WorldManager.js'
 import CommandManager from './lib/CommandManager.js'
 import GameTickManager from './lib/GameTickManager.js'
 
@@ -17,13 +17,13 @@ const server = createServer(app)
 const io = new Server(server)
 
 // Game state
-const gameWorld = new GameWorld()
+const gameWorld = new WorldManager()
 const activePlayers = new Map() // socketId -> player
 const combatSessions = new Map() // playerId -> combat state
 const commandManager = new CommandManager(gameWorld, activePlayers, combatSessions, io)
 const gameTickManager = new GameTickManager()
 
-// Connect GameWorld to GameTickManager for tick-based operations
+// Connect WorldManager to GameTickManager for tick-based operations
 gameWorld.setGameTickManager(gameTickManager)
 
 // Connect CombatManager to GameTickManager for combat processing
@@ -84,6 +84,253 @@ io.on('connection', (socket) => {
       }
       
       const needsPassword = Player.needsPassword(cleanName)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       socket.emit('loginResponse', {
         success: true,
@@ -195,35 +442,8 @@ io.on('connection', (socket) => {
       console.log(`${cleanName} logged in (socket: ${socket.id})`)
       console.log(`Total active players: ${activePlayers.size}`)
       
-      // Start health recovery for the player
-      currentPlayer.startHealthRecovery((player, message) => {
-        const playerSocket = [...activePlayers.entries()].find(([, p]) => p.name === player.name)?.[0]
-        if (playerSocket) {
-          const socket = io.sockets.sockets.get(playerSocket)
-          if (socket) {
-            if (message) {
-              socket.emit('message', message)
-            }
-            // Always send updated game state to keep client UI in sync
-            const room = gameWorld.getRoom(player.currentArea, player.currentRoom, player)
-            socket.emit('gameState', {
-              player: {
-                name: player.name,
-                level: player.level,
-                health: player.health,
-                maxHealth: player.maxHealth,
-                experience: player.experience,
-                gold: player.gold,
-                location: room ? room.name : 'Unknown',
-                currentArea: player.currentArea,
-                currentRoom: player.currentRoom,
-                inCombat: player.inCombat
-              },
-              room: room
-            })
-          }
-        }
-      })
+      // Start health recovery for the player (handled by global tick system)
+      currentPlayer.startHealthRecovery()
 
       // Send initial game state
       const room = gameWorld.getRoom(currentPlayer.currentArea, currentPlayer.currentRoom)
@@ -313,38 +533,11 @@ io.on('connection', (socket) => {
       console.log(`${cleanName} logged in after creation (socket: ${socket.id})`)
       console.log(`Total active players: ${activePlayers.size}`)
       
-      // Start health recovery for the new player
-      currentPlayer.startHealthRecovery((player, message) => {
-        const playerSocket = [...activePlayers.entries()].find(([, p]) => p.name === player.name)?.[0]
-        if (playerSocket) {
-          const socket = io.sockets.sockets.get(playerSocket)
-          if (socket) {
-            if (message) {
-              socket.emit('message', message)
-            }
-            // Always send updated game state to keep client UI in sync
-            const room = gameWorld.getRoom(player.currentArea, player.currentRoom, player)
-            socket.emit('gameState', {
-              player: {
-                name: player.name,
-                level: player.level,
-                health: player.health,
-                maxHealth: player.maxHealth,
-                experience: player.experience,
-                gold: player.gold,
-                location: room ? room.name : 'Unknown',
-                currentArea: player.currentArea,
-                currentRoom: player.currentRoom,
-                inCombat: player.inCombat
-              },
-              room: room
-            })
-          }
-        }
-      })
+      // Start health recovery for the new player (handled by global tick system)
+      currentPlayer.startHealthRecovery()
 
       // Send initial game state
-      const room = gameWorld.getRoom(currentPlayer.currentArea, currentPlayer.currentRoom)
+      const room = gameWorld.getRoom(currentPlayer.currentArea, currentPlayer.currentRoom, currentPlayer)
       socket.emit('gameState', {
         player: {
           name: currentPlayer.name,
