@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mudden v2 - Clean Client</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🏰 Mudden v2 - Clean Client</h1>
+        
+        <div class="main-game">
+            <div class="status">
+                <span>Connection: <span id="connectionStatus" class="disconnected">Disconnected</span></span>
+                <span id="playerInfo"></span>
+            </div>
+
+            <div id="authForm" class="auth-form">
+                <h3>Login / Create Character</h3>
+                <p>Enter your character name and password. If the character doesn't exist, it will be created.</p>
+                <div>
+                    <input type="text" id="username" placeholder="Character Name" />
+                    <input type="password" id="password" placeholder="Password" />
+                    <button onclick="authenticate()">Login/Create</button>
+                </div>
+            </div>
+
+            <div id="gameArea" style="display: none;">
+                <div class="commands-help">
+                    <h4>📜 Quick Commands</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <strong>Movement:</strong> north, south, east, west (or n, s, e, w)<br>
+                            <strong>Look:</strong> look, l<br>
+                            <strong>Items:</strong> take [item], drop [item]<br>
+                        </div>
+                        <div>
+                            <strong>Social:</strong> say [message], tell [player] [message]<br>
+                            <strong>Equipment:</strong> equip [item], inventory<br>
+                            <strong>Actions:</strong> emote [action]<br>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="gameOutput" class="game-output"></div>
+                
+                <div class="input-area">
+                    <input type="text" id="commandInput" placeholder="Enter command..." onkeypress="handleKeyPress(event)" />
+                    <button onclick="sendCommand()">Send</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sidebar">
+            <!-- Player Stats -->
+            <div id="playerStats" style="display: none;">
+                <h4>👤 Player Stats</h4>
+                <div>Level: <span id="playerLevel">1</span></div>
+                <div>
+                    Health: <span id="healthText">100/100</span>
+                    <div class="stat-bar">
+                        <div id="healthBar" class="stat-fill health-bar" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <div>
+                    Experience: <span id="expText">0/100</span>
+                    <div class="stat-bar">
+                        <div id="expBar" class="stat-fill exp-bar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Equipment -->
+            <div id="equipment" style="display: none;">
+                <h4>⚔️ Equipment</h4>
+                <div style="font-size: 12px;">
+                    <div>Main Hand: <span id="slot-main_hand">None</span></div>
+                    <div>Off Hand: <span id="slot-off_hand">None</span></div>
+                    <div>Head: <span id="slot-head">None</span></div>
+                    <div>Chest: <span id="slot-chest">None</span></div>
+                    <div>Legs: <span id="slot-legs">None</span></div>
+                    <div>Feet: <span id="slot-feet">None</span></div>
+                    <div>Hands: <span id="slot-hands">None</span></div>
+                </div>
+            </div>
+            
+            <!-- Quick Inventory -->
+            <div id="quickInventory" style="display: none;">
+                <h4>🎒 Quick Inventory</h4>
+                <div id="inventoryList" style="max-height: 150px; overflow-y: auto;">
+                    <!-- Inventory items will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load client JavaScript as ES module -->
+    <script type="module" src="js/client.js"></script>
+</body>
+</html>

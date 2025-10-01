@@ -1,8 +1,5 @@
-import express from 'express'
 import { Server } from 'socket.io'
 import { createServer } from 'http'
-import path from 'path'
-import { fileURLToPath } from 'url'
 import { CommandFactory } from '../shared/CommandFactory.js'
 import { UpdateTypes } from '../shared/UpdateTypes.js'
 
@@ -21,19 +18,13 @@ export class SocketManager {
   }
   
   /**
-   * Start the socket server
+   * Start the WebSocket server (no HTTP file serving)
    */
   start(port = 3000) {
-    // Create Express app for static file serving
-    const app = express()
+    // Create minimal HTTP server for Socket.IO
+    this.httpServer = createServer()
     
-    // Serve static files from public directory
-    app.use(express.static('public'))
-    
-    // Create HTTP server with Express
-    this.httpServer = createServer(app)
-    
-    // Create Socket.IO server
+    // Create Socket.IO server with CORS for development
     this.io = new Server(this.httpServer, {
       cors: {
         origin: "*",
@@ -46,7 +37,8 @@ export class SocketManager {
     
     // Start listening
     this.httpServer.listen(port, () => {
-      console.log(`Socket server listening on port ${port}`)
+      console.log(`WebSocket server listening on port ${port}`)
+      console.log(`No static files served - use VS Code Live Server for web client`)
     })
   }
   
