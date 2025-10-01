@@ -33,6 +33,24 @@ export const CommandTypes = {
   TRADE_ACCEPT: 502,
   TRADE_CANCEL: 503,
   
+  // Info Commands (600-699)
+  STATS: 600,
+  HEALTH: 601,
+  EQUIPMENT_DISPLAY: 602,
+  EXAMINE: 603,
+  
+  // Quest Commands (700-799)
+  QUEST_LIST: 700,
+  QUEST_ACCEPT: 701,
+  QUEST_COMPLETE: 702,
+  QUEST_INFO: 703,
+  
+  // Friends Commands (800-899)
+  FRIENDS_LIST: 800,
+  FRIENDS_ADD: 801,
+  FRIENDS_REMOVE: 802,
+  FRIENDS_NOTE: 803,
+  
   // System Commands (900-999)
   PING: 900,
   DISCONNECT: 901

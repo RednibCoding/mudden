@@ -329,7 +329,7 @@ class CommandHandler {
             case 'inv':
             case 'i':
                 commandData = {
-                    type: CommandTypes.SHOW_INVENTORY
+                    type: CommandTypes.INVENTORY
                 };
                 break;
                 
@@ -364,6 +364,42 @@ class CommandHandler {
                 }
                 break;
                 
+            case 'stats':
+            case 'statistics':
+                commandData = {
+                    type: CommandTypes.STATS
+                };
+                break;
+                
+            case 'health':
+            case 'hp':
+                commandData = {
+                    type: CommandTypes.HEALTH
+                };
+                break;
+                
+            case 'equipment':
+            case 'eq':
+                commandData = {
+                    type: CommandTypes.EQUIPMENT_DISPLAY
+                };
+                break;
+                
+            case 'help':
+            case 'commands':
+                this.showHelp(args[0] || null);
+                return;
+                
+            case 'examine':
+            case 'ex':
+                if (args.length > 0) {
+                    commandData = {
+                        type: CommandTypes.EXAMINE,
+                        target: args[0]
+                    };
+                }
+                break;
+                
             default:
                 client.addToOutput(`❓ Unknown command: ${cmd}. Type a command or check the help above.`, 'error');
                 return;
@@ -372,6 +408,92 @@ class CommandHandler {
         if (commandData) {
             this.socket.emit('gameCommand', commandData);
             client.addToOutput(`> ${commandText}`);
+        }
+    }
+    
+    showHelp(topic = null) {
+        const helpTopics = {
+            general: {
+                title: 'General Help',
+                content: [
+                    'Welcome to Mudden! Here are some basic commands:',
+                    '',
+                    'Movement: north, south, east, west, up, down (or n, s, e, w, u, d)',
+                    'Look: look, l, examine, ex [target]',
+                    'Inventory: inventory, i, take [item], drop [item]',
+                    'Equipment: equipment, eq, equip [item], unequip [item]',
+                    'Social: say [message], tell [player] [message]',
+                    'Info: stats, health',
+                    '',
+                    'Type "help [topic]" for more detailed help on specific areas.',
+                    'Available topics: movement, inventory, equipment, social'
+                ]
+            },
+            movement: {
+                title: 'Movement Help',
+                content: [
+                    'Movement Commands:',
+                    '• north, n - Go north',
+                    '• south, s - Go south', 
+                    '• east, e - Go east',
+                    '• west, w - Go west',
+                    '• up, u - Go up',
+                    '• down, d - Go down',
+                    '',
+                    'Use "look" to see available exits from your current room.'
+                ]
+            },
+            inventory: {
+                title: 'Inventory Help',
+                content: [
+                    'Inventory Commands:',
+                    '• inventory, i - Show your inventory',
+                    '• take [item] - Pick up an item',
+                    '• drop [item] - Drop an item',
+                    '• give [item] [player] - Give item to another player',
+                    '• use [item] - Use an item',
+                    '',
+                    'You can use partial item names for most commands.'
+                ]
+            },
+            equipment: {
+                title: 'Equipment Help',
+                content: [
+                    'Equipment Commands:',
+                    '• equipment, eq - Show equipped items',
+                    '• equip [item] - Equip an item from inventory',
+                    '• unequip [item] - Unequip an item to inventory',
+                    '',
+                    'Equipment slots: main_hand, off_hand, chest, legs, head, feet, hands'
+                ]
+            },
+            social: {
+                title: 'Social Help',
+                content: [
+                    'Social Commands:',
+                    '• say [message] - Say something to everyone in the room',
+                    '• tell [player] [message] - Send a private message',
+                    '• emote [action] - Perform an emotive action',
+                    '',
+                    'Examples:',
+                    '• say Hello everyone!',
+                    '• tell john How are you?',
+                    '• emote waves at everyone'
+                ]
+            }
+        };
+
+        const helpData = helpTopics[topic] || helpTopics.general;
+        
+        client.addToOutput(`> help ${topic || ''}`);
+        client.addToOutput(`\n❓ === ${helpData.title} ===`, 'info');
+        
+        for (const line of helpData.content) {
+            if (line === '') {
+                client.addToOutput(' ');
+            } else {
+                client.addToOutput(line, 'info');
+            }
         }
     }
 }
@@ -446,6 +568,28 @@ class UpdateHandler {
                 
             case UpdateTypes.SERVER_MESSAGE:
                 this.handleServerMessage(update);
+                break;
+                
+            case UpdateTypes.PLAYER_STATS:
+                this.handlePlayerStats(update);
+                break;
+                
+            case UpdateTypes.PLAYER_HEALTH:
+                this.handlePlayerHealth(update);
+                break;
+                
+            case UpdateTypes.EQUIPMENT_DISPLAY:
+                this.handleEquipmentDisplay(update);
+                break;
+                
+
+                
+            case UpdateTypes.ROOM_INFO:
+                this.handleRoomInfo(update);
+                break;
+                
+            case UpdateTypes.ITEM_INFO:
+                this.handleItemInfo(update);
                 break;
                 
             default:
@@ -542,6 +686,89 @@ class UpdateHandler {
         } else if (update.data.message) {
             // Fallback for legacy string messages
             client.addToOutput(`📢 ${update.data.message}`, 'info');
+        }
+    }
+    
+    handlePlayerStats(update) {
+        const stats = update.data.stats;
+        client.addToOutput(`\n📊 === ${stats.name}'s Statistics ===`, 'info');
+        client.addToOutput(`🏆 Level: ${stats.level}`, 'info');
+        client.addToOutput(`❤️ Health: ${stats.health}/${stats.maxHealth}`, 'info');
+        client.addToOutput(`✨ Experience: ${stats.experience}`, 'info');
+        client.addToOutput(`💰 Gold: ${stats.gold}`, 'info');
+        client.addToOutput(`📍 Location: ${stats.location}`, 'info');
+    }
+    
+    handlePlayerHealth(update) {
+        const health = update.data.health;
+        const statusColors = {
+            'excellent': 'success',
+            'good': 'success', 
+            'fair': 'warning',
+            'poor': 'warning',
+            'critical': 'error',
+            'near death': 'error'
+        };
+        const color = statusColors[health.status] || 'info';
+        client.addToOutput(`❤️ Health: ${health.health}/${health.maxHealth} (${health.healthPercent}%) - ${health.status}`, color);
+    }
+    
+    handleEquipmentDisplay(update) {
+        const equipment = update.data.equipment;
+        client.addToOutput(`\n⚔️ === Equipment ===`, 'info');
+        
+        const slotNames = {
+            main_hand: 'Main Hand',
+            off_hand: 'Off Hand', 
+            chest: 'Chest',
+            legs: 'Legs',
+            head: 'Head',
+            feet: 'Feet',
+            hands: 'Hands'
+        };
+        
+        for (const [slot, slotName] of Object.entries(slotNames)) {
+            if (equipment[slot] && equipment[slot].equipped) {
+                client.addToOutput(`${slotName}: ${equipment[slot].name}`, 'info');
+            } else {
+                client.addToOutput(`${slotName}: (empty)`, 'muted');
+            }
+        }
+    }
+    
+
+    
+    handleRoomInfo(update) {
+        const room = update.data.room;
+        client.addToOutput(`\n📍 === ${room.name} ===`, 'info');
+        client.addToOutput(room.description);
+        
+        if (room.exits && Object.keys(room.exits).length > 0) {
+            const exitList = Object.keys(room.exits).join(', ');
+            client.addToOutput(`🚪 Exits: ${exitList}`, 'info');
+        }
+        
+        if (room.items && room.items.length > 0) {
+            const itemList = room.items.map(i => `${i.name} (${i.quantity})`).join(', ');
+            client.addToOutput(`📦 Items: ${itemList}`, 'info');
+        }
+        
+        if (room.npcs && room.npcs.length > 0) {
+            client.addToOutput(`👥 NPCs: ${room.npcs.join(', ')}`, 'info');
+        }
+        
+        if (room.players && room.players.length > 0) {
+            client.addToOutput(`👤 Players: ${room.players.join(', ')}`, 'info');
+        }
+    }
+    
+    handleItemInfo(update) {
+        const item = update.data.item;
+        client.addToOutput(`\n🔍 === ${item.name} ===`, 'info');
+        client.addToOutput(item.description);
+        client.addToOutput(`📍 Location: ${item.location}`, 'info');
+        if (item.quantity > 1) {
+            client.addToOutput(`📦 Quantity: ${item.quantity}`, 'info');
         }
     }
     

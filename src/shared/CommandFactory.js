@@ -3,6 +3,7 @@ import { MoveCommand, LookCommand } from './commands/MovementCommands.js'
 import { TakeItemCommand, DropItemCommand, UseItemCommand } from './commands/InventoryCommands.js'
 import { EquipItemCommand, UnequipItemCommand } from './commands/EquipmentCommands.js'
 import { SayCommand, TellCommand, EmoteCommand } from './commands/SocialCommands.js'
+import { StatsCommand, HealthCommand, EquipmentDisplayCommand, ExamineCommand } from './commands/InfoCommands.js'
 
 /**
  * Factory for creating command instances from JSON data
@@ -20,6 +21,10 @@ export class CommandFactory {
         [CommandTypes.SAY]: SayCommand,
         [CommandTypes.TELL]: TellCommand,
         [CommandTypes.EMOTE]: EmoteCommand,
+        [CommandTypes.STATS]: StatsCommand,
+        [CommandTypes.HEALTH]: HealthCommand,
+        [CommandTypes.EQUIPMENT_DISPLAY]: EquipmentDisplayCommand,
+        [CommandTypes.EXAMINE]: ExamineCommand,
         // Add more command mappings as needed
     }
 

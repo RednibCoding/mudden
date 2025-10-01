@@ -28,34 +28,32 @@ export const CommandTypes = {
   // Combat Commands (400-499)
   ATTACK: 400,
   CAST_SPELL: 401,
-  FLEE: 402,
-  DEFEND: 403,
   
-  // Quest Commands (500-599)
-  ACCEPT_QUEST: 500,
-  COMPLETE_QUEST: 501,
-  ABANDON_QUEST: 502,
-  SHOW_QUESTS: 503,
+  // Trade Commands (500-599)
+  TRADE_REQUEST: 500,
+  TRADE_ADD_ITEM: 501,
+  TRADE_ACCEPT: 502,
+  TRADE_CANCEL: 503,
   
-  // Trade Commands (600-699)
-  TRADE_REQUEST: 600,
-  TRADE_ACCEPT: 601,
-  TRADE_DECLINE: 602,
-  TRADE_ADD_ITEM: 603,
-  TRADE_REMOVE_ITEM: 604,
-  TRADE_CONFIRM: 605,
+  // Info Commands (600-699)
+  STATS: 600,
+  HEALTH: 601,
+  EQUIPMENT_DISPLAY: 602,
+  EXAMINE: 603,
   
-  // Admin Commands (700-799)
-  KICK_PLAYER: 700,
-  BAN_PLAYER: 701,
-  MUTE_PLAYER: 702,
-  TELEPORT: 703,
-  SPAWN_ITEM: 704,
+  // Quest Commands (700-799)
+  QUEST_LIST: 700,
+  QUEST_ACCEPT: 701,
+  QUEST_COMPLETE: 702,
+  QUEST_INFO: 703,
   
-  // System Commands (800-899)
-  PING: 800,
-  QUIT: 801,
-  HELP: 802,
-  TIME: 803,
-  SAVE: 804
+  // Friends Commands (800-899)
+  FRIENDS_LIST: 800,
+  FRIENDS_ADD: 801,
+  FRIENDS_REMOVE: 802,
+  FRIENDS_NOTE: 803,
+  
+  // System Commands (900-999)
+  PING: 900,
+  DISCONNECT: 901
 }
