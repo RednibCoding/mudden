@@ -4,17 +4,17 @@
     "salt": "108b8783a9f7097e531768a93c0c86e7115d319e367b6724a94661c24ea5cd95",
     "hash": "c32de0f341c9b23898f8a60d3b16bbf440785b8272399f19277f4d1d6d1f2f8022b2a3fcafd98f7db777785b35dd08d8e04ee5f0cf781f8ed2568cf3a97e18e7"
   },
-  "health": 110,
-  "maxHealth": 110,
-  "level": 2,
-  "experience": 185,
-  "gold": 128,
-  "currentArea": "forest_area",
-  "currentRoom": "deep_forest",
+  "health": 70,
+  "maxHealth": 130,
+  "level": 4,
+  "experience": 450,
+  "gold": 237,
+  "currentArea": "town_area",
+  "currentRoom": "inn",
   "inventory": [
     {
       "id": "healing_potion",
-      "quantity": 6
+      "quantity": 12
     },
     {
       "id": "leather_shield",
@@ -22,19 +22,23 @@
     },
     {
       "id": "wolf_pelt",
-      "quantity": 5
+      "quantity": 15
     },
     {
       "id": "spider_silk",
-      "quantity": 6
+      "quantity": 8
     },
     {
       "id": "berries",
       "quantity": 1
+    },
+    {
+      "id": "iron_sword",
+      "quantity": 2
     }
   ],
   "equipment": {
-    "main_hand": null,
+    "main_hand": "iron_sword",
     "off_hand": "leather_shield",
     "chest": null,
     "legs": null,
@@ -43,28 +47,15 @@
     "hands": null
   },
   "stats": {
-    "strength": 11,
-    "defense": 6,
-    "speed": 9
+    "strength": 13,
+    "defense": 8,
+    "speed": 11
   },
-  "activeQuests": [
-    {
-      "id": "guard_forest_patrol",
-      "status": "accepted",
-      "acceptedAt": 1759244812374,
-      "objectives": [
-        {
-          "type": "kill",
-          "target": "wolf",
-          "quantity": 3,
-          "current": 3,
-          "description": "Kill 3 Forest Wolves in the woods"
-        }
-      ]
-    }
-  ],
+  "activeQuests": [],
   "completedQuests": [
-    "innkeeper_delivery"
+    "innkeeper_delivery",
+    "guard_forest_patrol",
+    "guard_patrol_route"
   ],
   "inCombat": false,
   "homestone": {
@@ -76,7 +67,7 @@
   ],
   "defeatedOnetimeEnemies": [],
   "healthRecoveryCallback": null,
-  "lastSaved": "2025-09-30T23:10:02.416Z",
+  "lastSaved": "2025-10-01T06:40:13.321Z",
   "lastTellSender": "Pennor",
   "friends": [
     "Pennor"

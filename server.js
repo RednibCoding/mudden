@@ -24,7 +24,7 @@ const sessionManager = new SessionManager(io)
 const combatSessions = new Map() // playerId -> combat state
 const commandManager = new CommandManager(gameWorld, sessionManager.getActivePlayers(), combatSessions, io)
 const gameTickManager = new GameTickManager()
-const authManager = new AuthenticationManager(io)
+const authManager = new AuthenticationManager(io, gameWorld)
 const socketManager = new SocketManager(io, authManager, sessionManager, gameWorld, commandManager, combatSessions)
 
 // Connect managers

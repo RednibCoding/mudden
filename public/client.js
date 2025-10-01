@@ -578,8 +578,16 @@ class SimpleMUDClient {
 
         let contextHtml = ''
         
+        // Update combat border styling
+        const isInCombat = state.combatInfo && state.combatInfo.enemies && state.combatInfo.enemies.length > 0
+        if (isInCombat) {
+            document.body.classList.add('in-combat')
+        } else {
+            document.body.classList.remove('in-combat')
+        }
+        
         // Show combat information if in combat
-        if (state.combatInfo && state.combatInfo.enemies && state.combatInfo.enemies.length > 0) {
+        if (isInCombat) {
             // Show player health first
             contextHtml += '<div class="context-header-text">Combat Status:</div>'
             contextHtml += '<div class="context-list">'
