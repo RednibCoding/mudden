@@ -5,25 +5,7 @@ import { UpdateTypes } from '../UpdateTypes.js'
 import { ErrorCodes } from '../ErrorCodes.js'
 
 /**
- * Take it      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { errorCode: ErrorCodes.PLAYER_NOT_FOUND }))
-      return updates
-    }
-
-    // Check if player has the item
-    if (!inventoryManager.hasItem(this.playerId, this.itemId, 1)) {
-      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
-        errorCode: ErrorCodes.ITEM_NOT_IN_INVENTORY,
-        itemId: this.itemId
-      }))
-      return updates
-    }
-
-    const itemTemplate = templateManager.getItem(this.itemId)
-    if (!itemTemplate) {
-      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
-        errorCode: ErrorCodes.ITEM_NOT_FOUND,
-        itemId: this.itemId
-      }))p items from room
+ * Take item command - pick up items from room
  */
 export class TakeItemCommand extends BaseCommand {
   constructor(playerId, itemId, quantity = 1, commandId = null) {
@@ -55,46 +37,48 @@ export class TakeItemCommand extends BaseCommand {
   
   execute(managers) {
     const updates = []
-    const { playerManager, inventoryManager, templateManager } = managers
+    const { playerManager, inventoryManager, templateManager, worldManager } = managers
     
+    // Verify player exists
     const player = playerManager.getPlayer(this.playerId)
     if (!player) {
-      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { errorCode: ErrorCodes.PLAYER_NOT_FOUND }))
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        errorCode: ErrorCodes.PLAYER_NOT_FOUND 
+      }))
       return updates
     }
 
-    // Use manager service method
-    const result = inventoryManager.tryTakeItem(
+    // Use inventory manager to handle the complete take workflow
+    const result = inventoryManager.processTakeItem(
       this.playerId, 
       this.itemId, 
       this.quantity, 
-      managers.worldManager, 
+      worldManager, 
       player.location
     )
     
     if (!result.success) {
       updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
-        errorCode: result.errorCode || ErrorCodes.UNKNOWN_ERROR,
-        itemId: this.itemId,
-        quantity: this.quantity
+        errorCode: result.errorCode,
+        itemId: result.itemId,
+        quantity: result.quantity
       }))
       return updates
     }
 
     // Create item names mapping for inventory display
     const itemNames = {}
-    const currentItems = result.inventory ? result.inventory.items : []
-    currentItems.forEach(item => {
+    result.inventory.items.forEach(item => {
       const template = templateManager.getItem(item.id)
       itemNames[item.id] = template?.name || item.id
     })
     
-    const itemTemplate = templateManager.getItem(this.itemId)
+    // Create success update
     updates.push(new BaseUpdate(this.playerId, UpdateTypes.INVENTORY_CHANGED, {
-      action: 'take',
-      itemId: this.itemId,
-      quantity: this.quantity,
-      inventory: currentItems,
+      action: result.action,
+      itemId: result.itemId,
+      quantity: result.quantity,
+      inventory: result.inventory.items,
       itemNames: itemNames
     }))
 
@@ -139,49 +123,48 @@ export class DropItemCommand extends BaseCommand {
   
   execute(managers) {
     const updates = []
-    const { playerManager, inventoryManager, templateManager } = managers
+    const { playerManager, inventoryManager, templateManager, worldManager } = managers
     
+    // Verify player exists
     const player = playerManager.getPlayer(this.playerId)
     if (!player) {
-      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { errorCode: ErrorCodes.PLAYER_NOT_FOUND }))
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        errorCode: ErrorCodes.PLAYER_NOT_FOUND 
+      }))
       return updates
     }
 
-    // Use manager service method
-    const result = inventoryManager.tryDropItem(
+    // Use inventory manager to handle the complete drop workflow
+    const result = inventoryManager.processDropItem(
       this.playerId, 
       this.itemId, 
       this.quantity || 1, 
-      managers.worldManager, 
+      worldManager, 
       player.location
     )
     
     if (!result.success) {
-      const itemTemplate = templateManager.getItem(this.itemId)
-      const itemName = itemTemplate?.name || this.itemId
       updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
-        errorCode: ErrorCodes.ITEM_NOT_IN_INVENTORY,
-        itemId: this.itemId,
-        quantity: this.quantity || 1
+        errorCode: result.errorCode,
+        itemId: result.itemId,
+        quantity: result.quantity
       }))
       return updates
     }
 
     // Create item names mapping for inventory display
     const itemNames = {}
-    const currentItems = result.inventory ? result.inventory.items : []
-    currentItems.forEach(item => {
+    result.inventory.items.forEach(item => {
       const template = templateManager.getItem(item.id)
       itemNames[item.id] = template?.name || item.id
     })
     
-    const itemTemplate = templateManager.getItem(this.itemId)
-    const itemName = itemTemplate?.name || this.itemId
+    // Create success update
     updates.push(new BaseUpdate(this.playerId, UpdateTypes.INVENTORY_CHANGED, {
-      action: 'drop',
-      itemId: this.itemId,
-      quantity: this.quantity || 1,
-      inventory: currentItems,
+      action: result.action,
+      itemId: result.itemId,
+      quantity: result.quantity,
+      inventory: result.inventory.items,
       itemNames: itemNames
     }))
     
@@ -221,11 +204,58 @@ export class UseItemCommand extends BaseCommand {
   execute(managers) {
     const updates = []
     const { playerManager, inventoryManager, templateManager } = managers
-    const player = playerManager.getPlayer(this.playerId)
     
+    // Verify player exists
+    const player = playerManager.getPlayer(this.playerId)
     if (!player) {
-      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { errorCode: ErrorCodes.PLAYER_NOT_FOUND }))
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        errorCode: ErrorCodes.PLAYER_NOT_FOUND 
+      }))
       return updates
     }
+
+    // Use inventory manager to handle the complete use item workflow
+    const result = inventoryManager.processUseItem(this.playerId, this.itemId, playerManager)
+    
+    if (!result.success) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        errorCode: result.errorCode,
+        itemId: result.itemId
+      }))
+      return updates
+    }
+
+    // Create item names mapping for inventory display
+    const itemNames = {}
+    result.inventory.items.forEach(item => {
+      const template = templateManager.getItem(item.id)
+      itemNames[item.id] = template?.name || item.id
+    })
+    
+    // Create success update with effects
+    updates.push(new BaseUpdate(this.playerId, UpdateTypes.INVENTORY_CHANGED, {
+      action: result.action,
+      itemId: result.itemId,
+      inventory: result.inventory.items,
+      itemNames: itemNames,
+      effects: result.effects,
+      itemName: result.itemName
+    }))
+
+    // If there are health/mana effects, send player stats update
+    if (result.effects && result.effects.length > 0) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.PLAYER_STATS_CHANGED, {
+        health: player.health,
+        maxHealth: player.maxHealth,
+        mana: player.mana || 0,
+        maxMana: player.maxMana || 100
+      }))
+    }
+
+    return updates
+  }
+  
+  static fromJSON(data) {
+    return new UseItemCommand(data.playerId, data.itemId, data.commandId)
   }
 }

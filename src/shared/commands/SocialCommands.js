@@ -35,36 +35,25 @@ export class SayCommand extends BaseCommand {
   
   execute(managers) {
     const updates = []
-    const { playerManager } = managers
+    const { playerManager, socialManager } = managers
     
-    const player = playerManager.getPlayer(this.playerId)
-    if (!player) {
+    // Use social manager to handle the say logic
+    const result = socialManager.broadcastSay(this.playerId, this.message, playerManager)
+    
+    if (!result.success) {
       updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
-        errorCode: ErrorCodes.PLAYER_NOT_FOUND 
+        errorCode: result.errorCode 
       }))
       return updates
     }
 
-    // Get all players in the same room
-    const playersInRoom = playerManager.getPlayersInRoom(player.location)
-    
-    // Send the message to all players in the room
-    for (const roomPlayer of playersInRoom) {
-      if (roomPlayer.id === this.playerId) {
-        // Send confirmation to the speaker
-        updates.push(new BaseUpdate(roomPlayer.id, UpdateTypes.SOCIAL_MESSAGE, {
-          type: 'say_self',
-          message: this.message,
-          speaker: player.name
-        }))
-      } else {
-        // Send message to other players
-        updates.push(new BaseUpdate(roomPlayer.id, UpdateTypes.SOCIAL_MESSAGE, {
-          type: 'say_other',
-          message: this.message,
-          speaker: player.name
-        }))
-      }
+    // Create updates for all players who should receive the message
+    for (const messageData of result.messageData) {
+      updates.push(new BaseUpdate(messageData.playerId, UpdateTypes.SOCIAL_MESSAGE, {
+        type: messageData.type,
+        message: messageData.message,
+        speaker: messageData.speaker
+      }))
     }
 
     return updates
@@ -112,39 +101,28 @@ export class TellCommand extends BaseCommand {
   
   execute(managers) {
     const updates = []
-    const { playerManager } = managers
+    const { playerManager, socialManager } = managers
     
-    const player = playerManager.getPlayer(this.playerId)
-    if (!player) {
+    // Use social manager to handle the tell logic
+    const result = socialManager.sendTell(this.playerId, this.targetPlayer, this.message, playerManager)
+    
+    if (!result.success) {
       updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
-        errorCode: ErrorCodes.PLAYER_NOT_FOUND 
+        errorCode: result.errorCode,
+        targetPlayer: result.targetPlayer
       }))
       return updates
     }
 
-    // Find target player by name
-    const targetPlayer = playerManager.getPlayerByName(this.targetPlayer)
-    if (!targetPlayer) {
-      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
-        errorCode: ErrorCodes.PLAYER_NOT_FOUND,
-        targetPlayer: this.targetPlayer
+    // Create updates for both sender and recipient
+    for (const messageData of result.messageData) {
+      updates.push(new BaseUpdate(messageData.playerId, UpdateTypes.SOCIAL_MESSAGE, {
+        type: messageData.type,
+        message: messageData.message,
+        sender: messageData.sender,
+        recipient: messageData.recipient
       }))
-      return updates
     }
-
-    // Send message to target player
-    updates.push(new BaseUpdate(targetPlayer.id, UpdateTypes.SOCIAL_MESSAGE, {
-      type: 'tell_received',
-      message: this.message,
-      sender: player.name
-    }))
-
-    // Send confirmation to sender
-    updates.push(new BaseUpdate(this.playerId, UpdateTypes.SOCIAL_MESSAGE, {
-      type: 'tell_sent',
-      message: this.message,
-      recipient: targetPlayer.name
-    }))
 
     return updates
   }
@@ -185,25 +163,24 @@ export class EmoteCommand extends BaseCommand {
   
   execute(managers) {
     const updates = []
-    const { playerManager } = managers
+    const { playerManager, socialManager } = managers
     
-    const player = playerManager.getPlayer(this.playerId)
-    if (!player) {
+    // Use social manager to handle the emote logic
+    const result = socialManager.broadcastEmote(this.playerId, this.action, playerManager)
+    
+    if (!result.success) {
       updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
-        errorCode: ErrorCodes.PLAYER_NOT_FOUND 
+        errorCode: result.errorCode 
       }))
       return updates
     }
 
-    // Get all players in the same room
-    const playersInRoom = playerManager.getPlayersInRoom(player.location)
-    
-    // Send the emote to all players in the room
-    for (const roomPlayer of playersInRoom) {
-      updates.push(new BaseUpdate(roomPlayer.id, UpdateTypes.SOCIAL_MESSAGE, {
-        type: 'emote',
-        action: this.action,
-        actor: player.name
+    // Create updates for all players in the room
+    for (const messageData of result.messageData) {
+      updates.push(new BaseUpdate(messageData.playerId, UpdateTypes.SOCIAL_MESSAGE, {
+        type: messageData.type,
+        action: messageData.action,
+        actor: messageData.actor
       }))
     }
 

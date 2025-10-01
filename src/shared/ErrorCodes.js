@@ -15,6 +15,7 @@ export const ErrorCodes = {
   EXIT_BLOCKED: 101,
   INSUFFICIENT_LEVEL: 102,
   ALREADY_IN_ROOM: 103,
+  ROOM_NOT_FOUND: 104,
   
   // Inventory Errors (200-299)
   ITEM_NOT_FOUND: 200,
@@ -23,6 +24,7 @@ export const ErrorCodes = {
   INSUFFICIENT_QUANTITY: 203,
   ITEM_NOT_TAKEABLE: 204,
   ITEM_TOO_HEAVY: 205,
+  ITEM_NOT_USABLE: 206,
   
   // Equipment Errors (300-399)
   ITEM_NOT_EQUIPPABLE: 300,

@@ -299,4 +299,199 @@ export class InventoryManager {
             utilizationPercent: Math.round((uniqueItems / inventory.capacity) * 100)
         };
     }
+
+    /**
+     * High-level workflow - process taking an item from room
+     * @param {string} playerId - Player ID
+     * @param {string} itemId - Item ID to take
+     * @param {number} quantity - Quantity to take
+     * @param {Object} worldManager - World manager instance
+     * @param {string} location - Player's current location
+     * @returns {Object} Complete result with inventory data
+     */
+    processTakeItem(playerId, itemId, quantity, worldManager, location) {
+        // Check if item exists in room
+        const roomItems = worldManager.getRoomItems(location);
+        const roomItem = roomItems.find(item => item.id === itemId);
+        
+        if (!roomItem || roomItem.quantity < quantity) {
+            return {
+                success: false,
+                errorCode: ErrorCodes.ITEM_NOT_FOUND,
+                itemId: itemId,
+                quantity: quantity
+            };
+        }
+
+        // Check if player has inventory space
+        if (!this.canAddItem(playerId, itemId, quantity)) {
+            return {
+                success: false,
+                errorCode: ErrorCodes.INVENTORY_FULL,
+                itemId: itemId,
+                quantity: quantity
+            };
+        }
+
+        // Remove item from room
+        worldManager.removeItemFromRoom(location, itemId, quantity);
+
+        // Add item to player inventory
+        this.addItem(playerId, itemId, quantity);
+
+        // Get updated inventory
+        const inventory = this.getInventory(playerId);
+
+        return {
+            success: true,
+            action: 'take',
+            itemId: itemId,
+            quantity: quantity,
+            inventory: inventory
+        };
+    }
+
+    /**
+     * High-level workflow - process dropping an item to room
+     * @param {string} playerId - Player ID
+     * @param {string} itemId - Item ID to drop
+     * @param {number} quantity - Quantity to drop
+     * @param {Object} worldManager - World manager instance
+     * @param {string} location - Player's current location
+     * @returns {Object} Complete result with inventory data
+     */
+    processDropItem(playerId, itemId, quantity, worldManager, location) {
+        // Check if player has the item
+        if (!this.hasItem(playerId, itemId, quantity)) {
+            return {
+                success: false,
+                errorCode: ErrorCodes.ITEM_NOT_IN_INVENTORY,
+                itemId: itemId,
+                quantity: quantity
+            };
+        }
+
+        // Remove item from player inventory
+        this.removeItem(playerId, itemId, quantity);
+
+        // Add item to room
+        worldManager.addItemToRoom(location, itemId, quantity);
+
+        // Get updated inventory
+        const inventory = this.getInventory(playerId);
+
+        return {
+            success: true,
+            action: 'drop',
+            itemId: itemId,
+            quantity: quantity,
+            inventory: inventory
+        };
+    }
+
+    /**
+     * High-level workflow - process using a consumable item
+     * @param {string} playerId - Player ID
+     * @param {string} itemId - Item ID to use
+     * @param {Object} playerManager - Player manager instance
+     * @returns {Object} Complete result with effects applied
+     */
+    processUseItem(playerId, itemId, playerManager) {
+        // Check if player has the item
+        if (!this.hasItem(playerId, itemId, 1)) {
+            return {
+                success: false,
+                errorCode: ErrorCodes.ITEM_NOT_IN_INVENTORY,
+                itemId: itemId
+            };
+        }
+
+        // Get item template
+        const itemTemplate = this.templateManager.getItem(itemId);
+        if (!itemTemplate) {
+            return {
+                success: false,
+                errorCode: ErrorCodes.ITEM_NOT_FOUND,
+                itemId: itemId
+            };
+        }
+
+        // Check if item is usable
+        if (!itemTemplate.consumable) {
+            return {
+                success: false,
+                errorCode: ErrorCodes.ITEM_NOT_USABLE,
+                itemId: itemId
+            };
+        }
+
+        // Apply item effects
+        const player = playerManager.getPlayer(playerId);
+        const effects = this.applyItemEffects(player, itemTemplate, playerManager);
+
+        // Remove item from inventory (consumable)
+        this.removeItem(playerId, itemId, 1);
+
+        // Get updated inventory
+        const inventory = this.getInventory(playerId);
+
+        return {
+            success: true,
+            action: 'use',
+            itemId: itemId,
+            inventory: inventory,
+            effects: effects,
+            itemName: itemTemplate.name || itemId
+        };
+    }
+
+    /**
+     * Apply effects from using an item
+     * @param {Object} player - Player object
+     * @param {Object} itemTemplate - Item template
+     * @param {Object} playerManager - Player manager instance
+     * @returns {Array} Array of applied effects
+     * @private
+     */
+    applyItemEffects(player, itemTemplate, playerManager) {
+        const effects = [];
+        
+        if (itemTemplate.consumable) {
+            // Apply health restoration
+            if (itemTemplate.consumable.health) {
+                const healthGain = itemTemplate.consumable.health;
+                const newHealth = Math.min(player.maxHealth, player.health + healthGain);
+                const actualGain = newHealth - player.health;
+                
+                player.health = newHealth;
+                playerManager.savePlayer(player.id, player);
+                
+                effects.push({
+                    type: 'health_restore',
+                    amount: actualGain,
+                    message: `You restore ${actualGain} health points.`
+                });
+            }
+
+            // Apply mana restoration
+            if (itemTemplate.consumable.mana) {
+                const manaGain = itemTemplate.consumable.mana;
+                const newMana = Math.min(player.maxMana || 100, (player.mana || 0) + manaGain);
+                const actualGain = newMana - (player.mana || 0);
+                
+                player.mana = newMana;
+                playerManager.savePlayer(player.id, player);
+                
+                effects.push({
+                    type: 'mana_restore',
+                    amount: actualGain,
+                    message: `You restore ${actualGain} mana points.`
+                });
+            }
+
+            // Add other consumable effects as needed
+        }
+
+        return effects;
+    }
 }

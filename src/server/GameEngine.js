@@ -11,6 +11,8 @@ import { PlayerManager } from './managers/PlayerManager.js'
 import { WorldManager } from './managers/WorldManager.js'
 import { InventoryManager } from './managers/InventoryManager.js'
 import { EquipmentManager } from './managers/EquipmentManager.js'
+import { SocialManager } from './managers/SocialManager.js'
+import { MovementManager } from './managers/MovementManager.js'
 
 /**
  * Main Game Engine - orchestrates the tick-based game loop
@@ -48,13 +50,19 @@ export class GameEngine {
     const inventoryManager = new InventoryManager(templateManager)
     const equipmentManager = new EquipmentManager(templateManager)
     const playerManager = new PlayerManager()
+    const socialManager = new SocialManager()
+    const movementManager = new MovementManager()
+    
+    console.log('MovementManager initialized')
     
     return {
       templateManager: templateManager,
       worldManager: worldManager,
       inventoryManager: inventoryManager,
       equipmentManager: equipmentManager,
-      playerManager: playerManager
+      playerManager: playerManager,
+      socialManager: socialManager,
+      movementManager: movementManager
     }
   }
   

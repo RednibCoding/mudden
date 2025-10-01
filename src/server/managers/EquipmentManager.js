@@ -3,6 +3,7 @@ import { ErrorCodes } from '../../shared/ErrorCodes.js';
 /**
  * Equipment Management System
  * Handles equipment operations and stat calculations
+ * Provides high-level equipment workflow methods
  */
 export class EquipmentManager {
     constructor(templateManager) {
@@ -285,6 +286,150 @@ export class EquipmentManager {
             emptySlots: this.slots.length - equippedCount,
             slotStatus,
             stats: this.calculateStats(playerId)
+        };
+    }
+
+    /**
+     * High-level equipment workflow - handles complete equip process
+     * @param {string} playerId - Player ID
+     * @param {string} itemId - Item ID to equip
+     * @param {Object} inventoryManager - Inventory manager instance
+     * @returns {Object} Complete result with all necessary data
+     */
+    processEquipItem(playerId, itemId, inventoryManager) {
+        // Check if player has the item in inventory
+        if (!inventoryManager.hasItem(playerId, itemId, 1)) {
+            return { 
+                success: false, 
+                errorCode: ErrorCodes.ITEM_NOT_FOUND,
+                itemId: itemId
+            };
+        }
+
+        // Get item template for validation
+        const itemTemplate = this.templateManager.getItem(itemId);
+        if (!itemTemplate) {
+            return { 
+                success: false, 
+                errorCode: ErrorCodes.ITEM_NOT_FOUND,
+                itemId: itemId
+            };
+        }
+
+        // Check if item is equippable
+        if (!itemTemplate.equipment) {
+            return { 
+                success: false, 
+                errorCode: ErrorCodes.ITEM_NOT_EQUIPPABLE,
+                itemId: itemId
+            };
+        }
+
+        const slot = itemTemplate.equipment.slot;
+        if (!slot) {
+            return { 
+                success: false, 
+                errorCode: ErrorCodes.INVALID_SLOT,
+                itemId: itemId
+            };
+        }
+
+        // Try to equip the item
+        const equipResult = this.equipItem(playerId, itemId, slot);
+        if (!equipResult.success) {
+            return {
+                success: false,
+                errorCode: equipResult.errorCode,
+                itemId: itemId,
+                context: equipResult.context
+            };
+        }
+
+        // Remove item from inventory
+        inventoryManager.removeItem(playerId, itemId, 1);
+
+        // If there was a previously equipped item, add it back to inventory
+        if (equipResult.unequippedItem) {
+            inventoryManager.addItem(playerId, equipResult.unequippedItem, 1);
+        }
+
+        // Get final equipment state
+        const equipment = this.getPlayerEquipment(playerId);
+
+        return {
+            success: true,
+            action: 'equip',
+            itemId: itemId,
+            slot: slot,
+            equipment: equipment,
+            unequippedItem: equipResult.unequippedItem || null
+        };
+    }
+
+    /**
+     * High-level unequip workflow - handles complete unequip process
+     * @param {string} playerId - Player ID
+     * @param {string} slot - Equipment slot to unequip
+     * @param {Object} inventoryManager - Inventory manager instance
+     * @returns {Object} Complete result with all necessary data
+     */
+    processUnequipItem(playerId, slot, inventoryManager) {
+        // Validate slot
+        if (!this.slots.includes(slot)) {
+            return {
+                success: false,
+                errorCode: ErrorCodes.INVALID_SLOT,
+                slot: slot
+            };
+        }
+
+        // Try to unequip the item
+        const unequipResult = this.unequipItem(playerId, slot);
+        if (!unequipResult.success) {
+            return {
+                success: false,
+                errorCode: unequipResult.errorCode,
+                slot: slot
+            };
+        }
+
+        // Check if there was an item to unequip
+        if (!unequipResult.unequippedItem) {
+            return {
+                success: false,
+                errorCode: ErrorCodes.NO_ITEM_EQUIPPED,
+                slot: slot
+            };
+        }
+
+        // Check if player has inventory space
+        const canAdd = inventoryManager.canAddItem(playerId, unequipResult.unequippedItem, 1);
+        if (!canAdd) {
+            // Rollback the unequip since we can't add to inventory
+            const itemTemplate = this.templateManager.getItem(unequipResult.unequippedItem);
+            if (itemTemplate && itemTemplate.equipment) {
+                this.equipItem(playerId, unequipResult.unequippedItem, slot);
+            }
+            
+            return {
+                success: false,
+                errorCode: ErrorCodes.INVENTORY_FULL,
+                slot: slot
+            };
+        }
+
+        // Add unequipped item back to inventory
+        inventoryManager.addItem(playerId, unequipResult.unequippedItem, 1);
+
+        // Get final equipment state
+        const equipment = this.getPlayerEquipment(playerId);
+
+        return {
+            success: true,
+            action: 'unequip',
+            itemId: unequipResult.unequippedItem,
+            slot: slot,
+            equipment: equipment
         };
     }
 }

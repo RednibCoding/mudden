@@ -279,6 +279,7 @@
             EXIT_BLOCKED: 101,
             INSUFFICIENT_LEVEL: 102,
             ALREADY_IN_ROOM: 103,
+            ROOM_NOT_FOUND: 104,
             
             // Inventory Errors (200-299)
             ITEM_NOT_FOUND: 200,
@@ -287,6 +288,7 @@
             INSUFFICIENT_QUANTITY: 203,
             ITEM_NOT_TAKEABLE: 204,
             ITEM_TOO_HEAVY: 205,
+            ITEM_NOT_USABLE: 206,
             
             // Equipment Errors (300-399)
             ITEM_NOT_EQUIPPABLE: 300,
@@ -307,11 +309,13 @@
             [ErrorCodes.NO_EXIT]: (data) => `You cannot go ${data.direction || 'that way'} from here`,
             [ErrorCodes.EXIT_BLOCKED]: 'That exit is blocked',
             [ErrorCodes.INSUFFICIENT_LEVEL]: 'Your level is too low',
+            [ErrorCodes.ROOM_NOT_FOUND]: 'Room not found',
             
             [ErrorCodes.ITEM_NOT_FOUND]: (data) => `Item ${data.itemId || 'unknown'} not found`,
             [ErrorCodes.ITEM_NOT_IN_INVENTORY]: (data) => `You don't have ${data.itemId || 'that item'} in your inventory`,
             [ErrorCodes.INVENTORY_FULL]: 'Your inventory is full',
             [ErrorCodes.INSUFFICIENT_QUANTITY]: (data) => `You don't have ${data.quantity || 1} of that item`,
+            [ErrorCodes.ITEM_NOT_USABLE]: (data) => `${data.itemId || 'That item'} cannot be used`,
             
             [ErrorCodes.ITEM_NOT_EQUIPPABLE]: (data) => `${data.itemId || 'That item'} cannot be equipped`,
             [ErrorCodes.WRONG_EQUIPMENT_SLOT]: 'Wrong equipment slot',

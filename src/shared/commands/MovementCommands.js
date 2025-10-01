@@ -32,35 +32,33 @@ export class MoveCommand extends BaseCommand {
   
   execute(managers) {
     const updates = []
-    const { playerManager, worldManager, templateManager } = managers
+    const { playerManager, worldManager, templateManager, movementManager } = managers
     
-    // Use manager to attempt movement
-    const result = playerManager.tryMovePlayer(this.playerId, this.direction.toLowerCase(), worldManager)
+    // Use movement manager to handle the complete move workflow
+    const result = movementManager.processMovePlayer(
+      this.playerId,
+      this.direction.toLowerCase(),
+      playerManager,
+      worldManager,
+      templateManager
+    )
     
     if (!result.success) {
       updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, {
-        errorCode: ErrorCodes.NO_EXIT,
-        direction: this.direction.toLowerCase()
+        errorCode: result.errorCode,
+        direction: result.direction
       }))
       return updates
     }
 
-    // Create item names mapping for room display
-    const itemNames = {}
-    if (result.room.items) {
-      result.room.items.forEach(item => {
-        const template = templateManager.getItem(item.id)
-        itemNames[item.id] = template?.name || item.id
-      })
-    }
-    
+    // Create success update with processed room data
     updates.push(new BaseUpdate(this.playerId, UpdateTypes.ROOM_STATE_CHANGED, {
       location: result.location,
       name: result.room.name,
       description: result.room.description,
       exits: Object.keys(result.room.exits),
       items: result.room.items || [],
-      itemNames: itemNames,
+      itemNames: result.itemNames,
       npcs: result.room.npcs || [],
       players: result.playersInRoom
     }))
@@ -108,34 +106,36 @@ export class LookCommand extends BaseCommand {
   
   execute(managers) {
     const updates = []
-    const { playerManager, templateManager } = managers
+    const { playerManager, worldManager, templateManager, movementManager } = managers
     
-    // Use manager to get room info
-    const roomInfo = playerManager.getPlayerRoomInfo(this.playerId, managers.worldManager)
+    // Use movement manager to handle the complete look workflow
+    const result = movementManager.processLookCommand(
+      this.playerId,
+      this.target,
+      this.targetType,
+      playerManager,
+      worldManager,
+      templateManager
+    )
     
-    if (!roomInfo) {
-      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { errorCode: ErrorCodes.PLAYER_NOT_FOUND }))
+    if (!result.success) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        errorCode: result.errorCode,
+        target: result.target
+      }))
       return updates
     }
 
-    // Create item names mapping for room display
-    const itemNames = {}
-    if (roomInfo.room.items) {
-      roomInfo.room.items.forEach(item => {
-        const template = templateManager.getItem(item.id)
-        itemNames[item.id] = template?.name || item.id
-      })
-    }
-    
+    // Create success update with processed room data
     updates.push(new BaseUpdate(this.playerId, UpdateTypes.ROOM_STATE_CHANGED, {
-      location: roomInfo.location,
-      name: roomInfo.room.name,
-      description: roomInfo.room.description,
-      exits: Object.keys(roomInfo.room.exits),
-      items: roomInfo.room.items || [],
-      itemNames: itemNames,
-      npcs: roomInfo.room.npcs || [],
-      players: roomInfo.playersInRoom
+      location: result.location,
+      name: result.room.name,
+      description: result.room.description,
+      exits: Object.keys(result.room.exits),
+      items: result.room.items || [],
+      itemNames: result.itemNames,
+      npcs: result.room.npcs || [],
+      players: result.playersInRoom
     }))
 
     return updates
