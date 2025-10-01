@@ -191,3 +191,133 @@ export class EmoteCommand extends BaseCommand {
     return new EmoteCommand(data.playerId, data.action, data.commandId)
   }
 }
+
+/**
+ * Talk command - initiate conversation with an NPC
+ */
+export class TalkCommand extends BaseCommand {
+  constructor(playerId, npcId, commandId = null) {
+    super(CommandTypes.TALK, playerId, commandId)
+    this.npcId = npcId
+  }
+  
+  validate() {
+    super.validate()
+    
+    if (!this.npcId || typeof this.npcId !== 'string') {
+      throw new Error('npcId is required and must be a string')
+    }
+    
+    return true
+  }
+  
+  getPayload() {
+    return {
+      npcId: this.npcId
+    }
+  }
+  
+  execute(managers) {
+    const updates = []
+    const { playerManager, socialManager, worldManager, templateManager } = managers
+    
+    // Use social manager to handle NPC conversation
+    const result = socialManager.processTalkToNpc(
+      this.playerId, 
+      this.npcId, 
+      playerManager, 
+      worldManager, 
+      templateManager
+    )
+    
+    if (!result.success) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        errorCode: result.errorCode,
+        npcId: this.npcId
+      }))
+      return updates
+    }
+
+    // Send NPC dialogue response
+    updates.push(new BaseUpdate(this.playerId, UpdateTypes.NPC_DIALOGUE, {
+      npcName: result.npcName,
+      message: result.message,
+      availableTopics: result.availableTopics || []
+    }))
+
+    return updates
+  }
+  
+  static fromJSON(data) {
+    return new TalkCommand(data.playerId, data.npcId, data.commandId)
+  }
+}
+
+/**
+ * Ask command - ask an NPC about a specific topic
+ */
+export class AskCommand extends BaseCommand {
+  constructor(playerId, npcId, topic, commandId = null) {
+    super(CommandTypes.ASK, playerId, commandId)
+    this.npcId = npcId
+    this.topic = topic
+  }
+  
+  validate() {
+    super.validate()
+    
+    if (!this.npcId || typeof this.npcId !== 'string') {
+      throw new Error('npcId is required and must be a string')
+    }
+    
+    if (!this.topic || typeof this.topic !== 'string') {
+      throw new Error('topic is required and must be a string')
+    }
+    
+    return true
+  }
+  
+  getPayload() {
+    return {
+      npcId: this.npcId,
+      topic: this.topic
+    }
+  }
+  
+  execute(managers) {
+    const updates = []
+    const { playerManager, socialManager, worldManager, templateManager } = managers
+    
+    // Use social manager to handle NPC topic conversation
+    const result = socialManager.processAskNpc(
+      this.playerId, 
+      this.npcId, 
+      this.topic,
+      playerManager, 
+      worldManager, 
+      templateManager
+    )
+    
+    if (!result.success) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        errorCode: result.errorCode,
+        npcId: this.npcId,
+        topic: this.topic
+      }))
+      return updates
+    }
+
+    // Send NPC response
+    updates.push(new BaseUpdate(this.playerId, UpdateTypes.NPC_RESPONSE, {
+      npcName: result.npcName,
+      topic: result.topic,
+      message: result.message
+    }))
+
+    return updates
+  }
+  
+  static fromJSON(data) {
+    return new AskCommand(data.playerId, data.npcId, data.topic, data.commandId)
+  }
+}

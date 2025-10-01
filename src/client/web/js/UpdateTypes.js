@@ -37,6 +37,8 @@ export const UpdateTypes = {
   MESSAGE_RECEIVED: 400,
   PLAYER_SPOKE: 401,
   SOCIAL_MESSAGE: 402,
+  NPC_DIALOGUE: 403,
+  NPC_RESPONSE: 404,
   
   // Info Updates (500-599)
   PLAYER_STATS: 500,

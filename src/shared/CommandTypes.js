@@ -22,6 +22,8 @@ export const CommandTypes = {
   SAY: 300,
   TELL: 301,
   EMOTE: 302,
+  TALK: 303,
+  ASK: 304,
   
   // Combat Commands (400-499)
   ATTACK: 400,

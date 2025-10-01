@@ -45,13 +45,15 @@ export class WorldManager {
     loadAreaRooms(areaPath) {
         try {
             const roomFiles = fs.readdirSync(areaPath).filter(file => file.endsWith('.json'));
+            const areaName = path.basename(areaPath); // Get area folder name
             
             for (const roomFile of roomFiles) {
-                const roomId = path.basename(roomFile, '.json');
+                const roomFileName = path.basename(roomFile, '.json');
+                const roomId = `${areaName}.${roomFileName}`; // Create full room ID
                 const roomPath = path.join(areaPath, roomFile);
                 const roomTemplate = JSON.parse(fs.readFileSync(roomPath, 'utf8'));
                 
-                // Store template
+                // Store template with full ID
                 this.roomTemplates.set(roomId, roomTemplate);
                 
                 // Create active room state from template

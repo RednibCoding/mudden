@@ -1,0 +1,26 @@
+{
+  "startingLocation": "town_area.town_square",
+  "level": 1,
+  "health": 100,
+  "maxHealth": 100,
+  "inventory": {
+    "items": [],
+    "maxSlots": 20
+  },
+  "equipment": {
+    "weapon": null,
+    "armor": null,
+    "shield": null,
+    "accessory": null
+  },
+  "stats": {
+    "strength": 10,
+    "dexterity": 10,
+    "constitution": 10,
+    "intelligence": 10,
+    "wisdom": 10,
+    "charisma": 10
+  },
+  "experience": 0,
+  "gold": 50
+}

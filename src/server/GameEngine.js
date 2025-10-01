@@ -50,7 +50,7 @@ export class GameEngine {
     const worldManager = new WorldManager(templateManager)
     const inventoryManager = new InventoryManager(templateManager)
     const equipmentManager = new EquipmentManager(templateManager)
-    const playerManager = new PlayerManager()
+    const playerManager = new PlayerManager(templateManager)
     const socialManager = new SocialManager()
     const movementManager = new MovementManager()
     const infoManager = new InfoManager(templateManager)

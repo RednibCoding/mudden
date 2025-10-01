@@ -205,4 +205,102 @@ export class SocialManager {
             return history && history.length > 0;
         });
     }
+    
+    /**
+     * Handle talking to an NPC (initial greeting)
+     * @param {string} playerId - Socket ID of the player
+     * @param {string} npcId - NPC identifier
+     * @param {Object} playerManager - Player manager instance
+     * @param {Object} worldManager - World manager instance  
+     * @param {Object} templateManager - Template manager instance
+     * @returns {Object} Result with NPC greeting and available topics
+     */
+    processTalkToNpc(playerId, npcId, playerManager, worldManager, templateManager) {
+        const player = playerManager.getPlayer(playerId);
+        if (!player) {
+            return { success: false, errorCode: ErrorCodes.PLAYER_NOT_FOUND };
+        }
+
+        // Get the room and check if NPC is present
+        const room = worldManager.getRoom(player.location);
+        if (!room || !room.npcs || !room.npcs.includes(npcId)) {
+            return { success: false, errorCode: ErrorCodes.NPC_NOT_FOUND };
+        }
+
+        // Get NPC template
+        const npcTemplate = templateManager.getNPC(npcId);
+        if (!npcTemplate) {
+            return { success: false, errorCode: ErrorCodes.NPC_NOT_FOUND };
+        }
+
+        // Check if NPC has dialogue
+        if (!npcTemplate.dialogue || !npcTemplate.dialogue.greeting) {
+            return { success: false, errorCode: ErrorCodes.NPC_NOT_RESPONSIVE };
+        }
+
+        // Get available topics (keys from responses)
+        const availableTopics = npcTemplate.dialogue.responses ? 
+            Object.keys(npcTemplate.dialogue.responses) : [];
+
+        return {
+            success: true,
+            npcName: npcTemplate.name,
+            message: npcTemplate.dialogue.greeting,
+            availableTopics: availableTopics
+        };
+    }
+    
+    /**
+     * Handle asking an NPC about a specific topic
+     * @param {string} playerId - Socket ID of the player
+     * @param {string} npcId - NPC identifier
+     * @param {string} topic - Topic to ask about
+     * @param {Object} playerManager - Player manager instance
+     * @param {Object} worldManager - World manager instance  
+     * @param {Object} templateManager - Template manager instance
+     * @returns {Object} Result with NPC response to the topic
+     */
+    processAskNpc(playerId, npcId, topic, playerManager, worldManager, templateManager) {
+        const player = playerManager.getPlayer(playerId);
+        if (!player) {
+            return { success: false, errorCode: ErrorCodes.PLAYER_NOT_FOUND };
+        }
+
+        // Get the room and check if NPC is present
+        const room = worldManager.getRoom(player.location);
+        if (!room || !room.npcs || !room.npcs.includes(npcId)) {
+            return { success: false, errorCode: ErrorCodes.NPC_NOT_FOUND };
+        }
+
+        // Get NPC template
+        const npcTemplate = templateManager.getNPC(npcId);
+        if (!npcTemplate) {
+            return { success: false, errorCode: ErrorCodes.NPC_NOT_FOUND };
+        }
+
+        // Check if NPC has dialogue responses
+        if (!npcTemplate.dialogue || !npcTemplate.dialogue.responses) {
+            return { success: false, errorCode: ErrorCodes.NPC_NOT_RESPONSIVE };
+        }
+
+        // Find response for the topic (case-insensitive)
+        const topicLower = topic.toLowerCase();
+        const response = npcTemplate.dialogue.responses[topicLower];
+        
+        if (!response) {
+            return {
+                success: false,
+                errorCode: ErrorCodes.INVALID_TOPIC,
+                npcId: npcId,
+                topic: topic
+            };
+        }
+
+        return {
+            success: true,
+            npcName: npcTemplate.name,
+            topic: topic,
+            message: response
+        };
+    }
 }

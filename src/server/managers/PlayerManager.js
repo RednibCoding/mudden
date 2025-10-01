@@ -8,10 +8,14 @@ import crypto from 'crypto';
 import { ErrorCodes } from '../../shared/ErrorCodes.js';
 
 export class PlayerManager {
-    constructor() {
+    constructor(templateManager) {
+        this.templateManager = templateManager;
         this.players = new Map(); // playerId -> player data
         this.playersByName = new Map(); // playerName -> playerId
         this.playersDir = 'persist/players';
+        
+        // Load player defaults from template
+        this.playerDefaults = this.loadPlayerDefaults();
         
         // Ensure players directory exists
         if (!fs.existsSync(this.playersDir)) {
@@ -65,10 +69,7 @@ export class PlayerManager {
                     name: username,
                     passwordHash,
                     salt,
-                    location: 'town_square', // Default starting location
-                    level: 1,
-                    health: 100,
-                    maxHealth: 100,
+                    ...this.playerDefaults,
                     created: Date.now(),
                     lastLogin: Date.now()
                 };
@@ -208,6 +209,47 @@ export class PlayerManager {
     verifyPassword(password, hash, salt) {
         const testHash = this.hashPassword(password, salt);
         return crypto.timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(testHash, 'hex'));
+    }
+
+    /**
+     * Load player defaults from template file
+     * @returns {Object} Player defaults
+     */
+    loadPlayerDefaults() {
+        try {
+            const defaultsFile = 'templates/player_defaults.json';
+            if (fs.existsSync(defaultsFile)) {
+                const defaults = JSON.parse(fs.readFileSync(defaultsFile, 'utf8'));
+                console.log(`Loaded player defaults: starting location = ${defaults.startingLocation}`);
+                return {
+                    location: defaults.startingLocation,
+                    level: defaults.level,
+                    health: defaults.health,
+                    maxHealth: defaults.maxHealth,
+                    inventory: { ...defaults.inventory },
+                    equipment: { ...defaults.equipment },
+                    stats: { ...defaults.stats },
+                    experience: defaults.experience,
+                    gold: defaults.gold
+                };
+            } else {
+                console.warn('Player defaults file not found, using fallback defaults');
+                return {
+                    location: 'town_area.town_square',
+                    level: 1,
+                    health: 100,
+                    maxHealth: 100,
+                    inventory: { items: [], maxSlots: 20 },
+                    equipment: { weapon: null, armor: null, shield: null, accessory: null },
+                    stats: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
+                    experience: 0,
+                    gold: 50
+                };
+            }
+        } catch (error) {
+            console.error('Error loading player defaults:', error);
+            throw new Error('Failed to load player defaults');
+        }
     }
 
     /**

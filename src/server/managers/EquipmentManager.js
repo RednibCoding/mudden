@@ -68,7 +68,7 @@ export class EquipmentManager {
     equipItem(playerId, itemId, slot = null) {
         const equipment = this.equipment.get(playerId);
         if (!equipment) {
-            return { success: false, error: 'Player equipment not found' };
+            return { success: false, errorCode: ErrorCodes.EQUIPMENT_NOT_INITIALIZED };
         }
         
         const itemTemplate = this.templateManager.getItem(itemId);
@@ -119,7 +119,7 @@ export class EquipmentManager {
     unequipItem(playerId, slot) {
         const equipment = this.equipment.get(playerId);
         if (!equipment) {
-            return { success: false, errorCode: ErrorCodes.PLAYER_NOT_FOUND };
+            return { success: false, errorCode: ErrorCodes.EQUIPMENT_NOT_INITIALIZED };
         }
         
         if (!this.slots.includes(slot)) {

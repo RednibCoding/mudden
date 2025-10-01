@@ -400,6 +400,25 @@ class CommandHandler {
                 }
                 break;
                 
+            case 'talk':
+                if (args.length > 0) {
+                    commandData = {
+                        type: CommandTypes.TALK,
+                        npcId: args[0]
+                    };
+                }
+                break;
+                
+            case 'ask':
+                if (args.length >= 3 && args[1] === 'about') {
+                    commandData = {
+                        type: CommandTypes.ASK,
+                        npcId: args[0],
+                        topic: args.slice(2).join(' ')
+                    };
+                }
+                break;
+                
             default:
                 client.addToOutput(`❓ Unknown command: ${cmd}. Type a command or check the help above.`, 'error');
                 return;
@@ -474,11 +493,15 @@ class CommandHandler {
                     '• say [message] - Say something to everyone in the room',
                     '• tell [player] [message] - Send a private message',
                     '• emote [action] - Perform an emotive action',
+                    '• talk [npc] - Start conversation with an NPC',
+                    '• ask [npc] about [topic] - Ask NPC about specific topic',
                     '',
                     'Examples:',
                     '• say Hello everyone!',
                     '• tell john How are you?',
-                    '• emote waves at everyone'
+                    '• emote waves at everyone',
+                    '• talk town_guard',
+                    '• ask innkeeper about ale'
                 ]
             }
         };
@@ -525,7 +548,12 @@ class UpdateHandler {
             
             [ErrorCodes.ITEM_NOT_EQUIPPABLE]: (data) => `${data.itemId || 'That item'} cannot be equipped`,
             [ErrorCodes.WRONG_EQUIPMENT_SLOT]: 'Wrong equipment slot',
-            [ErrorCodes.SLOT_ALREADY_OCCUPIED]: 'Equipment slot is already occupied'
+            [ErrorCodes.SLOT_ALREADY_OCCUPIED]: 'Equipment slot is already occupied',
+            [ErrorCodes.EQUIPMENT_NOT_INITIALIZED]: 'Equipment system not initialized for player',
+            
+            [ErrorCodes.NPC_NOT_FOUND]: (data) => `NPC ${data.npcId || 'unknown'} not found here`,
+            [ErrorCodes.NPC_NOT_RESPONSIVE]: 'This NPC is not responsive',
+            [ErrorCodes.INVALID_TOPIC]: (data) => this.generateGenericNpcResponse(data.topic)
         };
 
         // Success message mapping for actions
@@ -590,6 +618,14 @@ class UpdateHandler {
                 
             case UpdateTypes.ITEM_INFO:
                 this.handleItemInfo(update);
+                break;
+                
+            case UpdateTypes.NPC_DIALOGUE:
+                this.handleNpcDialogue(update);
+                break;
+                
+            case UpdateTypes.NPC_RESPONSE:
+                this.handleNpcResponse(update);
                 break;
                 
             default:
@@ -772,6 +808,21 @@ class UpdateHandler {
         }
     }
     
+    handleNpcDialogue(update) {
+        const { npcName, message, availableTopics } = update.data;
+        client.addToOutput(`\n💬 ${npcName} says: "${message}"`, 'info');
+        
+        if (availableTopics && availableTopics.length > 0) {
+            client.addToOutput(`🗨️ You can ask about: ${availableTopics.join(', ')}`, 'muted');
+            client.addToOutput(`💡 Use: ask ${npcName.toLowerCase().replace(/ /g, '_')} about <topic>`, 'muted');
+        }
+    }
+    
+    handleNpcResponse(update) {
+        const { npcName, topic, message } = update.data;
+        client.addToOutput(`\n💬 ${npcName} responds about ${topic}: "${message}"`, 'info');
+    }
+    
     getItemDisplayName(itemId, itemNames) {
         return (itemNames && itemNames[itemId]) ? itemNames[itemId] : itemId;
     }
@@ -782,6 +833,18 @@ class UpdateHandler {
             return message(data);
         }
         return message || `Unknown error (${errorCode})`;
+    }
+    
+    generateGenericNpcResponse(topic) {
+        const genericResponses = [
+            `I don't know much about ${topic || 'that'}.`,
+            `That's not something I can help you with.`,
+            `I'm afraid I don't understand what you're asking about.`,
+            `Perhaps you should ask someone else about ${topic || 'that topic'}.`,
+            `I haven't heard anything about ${topic || 'that'}.`,
+            `That's outside my area of knowledge.`
+        ];
+        return genericResponses[Math.floor(Math.random() * genericResponses.length)];
     }
 }
 
