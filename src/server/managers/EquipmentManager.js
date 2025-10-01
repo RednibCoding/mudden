@@ -72,13 +72,13 @@ export class EquipmentManager {
         }
         
         const itemTemplate = this.templateManager.getItem(itemId);
-        if (!itemTemplate || !itemTemplate.equipment) {
+        if (!itemTemplate || !itemTemplate.slot) {
             return { success: false, errorCode: ErrorCodes.ITEM_NOT_EQUIPPABLE };
         }
         
         // Determine slot if not specified
         if (!slot) {
-            slot = itemTemplate.equipment.slot;
+            slot = itemTemplate.slot;
         }
         
         // Validate slot
@@ -87,7 +87,7 @@ export class EquipmentManager {
         }
         
         // Check if item can be equipped to this slot
-        if (itemTemplate.equipment.slot !== slot) {
+        if (itemTemplate.slot !== slot) {
             return { success: false, errorCode: ErrorCodes.SLOT_RESTRICTION, context: { itemName: itemTemplate.name, slot } };
         }
         
@@ -316,8 +316,9 @@ export class EquipmentManager {
             };
         }
 
-        // Check if item is equippable
-        if (!itemTemplate.equipment) {
+        // Check if item is equippable by checking if it has a slot
+        const slot = itemTemplate.slot;
+        if (!slot) {
             return { 
                 success: false, 
                 errorCode: ErrorCodes.ITEM_NOT_EQUIPPABLE,
@@ -325,11 +326,11 @@ export class EquipmentManager {
             };
         }
 
-        const slot = itemTemplate.equipment.slot;
-        if (!slot) {
+        // Validate the slot is valid
+        if (!this.slots.includes(slot)) {
             return { 
                 success: false, 
-                errorCode: ErrorCodes.INVALID_SLOT,
+                errorCode: ErrorCodes.WRONG_EQUIPMENT_SLOT,
                 itemId: itemId
             };
         }

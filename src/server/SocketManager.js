@@ -94,6 +94,22 @@ export class SocketManager {
     const result = this.gameEngine.managers.playerManager.authenticatePlayer(socket.id, username, password)
     
     if (result.success) {
+      // If there was an existing session, disconnect it
+      if (result.existingPlayerId) {
+        const existingSocket = this.io.sockets.sockets.get(result.existingPlayerId);
+        if (existingSocket) {
+          console.log(`Disconnecting existing session for ${username}: ${result.existingPlayerId}`);
+          existingSocket.emit('authResult', { 
+            success: false, 
+            message: 'Session replaced by new login' 
+          });
+          existingSocket.disconnect(true);
+        }
+        
+        // Clean up connection tracking
+        this.connectedPlayers.delete(result.existingPlayerId);
+        this.playerSockets.delete(result.existingPlayerId);
+      }
       // Store player connection
       this.connectedPlayers.set(socket.id, socket.id)
       this.playerSockets.set(socket.id, socket.id)

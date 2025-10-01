@@ -86,7 +86,7 @@ export class TakeItemCommand extends BaseCommand {
   }
   
   static fromJSON(data) {
-    return new TakeItemCommand(data.playerId, data.itemId, data.quantity, data.commandId)
+    return new TakeItemCommand(data.playerId, data.itemId, data.quantity || 1, data.commandId)
   }
 }
 
@@ -172,7 +172,7 @@ export class DropItemCommand extends BaseCommand {
   }
   
   static fromJSON(data) {
-    return new DropItemCommand(data.playerId, data.itemId, data.quantity, data.commandId)
+    return new DropItemCommand(data.playerId, data.itemId, data.quantity || 1, data.commandId)
   }
 }
 

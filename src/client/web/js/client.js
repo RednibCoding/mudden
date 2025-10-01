@@ -291,10 +291,24 @@ class CommandHandler {
             case 'take':
             case 'get':
                 if (args.length > 0) {
+                    // Handle multi-word item names
+                    // If last arg is a number, it's quantity, otherwise all args are item name
+                    const lastArg = args[args.length - 1];
+                    const isQuantity = /^\d+$/.test(lastArg);
+                    
+                    let itemId, quantity;
+                    if (isQuantity && args.length > 1) {
+                        quantity = parseInt(lastArg);
+                        itemId = args.slice(0, -1).join('_').toLowerCase();
+                    } else {
+                        quantity = 1;
+                        itemId = args.join('_').toLowerCase();
+                    }
+                    
                     commandData = {
                         type: CommandTypes.TAKE_ITEM,
-                        itemId: args[0],
-                        quantity: args[1] ? parseInt(args[1]) : 1
+                        itemId: itemId,
+                        quantity: quantity
                     };
                 }
                 break;
@@ -316,11 +330,22 @@ class CommandHandler {
                 break;
                 
             case 'equip':
+            case 'wear':
                 if (args.length > 0) {
                     commandData = {
                         type: CommandTypes.EQUIP_ITEM,
-                        itemId: args[0],
-                        slot: args[1] || null
+                        itemId: args.join('_').toLowerCase(),
+                        slot: null
+                    };
+                }
+                break;
+                
+            case 'unequip':
+            case 'remove':
+                if (args.length > 0) {
+                    commandData = {
+                        type: CommandTypes.UNEQUIP_ITEM,
+                        itemId: args.join('_').toLowerCase()
                     };
                 }
                 break;

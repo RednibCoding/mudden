@@ -8,10 +8,13 @@
     "maxSlots": 20
   },
   "equipment": {
-    "weapon": null,
-    "armor": null,
-    "shield": null,
-    "accessory": null
+    "main_hand": null,
+    "off_hand": null,
+    "head": null,
+    "chest": null,
+    "legs": null,
+    "feet": null,
+    "hands": null
   },
   "stats": {
     "strength": 10,

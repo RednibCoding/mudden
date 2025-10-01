@@ -44,11 +44,15 @@ export class PlayerManager {
                     return { success: false, errorCode: ErrorCodes.INVALID_CREDENTIALS };
                 }
                 
-                // Check for duplicate login
+                // Check for duplicate login - prepare to disconnect existing session
+                let existingPlayerId = null;
                 if (this.playersByName.has(username.toLowerCase())) {
-                    const existingPlayerId = this.playersByName.get(username.toLowerCase());
-                    console.log(`Duplicate login attempt for ${username}. Existing session: ${existingPlayerId}`);
-                    return { success: false, errorCode: ErrorCodes.ALREADY_LOGGED_IN };
+                    existingPlayerId = this.playersByName.get(username.toLowerCase());
+                    console.log(`Duplicate login for ${username}. Will disconnect existing session: ${existingPlayerId}`);
+                    
+                    // Clean up the existing session data
+                    this.players.delete(existingPlayerId);
+                    this.playersByName.delete(username.toLowerCase());
                 }
                 
                 // Load player data
@@ -59,9 +63,26 @@ export class PlayerManager {
                 });
                 this.playersByName.set(username.toLowerCase(), playerId);
                 
-                return { success: true, isNewPlayer: false, player: playerData };
+                return { 
+                    success: true, 
+                    isNewPlayer: false, 
+                    player: playerData, 
+                    existingPlayerId: existingPlayerId 
+                };
             } else {
                 // New player - create account
+                // Character names must be unique, but this is already enforced by file system
+                // Check if someone with this name is currently logged in (shouldn't happen)
+                let existingPlayerId = null;
+                if (this.playersByName.has(username.toLowerCase())) {
+                    existingPlayerId = this.playersByName.get(username.toLowerCase());
+                    console.warn(`WARNING: Creating new character ${username} but name is in active session: ${existingPlayerId}`);
+                    
+                    // Clean up the existing session data
+                    this.players.delete(existingPlayerId);
+                    this.playersByName.delete(username.toLowerCase());
+                }
+                
                 const salt = crypto.randomBytes(32).toString('hex');
                 const passwordHash = this.hashPassword(password, salt);
                 
@@ -85,7 +106,12 @@ export class PlayerManager {
                 });
                 this.playersByName.set(username.toLowerCase(), playerId);
                 
-                return { success: true, isNewPlayer: true, player: newPlayer };
+                return { 
+                    success: true, 
+                    isNewPlayer: true, 
+                    player: newPlayer, 
+                    existingPlayerId: existingPlayerId 
+                };
             }
         } catch (error) {
             console.error('Error authenticating player:', error);
@@ -240,7 +266,7 @@ export class PlayerManager {
                     health: 100,
                     maxHealth: 100,
                     inventory: { items: [], maxSlots: 20 },
-                    equipment: { weapon: null, armor: null, shield: null, accessory: null },
+                    equipment: { main_hand: null, off_hand: null, head: null, chest: null, legs: null, feet: null, hands: null },
                     stats: { strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10 },
                     experience: 0,
                     gold: 50
