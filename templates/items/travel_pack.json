@@ -4,7 +4,6 @@
   "type": "bag",
   "slot": "bag",
   "value": 75,
-  "weight": 3,
   "canTake": true,
   "canUse": true,
   "stackable": false,

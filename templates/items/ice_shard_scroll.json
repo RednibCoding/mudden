@@ -3,7 +3,6 @@
   "description": "A freezing cold scroll that crackles with icy magic. Perfect for dealing frost damage to enemies.",
   "type": "scroll",
   "value": 20,
-  "weight": 1,
   "canTake": true,
   "canUse": true,
   "effects": {

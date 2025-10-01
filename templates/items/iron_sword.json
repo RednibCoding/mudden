@@ -4,7 +4,6 @@
   "type": "weapon",
   "slot": "main_hand",
   "value": 50,
-  "weight": 5,
   "canTake": true,
   "canUse": true,
   "stackable": false,

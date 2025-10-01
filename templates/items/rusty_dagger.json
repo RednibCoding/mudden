@@ -4,7 +4,6 @@
   "type": "weapon",
   "value": 8,
   "slot": "main_hand",
-  "weight": 1,
   "canTake": true,
   "canUse": true,
   "effects": {

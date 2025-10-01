@@ -4,7 +4,6 @@
   "type": "armor",
   "slot": "feet",
   "value": 30,
-  "weight": 2,
   "canTake": true,
   "canUse": true,
   "stackable": false,

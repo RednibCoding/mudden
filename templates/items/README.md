@@ -17,7 +17,6 @@ Each item file must contain the following structure:
   "type": "weapon|armor|consumable|readable|scroll|quest",
   "slot": "main_hand|off_hand|chest|head|legs|feet",
   "value": 50,
-  "weight": 5,
   "canTake": true,
   "canUse": true,
   "effects": {
@@ -35,7 +34,6 @@ Each item file must contain the following structure:
 - **type**: Category of item (weapon, armor, consumable, etc.)
 - **slot**: Equipment slot for weapons/armor (optional)
 - **value**: Gold value for buying/selling
-- **weight**: Encumbrance value (future use)
 - **canTake**: Whether players can pick up the item
 - **canUse**: Whether the item can be used/activated
 - **effects**: Object containing stat modifiers and special effects
@@ -132,7 +130,6 @@ Common effect properties:
 
 ### Shop Items
 - Set appropriate value for economy balance
-- Consider weight for inventory management
 - Ensure effects are balanced for game progression
 
 ### Room Items

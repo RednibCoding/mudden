@@ -4,7 +4,6 @@
   "type": "armor",
   "slot": "off_hand",
   "value": 25,
-  "weight": 3,
   "canTake": true,
   "canUse": true,
   "stackable": false,

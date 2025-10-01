@@ -3,7 +3,6 @@
   "description": "A thick, gray fur pelt from a forest wolf. The fur is coarse but warm, and could be useful for crafting or trade.",
   "type": "material",
   "value": 12,
-  "weight": 2,
   "canTake": true,
   "canUse": false,
   "stackable": true,

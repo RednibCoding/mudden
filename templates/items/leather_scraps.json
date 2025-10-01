@@ -3,7 +3,6 @@
   "description": "Pieces of torn leather padding from training equipment. Could be useful for basic armor repairs or crafting.",
   "type": "material",
   "value": 3,
-  "weight": 1,
   "stackable": true,
   "canTake": true,
   "canUse": false,

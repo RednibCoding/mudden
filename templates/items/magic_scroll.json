@@ -3,7 +3,6 @@
   "description": "An ancient scroll inscribed with mystical runes. It seems to contain a powerful spell.",
   "type": "scroll",
   "value": 15,
-  "weight": 1,
   "canTake": true,
   "canUse": true,
   "effects": {
