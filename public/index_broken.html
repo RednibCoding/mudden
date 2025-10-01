@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mudden v2 - Clean Client</title>
+    <title>Mudden v2 Test Client</title>
     <script src="/socket.io/socket.io.js"></script>
     <style>
         body {
@@ -13,7 +13,6 @@
             margin: 0;
             padding: 20px;
         }
-        
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -21,57 +20,21 @@
             grid-template-columns: 1fr 300px;
             gap: 20px;
         }
-        
         .main-game {
             min-width: 0;
         }
-        
         .sidebar {
             background-color: #2d2d2d;
             border: 1px solid #555;
             border-radius: 4px;
             padding: 15px;
         }
-        
         h1 {
             color: #4CAF50;
             text-align: center;
             border-bottom: 2px solid #4CAF50;
             padding-bottom: 10px;
-            grid-column: 1 / -1;
         }
-        
-        .status {
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #333;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .connected { color: #4CAF50; }
-        .disconnected { color: #f44336; }
-        
-        .auth-form {
-            background-color: #2d2d2d;
-            padding: 20px;
-            border: 1px solid #555;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-        
-        .auth-form input {
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-            border: 1px solid #555;
-            padding: 10px;
-            margin: 5px 10px 5px 0;
-            font-family: inherit;
-            border-radius: 4px;
-            width: 200px;
-        }
-        
         .game-output {
             background-color: #2d2d2d;
             border: 1px solid #555;
@@ -82,12 +45,10 @@
             white-space: pre-wrap;
             font-size: 14px;
         }
-        
         .input-area {
             display: flex;
             gap: 10px;
         }
-        
         #commandInput {
             flex: 1;
             background-color: #2d2d2d;
@@ -97,7 +58,6 @@
             font-family: inherit;
             font-size: 14px;
         }
-        
         button {
             background-color: #4a4a4a;
             color: #e0e0e0;
@@ -105,27 +65,18 @@
             padding: 10px 20px;
             cursor: pointer;
             font-family: inherit;
-            border-radius: 4px;
         }
-        
         button:hover {
             background-color: #5a5a5a;
         }
-        
-        .commands-help {
-            background-color: #2d2d2d;
-            padding: 15px;
-            border: 1px solid #555;
+        .status {
             margin-bottom: 10px;
+            padding: 10px;
+            background-color: #333;
             border-radius: 4px;
-            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
         }
-        
-        .commands-help h4 {
-            margin-top: 0;
-            color: #4CAF50;
-        }
-        
         .stat-bar {
             background-color: #1a1a1a;
             border: 1px solid #555;
@@ -134,25 +85,46 @@
             overflow: hidden;
             margin: 5px 0;
         }
-        
         .stat-fill {
             height: 100%;
             transition: width 0.3s ease;
         }
-        
         .health-bar { background-color: #f44336; }
+        .mana-bar { background-color: #2196F3; }
         .exp-bar { background-color: #4CAF50; }
-        
+        .connected { color: #4CAF50; }
+        .disconnected { color: #f44336; }
+        .auth-form {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border: 1px solid #555;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .auth-form input {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            padding: 10px;
+            margin: 5px 10px 5px 0;
+            font-family: inherit;
+            border-radius: 4px;
+        }
+        .commands-help {
+            background-color: #2d2d2d;
+            padding: 15px;
+            border: 1px solid #555;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .commands-help h4 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
         .error { color: #f44336; }
         .success { color: #4CAF50; }
         .info { color: #2196F3; }
-        
-        .sidebar h4 {
-            color: #4CAF50;
-            margin-top: 0;
-            border-bottom: 1px solid #555;
-            padding-bottom: 5px;
-        }
         
         /* Mobile responsiveness */
         @media (max-width: 768px) {
@@ -170,47 +142,41 @@
             .commands-help {
                 font-size: 11px;
             }
-            h1 {
-                grid-column: 1;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏰 Mudden v2 - Clean Client</h1>
-        
         <div class="main-game">
+            <h1>🏰 Mudden v2 - Test Client</h1>
+            
             <div class="status">
                 <span>Connection: <span id="connectionStatus" class="disconnected">Disconnected</span></span>
                 <span id="playerInfo"></span>
             </div>
 
-            <div id="authForm" class="auth-form">
-                <h3>Login / Create Character</h3>
-                <p>Enter your character name and password. If the character doesn't exist, it will be created.</p>
-                <div>
-                    <input type="text" id="username" placeholder="Character Name" />
-                    <input type="password" id="password" placeholder="Password" />
-                    <button onclick="authenticate()">Login/Create</button>
-                </div>
-            </div>
+        <div id="authForm" class="auth-form">
+            <h3>Login / Create Character</h3>
+            <p>Enter your character name and password. If the character doesn't exist, it will be created.</p>
+            <input type="text" id="username" placeholder="Character Name" />
+            <input type="password" id="password" placeholder="Password" />
+            <button onclick="authenticate()">Login/Create</button>
+        </div>
 
-            <div id="gameArea" style="display: none;">
-                <div class="commands-help">
-                    <h4>Available Commands:</h4>
-                    <strong>Movement:</strong> north/n, south/s, east/e, west/w, go [direction]<br>
-                    <strong>Items:</strong> take [item], get [item] [quantity], inventory/inv/i<br>
-                    <strong>Equipment:</strong> equip [item] [slot]<br>
-                    <strong>Information:</strong> look/l<br>
-                    <strong>Social:</strong> say [message]
-                </div>
-                
-                <div id="gameOutput" class="game-output"></div>
-                <div class="input-area">
-                    <input type="text" id="commandInput" placeholder="Enter command..." onkeypress="handleKeyPress(event)" />
-                    <button onclick="sendCommand()">Send</button>
-                </div>
+        <div id="gameArea" style="display: none;">
+            <div class="commands-help">
+                <h4>Available Commands:</h4>
+                <strong>Movement:</strong> north/n, south/s, east/e, west/w, go [direction]<br>
+                <strong>Items:</strong> take [item], get [item] [quantity], inventory/inv/i<br>
+                <strong>Equipment:</strong> equip [item] [slot]<br>
+                <strong>Information:</strong> look/l<br>
+                <strong>Social:</strong> say [message]
+            </div>
+            
+            <div id="gameOutput" class="game-output"></div>
+            <div class="input-area">
+                <input type="text" id="commandInput" placeholder="Enter command..." onkeypress="handleKeyPress(event)" />
+                <button onclick="sendCommand()">Send</button>
             </div>
         </div>
         
@@ -322,7 +288,7 @@
             refreshInventoryUI() {
                 const inventoryList = document.getElementById('inventoryList');
                 if (this.inventory.length === 0) {
-                    inventoryList.innerHTML = '<div style="color: #888;">Empty</div>';
+                    inventoryList.innerHTML = '<div style=\"color: #888;\">Empty</div>';
                     return;
                 }
                 
@@ -391,7 +357,7 @@
                     addToOutput(`👋 Welcome back, ${GameState.player.name}!`, 'success');
                 }
                 
-                // Request initial room state
+                                // Request initial room state
                 sendGameCommand('look');
             } else {
                 addToOutput(`❌ Authentication failed: ${result.error}`, 'error');
@@ -615,11 +581,11 @@
             document.getElementById('quickInventory').style.display = 'none';
         }
 
+        // Initial state
+        showAuthForm();
+        
         // Auto-focus username field
-        document.addEventListener('DOMContentLoaded', () => {
-            showAuthForm();
-            document.getElementById('username').focus();
-        });
+        document.getElementById('username').focus();
     </script>
 </body>
 </html>
