@@ -1,6 +1,8 @@
 .vscode/
 .github/
 
+persist/
+
 # Nuxt dev/build outputs
 .output
 .data
