@@ -41,6 +41,8 @@ export class PlayerManager {
                 
                 // Check for duplicate login
                 if (this.playersByName.has(username.toLowerCase())) {
+                    const existingPlayerId = this.playersByName.get(username.toLowerCase());
+                    console.log(`Duplicate login attempt for ${username}. Existing session: ${existingPlayerId}`);
                     return { success: false, error: 'Player is already logged in' };
                 }
                 
@@ -100,10 +102,13 @@ export class PlayerManager {
             this.savePlayer(playerId);
             
             // Remove from active players
+            console.log(`Cleaning up player ${player.name} (${playerId}) from playersByName and players maps`);
             this.playersByName.delete(player.name.toLowerCase());
             this.players.delete(playerId);
             
-            console.log(`Player ${player.name} disconnected`);
+            console.log(`Player ${player.name} disconnected and cleaned up`);
+        } else {
+            console.log(`No player data found for playerId: ${playerId} during disconnect`);
         }
     }
 

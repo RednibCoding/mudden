@@ -161,9 +161,22 @@ export class SocketManager {
    * Handle client disconnection
    */
   handleDisconnect(socket) {
-    const playerId = this.connectedPlayers.get(socket.id)
-    if (playerId) {
-      console.log(`Player ${playerId} disconnected`)
+    const playerId = socket.id // Use socket.id as the playerId
+    
+    // Check if this socket was authenticated
+    if (this.connectedPlayers.has(socket.id)) {
+      // Get player info before cleanup
+      const player = this.gameEngine.managers.player.getPlayer(playerId)
+      const playerName = player ? player.name : 'Unknown'
+      
+      console.log(`Player ${playerName} (${playerId}) disconnected`)
+      
+      // Clean up all player state
+      this.gameEngine.managers.player.disconnectPlayer(playerId)
+      this.gameEngine.managers.inventory.removePlayerInventory(playerId)
+      this.gameEngine.managers.equipment.removePlayerEquipment(playerId)
+      
+      // Clean up socket tracking
       this.connectedPlayers.delete(socket.id)
       this.playerSockets.delete(playerId)
     } else {
