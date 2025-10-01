@@ -1,0 +1,48 @@
+{
+  "name": "Forest Wolf",
+  "description": "A snarling gray wolf with yellow eyes and bared fangs. It looks hungry and aggressive.",
+  "stats": {
+    "health": 30,
+    "maxHealth": 30,
+    "strength": 8,
+    "defense": 3,
+    "speed": 12,
+    "experience": 15
+  },
+  "attacks": [
+    {
+      "name": "Savage Bite",
+      "damage": [6, 10],
+      "accuracy": 85,
+      "chance": 70,
+      "description": "The wolf lunges forward with snapping jaws!"
+    },
+    {
+      "name": "Claw Swipe",
+      "damage": [3, 7],
+      "accuracy": 90,
+      "chance": 30,
+      "description": "The wolf swipes with its sharp claws!"
+    }
+  ],
+  "loot": {
+    "gold": [3, 10],
+    "items": [
+      {
+        "id": "wolf_pelt",
+        "chance": 70,
+        "quantity": [1, 2]
+      },
+      {
+        "id": "healing_potion",
+        "chance": 40,
+        "quantity": [1, 1]
+      }
+    ]
+  },
+  "behavior": {
+    "aggressive": true,
+    "fleeThreshold": 5,
+    "packAnimal": true
+  }
+}

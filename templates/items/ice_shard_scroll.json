@@ -1,0 +1,12 @@
+{
+  "name": "Ice Shard Scroll",
+  "description": "A freezing cold scroll that crackles with icy magic. Perfect for dealing frost damage to enemies.",
+  "type": "scroll",
+  "value": 20,
+  "canTake": true,
+  "canUse": true,
+  "effects": {
+    "spell": "ice_shard",
+    "damage": 12
+  }
+}

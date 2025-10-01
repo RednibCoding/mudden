@@ -1,0 +1,42 @@
+{
+  "name": "Repair Tools",
+  "description": "The Blacksmith's tools are getting dull and need maintenance. He needs some materials to repair them.",
+  "giver": "blacksmith",
+  "type": "collect",
+  "level": 1,
+  "prerequisites": {
+    "level": 1,
+    "quests": [],
+    "items": []
+  },
+  "objectives": [
+    {
+      "type": "collect",
+      "target": "sharpening_stone",
+      "quantity": 1,
+      "current": 0,
+      "description": "Collect 1 Sharpening Stone for tool maintenance"
+    },
+    {
+      "type": "collect",
+      "target": "mushroom",
+      "quantity": 2,
+      "current": 0,
+      "description": "Collect 2 Mushrooms for tool oil"
+    }
+  ],
+  "rewards": {
+    "experience": 20,
+    "gold": 15,
+    "items": ["healing_potion"]
+  },
+  "dialogue": {
+    "offer": "My tools are getting dull from all the work. Could you help me gather some materials to repair them?",
+    "accept": "Great! I need a good sharpening stone for my tools and a couple of mushrooms to make tool oil.",
+    "decline": "No worries, I'll manage somehow.",
+    "progress": "Still looking for those materials? A sharpening stone and mushrooms - that's all I need.",
+    "complete": "Perfect! These will keep my tools in top condition. Here's something for your trouble.",
+    "completed": "Thanks to you, my tools are working perfectly again!"
+  },
+  "status": "available"
+}

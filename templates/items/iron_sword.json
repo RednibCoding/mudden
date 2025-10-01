@@ -1,0 +1,14 @@
+{
+  "name": "Iron Sword",
+  "description": "A well-crafted iron sword with a sharp blade and leather-wrapped hilt.",
+  "type": "weapon",
+  "slot": "main_hand",
+  "value": 50,
+  "canTake": true,
+  "canUse": true,
+  "stackable": false,
+  "tradeable": true,
+  "effects": {
+    "damage": 12
+  }
+}

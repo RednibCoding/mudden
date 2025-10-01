@@ -1,0 +1,10 @@
+{
+  "name": "Wood",
+  "description": "A sturdy piece of wood, suitable for crafting weapon handles.",
+  "type": "material",
+  "value": 2,
+  "stackable": true,
+  "tradeable": true,
+  "effects": {},
+  "stats": {}
+}

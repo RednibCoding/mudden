@@ -1,0 +1,14 @@
+{
+  "name": "Enchanted Satchel",
+  "description": "A magical satchel that seems larger inside than outside. Adds 15 inventory slots when equipped.",
+  "type": "bag",
+  "slot": "bag",
+  "value": 300,
+  "canTake": true,
+  "canUse": true,
+  "stackable": false,
+  "tradeable": true,
+  "effects": {
+    "inventory": 15
+  }
+}

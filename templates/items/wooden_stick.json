@@ -1,0 +1,12 @@
+{
+  "name": "Wooden Stick",
+  "description": "A sturdy wooden stick, suitable for use as a basic weapon.",
+  "type": "weapon",
+  "slot": "main_hand",
+  "value": 2,
+  "canTake": true,
+  "canUse": true,
+  "effects": {
+    "damage": 3
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "name": "Forest Spider",
+  "description": "A large, hairy spider with glistening black eyes and sharp fangs. Its web glistens with dewdrops in the dim forest light. It moves with surprising speed and agility.",
+  "stats": {
+    "health": 35,
+    "maxHealth": 35,
+    "strength": 10,
+    "defense": 4,
+    "speed": 15,
+    "experience": 20
+  },
+  "attacks": [
+    {
+      "name": "Venomous Bite",
+      "damage": [6, 10],
+      "accuracy": 85,
+      "chance": 50,
+      "description": "The spider lunges forward with its fangs dripping venom!"
+    },
+    {
+      "name": "Web Strike",
+      "damage": [3, 7],
+      "accuracy": 90,
+      "chance": 35,
+      "description": "The spider shoots a sticky web and strikes with its legs!"
+    },
+    {
+      "name": "Quick Skitter",
+      "damage": [4, 8],
+      "accuracy": 95,
+      "chance": 15,
+      "description": "The spider darts forward with lightning speed!"
+    }
+  ],
+  "loot": {
+    "gold": [2, 8],
+    "items": [
+      {
+        "id": "spider_silk",
+        "chance": 80,
+        "quantity": [1, 3]
+      },
+      {
+        "id": "healing_potion",
+        "chance": 30,
+        "quantity": [1, 1]
+      }
+    ]
+  },
+  "behavior": {
+    "aggressive": true,
+    "fleeThreshold": 8,
+    "packAnimal": false
+  }
+}

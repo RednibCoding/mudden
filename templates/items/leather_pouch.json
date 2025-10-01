@@ -1,0 +1,14 @@
+{
+  "name": "Leather Pouch",
+  "description": "A small leather pouch that can hold a few extra items. Adds 3 inventory slots when equipped.",
+  "type": "bag",
+  "slot": "bag",
+  "value": 25,
+  "canTake": true,
+  "canUse": true,
+  "stackable": false,
+  "tradeable": true,
+  "effects": {
+    "inventory": 3
+  }
+}

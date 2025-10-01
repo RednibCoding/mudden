@@ -1,0 +1,11 @@
+{
+  "name": "Wild Berries",
+  "description": "Sweet wild berries found in forest clearings. They're perfectly ripe.",
+  "type": "consumable",
+  "value": 2,
+  "stackable": true,
+  "effects": {
+    "health": 8
+  },
+  "stats": {}
+}

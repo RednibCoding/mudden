@@ -1,0 +1,13 @@
+{
+  "name": "Healing Potion",
+  "description": "A small vial containing a red liquid that glows with magical energy.",
+  "type": "consumable",
+  "value": 20,
+  "canTake": true,
+  "canUse": true,
+  "stackable": true,
+  "tradeable": true,
+  "effects": {
+    "health": 25
+  }
+}

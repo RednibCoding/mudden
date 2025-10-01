@@ -1,0 +1,12 @@
+{
+  "name": "Rusty Dagger",
+  "description": "A small, corroded blade with a chipped edge. Despite its poor condition, it's still sharp enough to be dangerous.",
+  "type": "weapon",
+  "value": 8,
+  "slot": "main_hand",
+  "canTake": true,
+  "canUse": true,
+  "effects": {
+      "damage": 3
+    }
+}

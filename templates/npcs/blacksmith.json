@@ -1,0 +1,25 @@
+{
+  "name": "Master Blacksmith",
+  "description": "A muscular dwarf with soot-covered hands and a leather apron, hammering away at red-hot metal.",
+  "dialogue": {
+    "greeting": "Ah, a customer! Looking for quality weapons and armor?",
+    "responses": {
+      "hello": "Welcome to my forge! I craft the finest weapons in the land.",
+      "weapons": "I have swords, axes, and daggers. All made with the best steel.",
+      "armor": "Need protection? I've got shields and armor to keep you safe.",
+      "repair": "Bring me your damaged gear, I'll fix it good as new.",
+      "bye": "May your blade stay sharp, adventurer!"
+    }
+  },
+  "quests": ["blacksmith_first_weapon", "blacksmith_repair_tools", "blacksmith_advanced_forging"],
+  "shop": {
+    "items": ["iron_sword", "leather_shield"],
+    "services": ["repair", "upgrade"]
+  },
+  "hostile": false,
+  "stats": {
+    "health": 80,
+    "strength": 18,
+    "defense": 10
+  }
+}

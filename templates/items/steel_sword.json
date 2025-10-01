@@ -1,0 +1,14 @@
+{
+  "name": "Steel Sword",
+  "description": "A superior steel sword with excellent balance and a razor-sharp edge.",
+  "type": "weapon",
+  "slot": "main_hand",
+  "value": 100,
+  "canTake": true,
+  "canUse": true,
+  "stackable": false,
+  "tradeable": true,
+  "effects": {
+    "damage": 18
+  }
+}

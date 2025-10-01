@@ -1,0 +1,11 @@
+{
+  "name": "Spider Silk",
+  "description": "Strong, silvery threads of spider silk. This natural fiber is incredibly durable and could be useful for crafting or trading.",
+  "type": "material",
+  "value": 8,
+  "stackable": true,
+  "canTake": true,
+  "canUse": false,
+  "tradeable": true,
+  "effects": {}
+}

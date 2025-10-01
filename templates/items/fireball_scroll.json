@@ -1,0 +1,12 @@
+{
+  "name": "Fireball Scroll",
+  "description": "A combat scroll inscribed with fiery runes. When used, it unleashes a devastating fireball at your enemy.",
+  "type": "scroll",
+  "value": 25,
+  "canTake": true,
+  "canUse": true,
+  "effects": {
+    "spell": "fireball",
+    "damage": 15
+  }
+}
