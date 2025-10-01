@@ -11,7 +11,8 @@ export const UpdateTypes = {
   
   // Inventory Updates (100-199)
   INVENTORY_CHANGED: 100,
-  EQUIPMENT_CHANGED: 101,
+  INVENTORY_DISPLAY: 101,
+  EQUIPMENT_CHANGED: 102,
   
   // World Updates (200-299)
   ROOM_STATE_CHANGED: 200,

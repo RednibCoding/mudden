@@ -1,6 +1,6 @@
 import { CommandTypes } from './CommandTypes.js'
 import { MoveCommand, LookCommand } from './commands/MovementCommands.js'
-import { TakeItemCommand, DropItemCommand, UseItemCommand } from './commands/InventoryCommands.js'
+import { TakeItemCommand, DropItemCommand, UseItemCommand, InventoryCommand } from './commands/InventoryCommands.js'
 import { EquipItemCommand, UnequipItemCommand } from './commands/EquipmentCommands.js'
 import { SayCommand, TellCommand, EmoteCommand, TalkCommand, AskCommand } from './commands/SocialCommands.js'
 import { StatsCommand, HealthCommand, EquipmentDisplayCommand, ExamineCommand } from './commands/InfoCommands.js'
@@ -16,6 +16,7 @@ export class CommandFactory {
         [CommandTypes.TAKE_ITEM]: TakeItemCommand,
         [CommandTypes.DROP_ITEM]: DropItemCommand,
         [CommandTypes.USE_ITEM]: UseItemCommand,
+        [CommandTypes.INVENTORY]: InventoryCommand,
         [CommandTypes.EQUIP_ITEM]: EquipItemCommand,
         [CommandTypes.UNEQUIP_ITEM]: UnequipItemCommand,
         [CommandTypes.SAY]: SayCommand,

@@ -310,10 +310,17 @@ export class InventoryManager {
      * @returns {Object} Complete result with inventory data
      */
     processTakeItem(playerId, itemId, quantity, worldManager, location) {
-        // Check if item exists in room
-        const roomItems = worldManager.getRoomItems(location);
-        const roomItem = roomItems.find(item => item.id === itemId);
+        // Get room and check if item exists
+        const room = worldManager.getRoom(location);
+        if (!room) {
+            return {
+                success: false,
+                errorCode: ErrorCodes.ROOM_NOT_FOUND,
+                itemId: itemId
+            };
+        }
         
+        const roomItem = room.items?.find(item => item.id === itemId);
         if (!roomItem || roomItem.quantity < quantity) {
             return {
                 success: false,
@@ -493,5 +500,38 @@ export class InventoryManager {
         }
 
         return effects;
+    }
+
+    /**
+     * Get player inventory for display
+     * @param {string} playerId - Player ID
+     * @param {Object} playerManager - Player manager instance
+     * @returns {Object} Inventory display data
+     */
+    processGetInventory(playerId, playerManager) {
+        const player = playerManager.getPlayer(playerId);
+        if (!player) {
+            return {
+                success: false,
+                errorCode: ErrorCodes.PLAYER_NOT_FOUND
+            };
+        }
+
+        // Ensure inventory exists
+        if (!player.inventory) {
+            player.inventory = { items: [], maxSlots: 20 };
+        }
+
+        const inventory = player.inventory;
+        const totalSlots = inventory.maxSlots || 20;
+        const usedSlots = inventory.items.length;
+        const freeSlots = totalSlots - usedSlots;
+
+        return {
+            success: true,
+            inventory: inventory,
+            freeSlots: freeSlots,
+            totalSlots: totalSlots
+        };
     }
 }

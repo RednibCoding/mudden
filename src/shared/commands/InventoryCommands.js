@@ -259,3 +259,66 @@ export class UseItemCommand extends BaseCommand {
     return new UseItemCommand(data.playerId, data.itemId, data.commandId)
   }
 }
+
+/**
+ * Inventory command - display player's inventory
+ */
+export class InventoryCommand extends BaseCommand {
+  constructor(playerId, commandId = null) {
+    super(CommandTypes.INVENTORY, playerId, commandId)
+  }
+  
+  validate() {
+    super.validate()
+    return true
+  }
+  
+  getPayload() {
+    return {}
+  }
+  
+  execute(managers) {
+    const updates = []
+    const { playerManager, inventoryManager, templateManager } = managers
+    
+    // Validate player exists
+    const player = playerManager.getPlayer(this.playerId)
+    if (!player) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        errorCode: ErrorCodes.PLAYER_NOT_FOUND 
+      }))
+      return updates
+    }
+
+    // Get inventory display data
+    const result = inventoryManager.processGetInventory(this.playerId, playerManager)
+    
+    if (!result.success) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        errorCode: result.errorCode
+      }))
+      return updates
+    }
+
+    // Create item names mapping for display
+    const itemNames = {}
+    result.inventory.items.forEach(item => {
+      const template = templateManager.getItem(item.id)
+      itemNames[item.id] = template?.name || item.id
+    })
+    
+    // Create inventory display update
+    updates.push(new BaseUpdate(this.playerId, UpdateTypes.INVENTORY_DISPLAY, {
+      inventory: result.inventory.items,
+      itemNames: itemNames,
+      freeSlots: result.freeSlots,
+      totalSlots: result.totalSlots
+    }))
+
+    return updates
+  }
+  
+  static fromJSON(data) {
+    return new InventoryCommand(data.playerId, data.commandId)
+  }
+}

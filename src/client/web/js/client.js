@@ -576,6 +576,10 @@ class UpdateHandler {
                 this.handleInventoryChanged(update);
                 break;
                 
+            case UpdateTypes.INVENTORY_DISPLAY:
+                this.handleInventoryDisplay(update);
+                break;
+                
             case UpdateTypes.EQUIPMENT_CHANGED:
                 this.handleEquipmentChanged(update);
                 break;
@@ -679,6 +683,48 @@ class UpdateHandler {
         }
         if (update.data.itemNames) {
             this.gameState.updateItemNames(update.data.itemNames);
+        }
+    }
+    
+    handleInventoryDisplay(update) {
+        const data = update.data;
+        let output = '\n=== 🎒 Inventory ===\n';
+        
+        if (!data.inventory || data.inventory.length === 0) {
+            output += `Empty (${data.freeSlots}/${data.totalSlots} slots free)\n`;
+        } else {
+            output += `(${data.inventory.length}/${data.totalSlots} slots used)\n\n`;
+            
+            // Group items by ID and show quantities
+            const itemGroups = {};
+            data.inventory.forEach(item => {
+                if (itemGroups[item.id]) {
+                    itemGroups[item.id].quantity += item.quantity || 1;
+                } else {
+                    itemGroups[item.id] = {
+                        name: data.itemNames[item.id] || item.id,
+                        quantity: item.quantity || 1
+                    };
+                }
+            });
+            
+            // Display grouped items
+            Object.entries(itemGroups).forEach(([itemId, group]) => {
+                const quantityText = group.quantity > 1 ? ` (${group.quantity})` : '';
+                output += `• ${group.name}${quantityText}\n`;
+            });
+            
+            output += `\n${data.freeSlots} slots free\n`;
+        }
+        
+        client.addToOutput(output, 'info');
+        
+        // Also update the sidebar inventory
+        if (data.inventory) {
+            this.gameState.updateInventory(data.inventory);
+        }
+        if (data.itemNames) {
+            this.gameState.updateItemNames(data.itemNames);
         }
     }
     
