@@ -1,0 +1,15 @@
+{
+  "name": "Adventurer's Backpack",
+  "description": "A large, well-crafted backpack designed for long journeys. Adds 10 inventory slots when equipped.",
+  "type": "bag",
+  "slot": "bag",
+  "value": 150,
+  "weight": 5,
+  "canTake": true,
+  "canUse": true,
+  "stackable": false,
+  "tradeable": true,
+  "effects": {
+    "inventory": 10
+  }
+}
