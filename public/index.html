@@ -14,8 +14,20 @@
             padding: 20px;
         }
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+        .main-game {
+            min-width: 0;
+        }
+        .sidebar {
+            background-color: #2d2d2d;
+            border: 1px solid #555;
+            border-radius: 4px;
+            padding: 15px;
         }
         h1 {
             color: #4CAF50;
@@ -64,7 +76,23 @@
             border-radius: 4px;
             display: flex;
             justify-content: space-between;
+            grid-column: 1 / -1;
         }
+        .stat-bar {
+            background-color: #1a1a1a;
+            border: 1px solid #555;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+        .stat-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .health-bar { background-color: #f44336; }
+        .mana-bar { background-color: #2196F3; }
+        .exp-bar { background-color: #4CAF50; }
         .connected { color: #4CAF50; }
         .disconnected { color: #f44336; }
         .auth-form {
@@ -98,16 +126,35 @@
         .error { color: #f44336; }
         .success { color: #4CAF50; }
         .info { color: #2196F3; }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+            .sidebar {
+                order: -1;
+                margin-bottom: 10px;
+            }
+            .game-output {
+                height: 300px;
+            }
+            .commands-help {
+                font-size: 11px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏰 Mudden v2 - Test Client</h1>
-        
-        <div class="status">
-            <span>Connection: <span id="connectionStatus" class="disconnected">Disconnected</span></span>
-            <span id="playerInfo"></span>
-        </div>
+        <div class="main-game">
+            <h1>🏰 Mudden v2 - Test Client</h1>
+            
+            <div class="status">
+                <span>Connection: <span id="connectionStatus" class="disconnected">Disconnected</span></span>
+                <span id="playerInfo"></span>
+            </div>
 
         <div id="authForm" class="auth-form">
             <h3>Login / Create Character</h3>
@@ -118,14 +165,7 @@
         </div>
 
         <div id="gameArea" style="display: none;">
-            <div class="commands-help">
-                <h4>Available Commands:</h4>
-                <strong>Movement:</strong> north/n, south/s, east/e, west/w, go [direction]<br>
-                <strong>Items:</strong> take [item], get [item] [quantity]<br>
-                <strong>Equipment:</strong> equip [item] [slot]<br>
-                <strong>Information:</strong> look, l<br>
-                <strong>Social:</strong> say [message]
-            </div>
+                        <div class=\"commands-help\">\n                <h4>Available Commands:</h4>\n                <strong>Movement:</strong> north/n, south/s, east/e, west/w, go [direction]<br>\n                <strong>Items:</strong> take [item], get [item] [quantity], inventory/inv/i<br>\n                <strong>Equipment:</strong> equip [item] [slot]<br>\n                <strong>Information:</strong> look/l<br>\n                <strong>Social:</strong> say [message]\n            </div>"
             
             <div id="gameOutput" class="game-output"></div>
             <div class="input-area">
@@ -133,12 +173,134 @@
                 <button onclick="sendCommand()">Send</button>
             </div>
         </div>
+        
+        <div class="sidebar">
+            <!-- Player Stats -->
+            <div id="playerStats" style="display: none;">
+                <h4>📊 Player Stats</h4>
+                <div>
+                    <label>Health:</label>
+                    <div class="stat-bar">
+                        <div id="healthBar" class="stat-fill health-bar" style="width: 100%;"></div>
+                    </div>
+                    <span id="healthText">100/100</span>
+                </div>
+                <div>
+                    <label>Level:</label> <span id="playerLevel">1</span>
+                </div>
+                <div>
+                    <label>Experience:</label>
+                    <div class="stat-bar">
+                        <div id="expBar" class="stat-fill exp-bar" style="width: 0%;"></div>
+                    </div>
+                    <span id="expText">0/100</span>
+                </div>
+            </div>
+            
+            <!-- Equipment -->
+            <div id="equipment" style="display: none;">
+                <h4>⚔️ Equipment</h4>
+                <div id="equipmentSlots">
+                    <div>Main Hand: <span id="slot-main_hand">None</span></div>
+                    <div>Off Hand: <span id="slot-off_hand">None</span></div>
+                    <div>Head: <span id="slot-head">None</span></div>
+                    <div>Chest: <span id="slot-chest">None</span></div>
+                    <div>Legs: <span id="slot-legs">None</span></div>
+                    <div>Feet: <span id="slot-feet">None</span></div>
+                    <div>Hands: <span id="slot-hands">None</span></div>
+                </div>
+            </div>
+            
+            <!-- Quick Inventory -->
+            <div id="quickInventory" style="display: none;">
+                <h4>🎒 Quick Inventory</h4>
+                <div id="inventoryList" style="max-height: 150px; overflow-y: auto;">
+                    <!-- Inventory items will be populated here -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
         const socket = io();
-        let isAuthenticated = false;
-        let playerName = '';
+        
+        // Clean game state management
+        const GameState = {
+            isAuthenticated: false,
+            player: {
+                name: '',
+                level: 1,
+                health: 100,
+                maxHealth: 100,
+                experience: 0,
+                expToNext: 100,
+                location: ''
+            },
+            inventory: [],
+            equipment: {},
+            
+            // Update methods
+            updatePlayer(playerData) {
+                Object.assign(this.player, playerData);
+                this.refreshUI();
+            },
+            
+            updateInventory(inventoryData) {
+                this.inventory = inventoryData;
+                this.refreshInventoryUI();
+            },
+            
+            updateEquipment(equipmentData) {
+                this.equipment = equipmentData;
+                this.refreshEquipmentUI();
+            },
+            
+            // UI refresh methods
+            refreshUI() {
+                if (!this.isAuthenticated) return;
+                
+                // Update player info
+                document.getElementById('playerInfo').textContent = 
+                    `Player: ${this.player.name} (Level ${this.player.level})`;
+                
+                // Update health bar
+                const healthPercent = (this.player.health / this.player.maxHealth) * 100;
+                document.getElementById('healthBar').style.width = healthPercent + '%';
+                document.getElementById('healthText').textContent = 
+                    `${this.player.health}/${this.player.maxHealth}`;
+                
+                // Update level
+                document.getElementById('playerLevel').textContent = this.player.level;
+                
+                // Update experience bar
+                const expPercent = (this.player.experience / this.player.expToNext) * 100;
+                document.getElementById('expBar').style.width = expPercent + '%';
+                document.getElementById('expText').textContent = 
+                    `${this.player.experience}/${this.player.expToNext}`;
+            },
+            
+            refreshInventoryUI() {
+                const inventoryList = document.getElementById('inventoryList');
+                if (this.inventory.length === 0) {
+                    inventoryList.innerHTML = '<div style=\"color: #888;\">Empty</div>';
+                    return;
+                }
+                
+                inventoryList.innerHTML = this.inventory.map(item => 
+                    `<div>${item.id} (${item.quantity})</div>`
+                ).join('');
+            },
+            
+            refreshEquipmentUI() {
+                const slots = ['main_hand', 'off_hand', 'head', 'chest', 'legs', 'feet', 'hands'];
+                slots.forEach(slot => {
+                    const element = document.getElementById(`slot-${slot}`);
+                    if (element) {
+                        element.textContent = this.equipment[slot] ? this.equipment[slot].id : 'None';
+                    }
+                });
+            }
+        };
 
         // Connection status
         socket.on('connect', () => {
@@ -170,20 +332,27 @@
 
         socket.on('authResult', (result) => {
             if (result.success) {
-                isAuthenticated = true;
-                playerName = result.player.name;
-                hideAuthForm();
+                GameState.isAuthenticated = true;
+                GameState.updatePlayer({
+                    name: result.player.name,
+                    level: result.player.level || 1,
+                    health: result.player.health || 100,
+                    maxHealth: result.player.maxHealth || 100,
+                    experience: result.player.experience || 0,
+                    location: result.player.location || 'town_square'
+                });
                 
-                document.getElementById('playerInfo').textContent = `Player: ${playerName} (Level ${result.player.level})`;
+                hideAuthForm();
+                showGameUI();
                 
                 if (result.isNewPlayer) {
-                    addToOutput(`🎉 Welcome to Mudden, ${playerName}! New character created.`, 'success');
+                    addToOutput(`🎉 Welcome to Mudden, ${GameState.player.name}! New character created.`, 'success');
                 } else {
-                    addToOutput(`👋 Welcome back, ${playerName}!`, 'success');
+                    addToOutput(`👋 Welcome back, ${GameState.player.name}!`, 'success');
                 }
                 
-                // Request initial room state
-                sendTestCommand('look');
+                                // Request initial room state
+                sendGameCommand('look');
             } else {
                 addToOutput(`❌ Authentication failed: ${result.error}`, 'error');
             }
@@ -233,13 +402,16 @@
                         addToOutput(`🎒 ${update.data.message}`, 'success');
                     }
                     if (update.data.inventory) {
-                        // Could display inventory details here
+                        GameState.updateInventory(update.data.inventory);
                     }
                     break;
                     
                 case 'EQUIPMENT_UPDATE':
                     if (update.data.message) {
                         addToOutput(`⚔️ ${update.data.message}`, 'success');
+                    }
+                    if (update.data.equipment) {
+                        GameState.updateEquipment(update.data.equipment);
                     }
                     break;
                     
@@ -262,13 +434,13 @@
         function sendCommand() {
             const input = document.getElementById('commandInput');
             const command = input.value.trim();
-            if (command && isAuthenticated) {
-                sendTestCommand(command);
+            if (command && GameState.isAuthenticated) {
+                sendGameCommand(command);
                 input.value = '';
             }
         }
 
-        function sendTestCommand(commandText) {
+        function sendGameCommand(commandText) {
             // Parse command and send appropriate format
             const parts = commandText.toLowerCase().split(' ');
             const cmd = parts[0];
@@ -339,6 +511,14 @@
                     }
                     break;
                     
+                case 'inventory':
+                case 'inv':
+                case 'i':
+                    commandData = {
+                        type: 104 // INVENTORY command type
+                    };
+                    break;
+                    
                 default:
                     addToOutput(`❓ Unknown command: ${cmd}. Type a command or check the help above.`, 'error');
                     return;
@@ -371,15 +551,28 @@
         function showAuthForm() {
             document.getElementById('authForm').style.display = 'block';
             document.getElementById('gameArea').style.display = 'none';
-            document.getElementById('playerInfo').textContent = '';
-            isAuthenticated = false;
-            playerName = '';
+            hideGameUI();
+            GameState.isAuthenticated = false;
+            GameState.player.name = '';
         }
 
         function hideAuthForm() {
             document.getElementById('authForm').style.display = 'none';
             document.getElementById('gameArea').style.display = 'block';
             document.getElementById('commandInput').focus();
+        }
+        
+        function showGameUI() {
+            document.getElementById('playerStats').style.display = 'block';
+            document.getElementById('equipment').style.display = 'block';
+            document.getElementById('quickInventory').style.display = 'block';
+            GameState.refreshUI();
+        }
+        
+        function hideGameUI() {
+            document.getElementById('playerStats').style.display = 'none';
+            document.getElementById('equipment').style.display = 'none';
+            document.getElementById('quickInventory').style.display = 'none';
         }
 
         // Initial state

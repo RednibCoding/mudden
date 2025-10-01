@@ -103,7 +103,33 @@ export class SocketManager {
       this.connectedPlayers.set(socket.id, socket.id)
       this.playerSockets.set(socket.id, socket.id)
       
+      // Initialize inventory and equipment for the player
+      this.gameEngine.managers.inventory.initializeInventory(socket.id, result.player.inventory)
+      this.gameEngine.managers.equipment.initializeEquipment(socket.id, result.player.equipment)
+      
       console.log(`Player ${username} authenticated successfully`)
+      
+      // Send initial state after authentication
+      setTimeout(() => {
+        const inventory = this.gameEngine.managers.inventory.getInventory(socket.id)
+        const equipment = this.gameEngine.managers.equipment.getEquipment(socket.id)
+        
+        // Send initial inventory state
+        if (inventory) {
+          socket.emit('gameUpdate', [{
+            type: 'INVENTORY_UPDATE',
+            data: { inventory: inventory.items }
+          }])
+        }
+        
+        // Send initial equipment state
+        if (equipment) {
+          socket.emit('gameUpdate', [{
+            type: 'EQUIPMENT_UPDATE', 
+            data: { equipment: equipment }
+          }])
+        }
+      }, 100)
     }
     
     socket.emit('authResult', result)

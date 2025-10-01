@@ -12,6 +12,7 @@ export const CommandTypes = {
   DROP_ITEM: 101,
   USE_ITEM: 102,
   GIVE_ITEM: 103,
+  INVENTORY: 104,
   
   // Equipment Commands (200-299)
   EQUIP_ITEM: 200,

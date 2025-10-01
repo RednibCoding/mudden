@@ -57,6 +57,8 @@ export class TickProcessor {
                 return this.handleEquipItemCommand(command);
             case CommandTypes.SAY:
                 return this.handleSayCommand(command);
+            case CommandTypes.INVENTORY:
+                return this.handleInventoryCommand(command);
             default:
                 console.warn(`Unknown command type: ${command.type}`);
                 return [];
@@ -150,9 +152,10 @@ export class TickProcessor {
         
         // Send updates
         const itemTemplate = this.templateManager.getItem(command.itemId);
+        const inventory = this.inventoryManager.getInventory(command.playerId);
         updates.push(new BaseUpdate(command.playerId, 'INVENTORY_UPDATE', {
             message: `You take ${command.quantity} ${itemTemplate?.name || command.itemId}.`,
-            inventory: this.inventoryManager.getInventory(command.playerId)
+            inventory: inventory ? inventory.items : []
         }));
         
         return updates;
@@ -195,19 +198,21 @@ export class TickProcessor {
             // Remove from inventory
             this.inventoryManager.removeItem(command.playerId, command.itemId, 1);
             
+            const inventory = this.inventoryManager.getInventory(command.playerId);
             updates.push(new BaseUpdate(command.playerId, 'EQUIPMENT_UPDATE', {
                 message: `You equip ${itemTemplate.name}.`,
                 equipment: this.equipmentManager.getEquipment(command.playerId),
-                inventory: this.inventoryManager.getInventory(command.playerId)
+                inventory: inventory ? inventory.items : []
             }));
             
             // If something was unequipped, add it back to inventory
             if (result.unequippedItem) {
                 this.inventoryManager.addItem(command.playerId, result.unequippedItem, 1);
                 const unequippedTemplate = this.templateManager.getItem(result.unequippedItem);
+                const updatedInventory = this.inventoryManager.getInventory(command.playerId);
                 updates.push(new BaseUpdate(command.playerId, 'INVENTORY_UPDATE', {
                     message: `You unequip ${unequippedTemplate?.name || result.unequippedItem}.`,
-                    inventory: this.inventoryManager.getInventory(command.playerId)
+                    inventory: updatedInventory ? updatedInventory.items : []
                 }));
             }
         } else {
@@ -282,6 +287,46 @@ export class TickProcessor {
                 }));
             }
         }
+        
+        return updates;
+    }
+
+    /**
+     * Handle inventory command
+     * @param {BaseCommand} command
+     * @returns {BaseUpdate[]}
+     */
+    handleInventoryCommand(command) {
+        const updates = [];
+        const player = this.playerManager.getPlayer(command.playerId);
+        
+        if (!player) {
+            updates.push(new BaseUpdate(command.playerId, 'ERROR', { message: 'Player not found' }));
+            return updates;
+        }
+
+        const inventory = this.inventoryManager.getInventory(command.playerId);
+        const stats = this.inventoryManager.getInventoryStats(command.playerId);
+        
+        let message = '\n=== INVENTORY ===\n';
+        if (!inventory || inventory.items.length === 0) {
+            message += 'Your inventory is empty.';
+        } else {
+            inventory.items.forEach(item => {
+                const template = this.templateManager.getItem(item.id);
+                const name = template?.name || item.id;
+                message += `${name} (${item.quantity})\n`;
+            });
+            
+            if (stats) {
+                message += `\nCapacity: ${stats.uniqueItems}/${stats.capacity} slots used`;
+            }
+        }
+        
+        updates.push(new BaseUpdate(command.playerId, 'INVENTORY_UPDATE', {
+            message: message,
+            inventory: inventory ? inventory.items : []
+        }));
         
         return updates;
     }
