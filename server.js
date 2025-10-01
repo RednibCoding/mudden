@@ -22,13 +22,14 @@ const io = new Server(server)
 const gameWorld = new WorldManager()
 const sessionManager = new SessionManager(io)
 const combatSessions = new Map() // playerId -> combat state
-const commandManager = new CommandManager(gameWorld, sessionManager.getActivePlayers(), combatSessions, io)
+const commandManager = new CommandManager(gameWorld, sessionManager, combatSessions, io)
 const gameTickManager = new GameTickManager()
 const authManager = new AuthenticationManager(io, gameWorld)
 const socketManager = new SocketManager(io, authManager, sessionManager, gameWorld, commandManager, combatSessions)
 
 // Connect managers
 gameWorld.setGameTickManager(gameTickManager)
+gameWorld.setCommandManager(commandManager)
 gameTickManager.setCombatManager(commandManager.combatManager)
 
 // Add helper function to get player socket by name (used by other parts of the system)
