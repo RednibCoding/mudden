@@ -194,3 +194,78 @@ button:hover {
         grid-column: 1;
     }
 }
+
+/* Custom Scrollbar Styling - Medieval/Fantasy Theme */
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 8px;
+    border: 1px solid #333;
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #4a4a4a 0%, #333 50%, #2a2a2a 100%);
+    border-radius: 8px;
+    border: 1px solid #555;
+    box-shadow: inset 0 0 4px rgba(76, 175, 80, 0.1);
+    transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #5a5a5a 0%, #4CAF50 50%, #3a3a3a 100%);
+    border-color: #4CAF50;
+    box-shadow: inset 0 0 6px rgba(76, 175, 80, 0.3), 0 0 4px rgba(76, 175, 80, 0.2);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(180deg, #4CAF50 0%, #388E3C 50%, #2E7D32 100%);
+    border-color: #66BB6A;
+}
+
+::-webkit-scrollbar-corner {
+    background: #1a1a1a;
+    border: 1px solid #333;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #4a4a4a #1a1a1a;
+}
+
+/* Enhanced styling for game output area specifically */
+.game-output::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #4a4a4a 0%, #4CAF50 30%, #333 70%, #2a2a2a 100%);
+    border: 2px solid #555;
+    box-shadow: 
+        inset 0 0 4px rgba(76, 175, 80, 0.2),
+        inset 1px 1px 0 rgba(255, 255, 255, 0.1),
+        inset -1px -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.game-output::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #5a5a5a 0%, #66BB6A 30%, #4CAF50 70%, #3a3a3a 100%);
+    border-color: #4CAF50;
+    box-shadow: 
+        inset 0 0 6px rgba(76, 175, 80, 0.4),
+        inset 1px 1px 0 rgba(255, 255, 255, 0.2),
+        inset -1px -1px 0 rgba(0, 0, 0, 0.4),
+        0 0 8px rgba(76, 175, 80, 0.3);
+}
+
+/* Sidebar scrollbars (if needed) */
+.sidebar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3a3a3a 0%, #2d2d2d 50%, #1a1a1a 100%);
+    border: 1px solid #444;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #4a4a4a 0%, #4CAF50 50%, #2a2a2a 100%);
+    border-color: #4CAF50;
+}
