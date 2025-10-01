@@ -1,6 +1,8 @@
+import { ErrorCodes } from '../../shared/ErrorCodes.js';
+
 /**
- * Inventory Manager - handles player inventories and item operations
- * Provides clean interface for inventory management
+ * Inventory Management System
+ * Handles item interactions and inventory state
  */
 export class InventoryManager {
     constructor(templateManager) {
@@ -231,11 +233,11 @@ export class InventoryManager {
     tryTakeItem(playerId, itemId, quantity, worldManager, playerLocation) {
         const room = worldManager.getRoom(playerLocation);
         if (!room || !room.items || !room.items.find(item => item.id === itemId)) {
-            return { success: false, message: 'Item not found in room' };
+            return { success: false, errorCode: ErrorCodes.ITEM_NOT_FOUND };
         }
 
         if (!this.canAddItem(playerId, itemId, quantity)) {
-            return { success: false, message: 'Not enough inventory space' };
+            return { success: false, errorCode: ErrorCodes.INVENTORY_FULL };
         }
 
         // Remove from room and add to inventory
@@ -273,7 +275,7 @@ export class InventoryManager {
                 inventory: this.getInventory(playerId)
             };
         } else {
-            return { success: false, message: 'Failed to drop item' };
+            return { success: false, errorCode: ErrorCodes.ITEM_NOT_FOUND };
         }
     }
 

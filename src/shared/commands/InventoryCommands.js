@@ -2,9 +2,28 @@ import { BaseCommand } from './BaseCommand.js'
 import { CommandTypes } from '../CommandTypes.js'
 import { BaseUpdate } from '../BaseUpdate.js'
 import { UpdateTypes } from '../UpdateTypes.js'
+import { ErrorCodes } from '../ErrorCodes.js'
 
 /**
- * Take item command - pick up items from room
+ * Take it      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { errorCode: ErrorCodes.PLAYER_NOT_FOUND }))
+      return updates
+    }
+
+    // Check if player has the item
+    if (!inventoryManager.hasItem(this.playerId, this.itemId, 1)) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        errorCode: ErrorCodes.ITEM_NOT_IN_INVENTORY,
+        itemId: this.itemId
+      }))
+      return updates
+    }
+
+    const itemTemplate = templateManager.getItem(this.itemId)
+    if (!itemTemplate) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        errorCode: ErrorCodes.ITEM_NOT_FOUND,
+        itemId: this.itemId
+      }))p items from room
  */
 export class TakeItemCommand extends BaseCommand {
   constructor(playerId, itemId, quantity = 1, commandId = null) {
@@ -40,7 +59,7 @@ export class TakeItemCommand extends BaseCommand {
     
     const player = playerManager.getPlayer(this.playerId)
     if (!player) {
-      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { message: 'Player not found' }))
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { errorCode: ErrorCodes.PLAYER_NOT_FOUND }))
       return updates
     }
 
@@ -55,7 +74,9 @@ export class TakeItemCommand extends BaseCommand {
     
     if (!result.success) {
       updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
-        message: result.message 
+        errorCode: result.errorCode || ErrorCodes.UNKNOWN_ERROR,
+        itemId: this.itemId,
+        quantity: this.quantity
       }))
       return updates
     }
@@ -70,7 +91,9 @@ export class TakeItemCommand extends BaseCommand {
     
     const itemTemplate = templateManager.getItem(this.itemId)
     updates.push(new BaseUpdate(this.playerId, UpdateTypes.INVENTORY_CHANGED, {
-      message: `You take ${this.quantity} ${itemTemplate?.name || this.itemId}.`,
+      action: 'take',
+      itemId: this.itemId,
+      quantity: this.quantity,
       inventory: currentItems,
       itemNames: itemNames
     }))
@@ -120,7 +143,7 @@ export class DropItemCommand extends BaseCommand {
     
     const player = playerManager.getPlayer(this.playerId)
     if (!player) {
-      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { message: 'Player not found' }))
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { errorCode: ErrorCodes.PLAYER_NOT_FOUND }))
       return updates
     }
 
@@ -137,7 +160,9 @@ export class DropItemCommand extends BaseCommand {
       const itemTemplate = templateManager.getItem(this.itemId)
       const itemName = itemTemplate?.name || this.itemId
       updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
-        message: result.message.replace(this.itemId, itemName)
+        errorCode: ErrorCodes.ITEM_NOT_IN_INVENTORY,
+        itemId: this.itemId,
+        quantity: this.quantity || 1
       }))
       return updates
     }
@@ -153,7 +178,9 @@ export class DropItemCommand extends BaseCommand {
     const itemTemplate = templateManager.getItem(this.itemId)
     const itemName = itemTemplate?.name || this.itemId
     updates.push(new BaseUpdate(this.playerId, UpdateTypes.INVENTORY_CHANGED, {
-      message: `You drop ${this.quantity || 1} ${itemName}.`,
+      action: 'drop',
+      itemId: this.itemId,
+      quantity: this.quantity || 1,
       inventory: currentItems,
       itemNames: itemNames
     }))
@@ -167,13 +194,12 @@ export class DropItemCommand extends BaseCommand {
 }
 
 /**
- * Use item command - activate consumable items
+ * Use item command - use consumable items
  */
 export class UseItemCommand extends BaseCommand {
-  constructor(playerId, itemId, targetId = null, commandId = null) {
+  constructor(playerId, itemId, commandId = null) {
     super(CommandTypes.USE_ITEM, playerId, commandId)
     this.itemId = itemId
-    this.targetId = targetId // Optional target (for items used on others)
   }
   
   validate() {
@@ -183,18 +209,12 @@ export class UseItemCommand extends BaseCommand {
       throw new Error('itemId is required and must be a string')
     }
     
-    // targetId is optional but if provided must be string
-    if (this.targetId && typeof this.targetId !== 'string') {
-      throw new Error('targetId must be a string if provided')
-    }
-    
     return true
   }
   
   getPayload() {
     return {
-      itemId: this.itemId,
-      targetId: this.targetId
+      itemId: this.itemId
     }
   }
   
@@ -204,37 +224,8 @@ export class UseItemCommand extends BaseCommand {
     const player = playerManager.getPlayer(this.playerId)
     
     if (!player) {
-      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { message: 'Player not found' }))
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { errorCode: ErrorCodes.PLAYER_NOT_FOUND }))
       return updates
     }
-
-    // Check if player has the item
-    if (!inventoryManager.hasItem(this.playerId, this.itemId, 1)) {
-      const itemTemplate = templateManager.getItem(this.itemId)
-      const itemName = itemTemplate?.name || this.itemId
-      updates.push(new BaseUpdate(this.playerId, 'INVENTORY_UPDATE', { 
-        message: `You don't have ${itemName} to use.` 
-      }))
-      return updates
-    }
-
-    const itemTemplate = templateManager.getItem(this.itemId)
-    if (!itemTemplate) {
-      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
-        message: 'Unknown item' 
-      }))
-      return updates
-    }
-
-    // For now, just a placeholder - item usage logic would go here
-    updates.push(new BaseUpdate(this.playerId, UpdateTypes.SERVER_MESSAGE, {
-      message: `You use ${itemTemplate.name || this.itemId}.`
-    }))
-    
-    return updates
-  }
-  
-  static fromJSON(data) {
-    return new UseItemCommand(data.playerId, data.itemId, data.targetId, data.commandId)
   }
 }

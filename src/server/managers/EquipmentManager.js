@@ -1,6 +1,8 @@
+import { ErrorCodes } from '../../shared/ErrorCodes.js';
+
 /**
- * Equipment Manager - handles player equipment and stats
- * Provides clean interface for equipment operations
+ * Equipment Management System
+ * Handles equipment operations and stat calculations
  */
 export class EquipmentManager {
     constructor(templateManager) {
@@ -70,7 +72,7 @@ export class EquipmentManager {
         
         const itemTemplate = this.templateManager.getItem(itemId);
         if (!itemTemplate || !itemTemplate.equipment) {
-            return { success: false, error: 'Item cannot be equipped' };
+            return { success: false, errorCode: ErrorCodes.ITEM_NOT_EQUIPPABLE };
         }
         
         // Determine slot if not specified
@@ -80,12 +82,12 @@ export class EquipmentManager {
         
         // Validate slot
         if (!this.slots.includes(slot)) {
-            return { success: false, error: 'Invalid equipment slot' };
+            return { success: false, errorCode: ErrorCodes.INVALID_SLOT };
         }
         
         // Check if item can be equipped to this slot
         if (itemTemplate.equipment.slot !== slot) {
-            return { success: false, error: `${itemTemplate.name} cannot be equipped to ${slot}` };
+            return { success: false, errorCode: ErrorCodes.SLOT_RESTRICTION, context: { itemName: itemTemplate.name, slot } };
         }
         
         // Check what's currently equipped
@@ -116,16 +118,16 @@ export class EquipmentManager {
     unequipItem(playerId, slot) {
         const equipment = this.equipment.get(playerId);
         if (!equipment) {
-            return { success: false, error: 'Player equipment not found' };
+            return { success: false, errorCode: ErrorCodes.PLAYER_NOT_FOUND };
         }
         
         if (!this.slots.includes(slot)) {
-            return { success: false, error: 'Invalid equipment slot' };
+            return { success: false, errorCode: ErrorCodes.INVALID_SLOT };
         }
         
         const currentItem = equipment[slot];
         if (!currentItem) {
-            return { success: false, error: 'No item equipped in that slot' };
+            return { success: false, errorCode: ErrorCodes.NO_ITEM_EQUIPPED };
         }
         
         // Unequip

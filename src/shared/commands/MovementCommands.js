@@ -2,6 +2,7 @@ import { BaseCommand } from './BaseCommand.js'
 import { CommandTypes } from '../CommandTypes.js'
 import { BaseUpdate } from '../BaseUpdate.js'
 import { UpdateTypes } from '../UpdateTypes.js'
+import { ErrorCodes } from '../ErrorCodes.js'
 
 /**
  * Move command - handles player movement between rooms
@@ -38,7 +39,8 @@ export class MoveCommand extends BaseCommand {
     
     if (!result.success) {
       updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, {
-        message: result.message
+        errorCode: ErrorCodes.NO_EXIT,
+        direction: this.direction.toLowerCase()
       }))
       return updates
     }
@@ -112,7 +114,7 @@ export class LookCommand extends BaseCommand {
     const roomInfo = playerManager.getPlayerRoomInfo(this.playerId, managers.worldManager)
     
     if (!roomInfo) {
-      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { message: 'Player or room not found' }))
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { errorCode: ErrorCodes.PLAYER_NOT_FOUND }))
       return updates
     }
 

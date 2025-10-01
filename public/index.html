@@ -146,6 +146,7 @@
         .error { color: #f44336; }
         .success { color: #4CAF50; }
         .info { color: #2196F3; }
+        .emote { color: #FF9800; font-style: italic; }
         
         .sidebar h4 {
             color: #4CAF50;
@@ -264,6 +265,82 @@
     <script>
         const socket = io();
         
+        // Error Code Constants - mirror of server ErrorCodes
+        const ErrorCodes = {
+            // General Errors (1-99)
+            UNKNOWN_ERROR: 1,
+            INVALID_COMMAND: 2,
+            PLAYER_NOT_FOUND: 3,
+            INSUFFICIENT_PERMISSIONS: 4,
+            COMMAND_VALIDATION_FAILED: 5,
+            
+            // Movement Errors (100-199)
+            NO_EXIT: 100,
+            EXIT_BLOCKED: 101,
+            INSUFFICIENT_LEVEL: 102,
+            ALREADY_IN_ROOM: 103,
+            
+            // Inventory Errors (200-299)
+            ITEM_NOT_FOUND: 200,
+            ITEM_NOT_IN_INVENTORY: 201,
+            INVENTORY_FULL: 202,
+            INSUFFICIENT_QUANTITY: 203,
+            ITEM_NOT_TAKEABLE: 204,
+            ITEM_TOO_HEAVY: 205,
+            
+            // Equipment Errors (300-399)
+            ITEM_NOT_EQUIPPABLE: 300,
+            WRONG_EQUIPMENT_SLOT: 301,
+            SLOT_ALREADY_OCCUPIED: 302,
+            ITEM_NOT_EQUIPPED: 303,
+            CANNOT_UNEQUIP_BAG: 304,
+            INSUFFICIENT_LEVEL_FOR_ITEM: 305
+        };
+
+        // Error message mapping - client controls presentation and language
+        const ErrorMessages = {
+            [ErrorCodes.UNKNOWN_ERROR]: 'An unknown error occurred',
+            [ErrorCodes.INVALID_COMMAND]: 'Invalid command',
+            [ErrorCodes.PLAYER_NOT_FOUND]: 'Player not found',
+            [ErrorCodes.INSUFFICIENT_PERMISSIONS]: 'Insufficient permissions',
+            
+            [ErrorCodes.NO_EXIT]: (data) => `You cannot go ${data.direction || 'that way'} from here`,
+            [ErrorCodes.EXIT_BLOCKED]: 'That exit is blocked',
+            [ErrorCodes.INSUFFICIENT_LEVEL]: 'Your level is too low',
+            
+            [ErrorCodes.ITEM_NOT_FOUND]: (data) => `Item ${data.itemId || 'unknown'} not found`,
+            [ErrorCodes.ITEM_NOT_IN_INVENTORY]: (data) => `You don't have ${data.itemId || 'that item'} in your inventory`,
+            [ErrorCodes.INVENTORY_FULL]: 'Your inventory is full',
+            [ErrorCodes.INSUFFICIENT_QUANTITY]: (data) => `You don't have ${data.quantity || 1} of that item`,
+            
+            [ErrorCodes.ITEM_NOT_EQUIPPABLE]: (data) => `${data.itemId || 'That item'} cannot be equipped`,
+            [ErrorCodes.WRONG_EQUIPMENT_SLOT]: 'Wrong equipment slot',
+            [ErrorCodes.SLOT_ALREADY_OCCUPIED]: 'Equipment slot is already occupied'
+        };
+
+        // Success message mapping for actions
+        const ActionMessages = {
+            take: (data) => `You take ${data.quantity || 1} ${getItemDisplayName(data.itemId, data.itemNames)}`,
+            drop: (data) => `You drop ${data.quantity || 1} ${getItemDisplayName(data.itemId, data.itemNames)}`,
+            use: (data) => `You use ${getItemDisplayName(data.itemId, data.itemNames)}`,
+            equip: (data) => `You equip ${getItemDisplayName(data.itemId, data.itemNames)}`,
+            unequip: (data) => `You unequip ${getItemDisplayName(data.itemId, data.itemNames)}`
+        };
+
+        // Helper function to get display name for items
+        function getItemDisplayName(itemId, itemNames) {
+            return (itemNames && itemNames[itemId]) ? itemNames[itemId] : itemId;
+        }
+
+        // Helper function to format error messages
+        function formatErrorMessage(errorCode, data = {}) {
+            const message = ErrorMessages[errorCode];
+            if (typeof message === 'function') {
+                return message(data);
+            }
+            return message || `Unknown error (${errorCode})`;
+        }
+
         // Update Type Constants - mirror of server UpdateTypes
         const UpdateTypes = {
             // Player Updates (1-99)
@@ -290,6 +367,7 @@
             // Social Updates (400-499)
             MESSAGE_RECEIVED: 400,
             PLAYER_SPOKE: 401,
+            SOCIAL_MESSAGE: 402,
             
             // Error Updates (800-899)
             COMMAND_ERROR: 800,
@@ -489,8 +567,10 @@
                     break;
                     
                 case UpdateTypes.INVENTORY_CHANGED:
-                    if (update.data.message) {
-                        addToOutput(`🎒 ${update.data.message}`, 'success');
+                    // Handle action-based inventory changes
+                    if (update.data.action && ActionMessages[update.data.action]) {
+                        const message = ActionMessages[update.data.action](update.data);
+                        addToOutput(`🎒 ${message}`, 'success');
                     }
                     if (update.data.inventory) {
                         GameState.updateInventory(update.data.inventory);
@@ -514,13 +594,39 @@
                         addToOutput(`💬 ${update.data.message}`);
                     }
                     break;
+                
+                case UpdateTypes.SOCIAL_MESSAGE:
+                    if (update.data.type === 'say_self') {
+                        addToOutput(`💬 You say: "${update.data.message}"`, 'success');
+                    } else if (update.data.type === 'say_other') {
+                        addToOutput(`💬 ${update.data.speaker} says: "${update.data.message}"`);
+                    } else if (update.data.type === 'tell_received') {
+                        addToOutput(`📞 ${update.data.sender} tells you: "${update.data.message}"`, 'info');
+                    } else if (update.data.type === 'tell_sent') {
+                        addToOutput(`📞 You tell ${update.data.recipient}: "${update.data.message}"`, 'success');
+                    } else if (update.data.type === 'emote') {
+                        addToOutput(`🎭 ${update.data.actor} ${update.data.action}`, 'emote');
+                    }
+                    break;
                     
                 case UpdateTypes.COMMAND_ERROR:
-                    addToOutput(`❌ ERROR: ${update.data.message}`, 'error');
+                    // Handle error codes with custom formatting
+                    if (update.data.errorCode) {
+                        const errorMessage = formatErrorMessage(update.data.errorCode, update.data);
+                        addToOutput(`❌ ${errorMessage}`, 'error');
+                    } else if (update.data.message) {
+                        // Fallback for legacy string messages
+                        addToOutput(`❌ ERROR: ${update.data.message}`, 'error');
+                    }
                     break;
                     
                 case UpdateTypes.SERVER_MESSAGE:
-                    if (update.data.message) {
+                    // Handle action-based server messages
+                    if (update.data.action && ActionMessages[update.data.action]) {
+                        const message = ActionMessages[update.data.action](update.data);
+                        addToOutput(`📢 ${message}`, 'info');
+                    } else if (update.data.message) {
+                        // Fallback for legacy string messages
                         addToOutput(`📢 ${update.data.message}`, 'info');
                     }
                     break;
@@ -622,9 +728,30 @@
                 case 'drop':
                     if (args.length > 0) {
                         commandData = {
-                            type: 105, // DROP_ITEM command type
+                            type: 101, // DROP_ITEM command type
                             itemId: args[0],
                             quantity: args[1] ? parseInt(args[1]) : 1
+                        };
+                    }
+                    break;
+                    
+                case 'tell':
+                case 't':
+                    if (args.length > 1) {
+                        commandData = {
+                            type: 301, // TELL command type
+                            targetPlayer: args[0],
+                            message: args.slice(1).join(' ')
+                        };
+                    }
+                    break;
+                    
+                case 'emote':
+                case 'em':
+                    if (args.length > 0) {
+                        commandData = {
+                            type: 302, // EMOTE command type
+                            action: args.join(' ')
                         };
                     }
                     break;

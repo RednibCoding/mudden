@@ -2,6 +2,7 @@ import { CommandTypes } from './CommandTypes.js'
 import { MoveCommand, LookCommand } from './commands/MovementCommands.js'
 import { TakeItemCommand, DropItemCommand, UseItemCommand } from './commands/InventoryCommands.js'
 import { EquipItemCommand, UnequipItemCommand } from './commands/EquipmentCommands.js'
+import { SayCommand, TellCommand, EmoteCommand } from './commands/SocialCommands.js'
 
 /**
  * Factory for creating command instances from JSON data
@@ -16,6 +17,9 @@ export class CommandFactory {
         [CommandTypes.USE_ITEM]: UseItemCommand,
         [CommandTypes.EQUIP_ITEM]: EquipItemCommand,
         [CommandTypes.UNEQUIP_ITEM]: UnequipItemCommand,
+        [CommandTypes.SAY]: SayCommand,
+        [CommandTypes.TELL]: TellCommand,
+        [CommandTypes.EMOTE]: EmoteCommand,
         // Add more command mappings as needed
     }
 

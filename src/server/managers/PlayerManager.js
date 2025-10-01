@@ -5,6 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { ErrorCodes } from '../../shared/ErrorCodes.js';
 
 export class PlayerManager {
     constructor() {
@@ -36,14 +37,14 @@ export class PlayerManager {
                 const playerData = JSON.parse(fs.readFileSync(playerFile, 'utf8'));
                 
                 if (!this.verifyPassword(password, playerData.passwordHash, playerData.salt)) {
-                    return { success: false, error: 'Invalid username or password' };
+                    return { success: false, errorCode: ErrorCodes.INVALID_CREDENTIALS };
                 }
                 
                 // Check for duplicate login
                 if (this.playersByName.has(username.toLowerCase())) {
                     const existingPlayerId = this.playersByName.get(username.toLowerCase());
                     console.log(`Duplicate login attempt for ${username}. Existing session: ${existingPlayerId}`);
-                    return { success: false, error: 'Player is already logged in' };
+                    return { success: false, errorCode: ErrorCodes.ALREADY_LOGGED_IN };
                 }
                 
                 // Load player data
@@ -87,7 +88,7 @@ export class PlayerManager {
             }
         } catch (error) {
             console.error('Error authenticating player:', error);
-            return { success: false, error: 'Authentication failed' };
+            return { success: false, errorCode: ErrorCodes.AUTHENTICATION_FAILED };
         }
     }
 
@@ -137,6 +138,19 @@ export class PlayerManager {
     }
 
     /**
+     * Get player by name
+     * @param {string} playerName - Player name
+     * @returns {Object|null} Player object or null if not found
+     */
+    getPlayerByName(playerName) {
+        const playerId = this.playersByName.get(playerName.toLowerCase());
+        if (playerId) {
+            return this.players.get(playerId) || null;
+        }
+        return null;
+    }
+
+    /**
      * Move player to new location
      * @param {string} playerId - Socket ID
      * @param {string} newLocation - Room ID
@@ -159,12 +173,12 @@ export class PlayerManager {
     tryMovePlayer(playerId, direction, worldManager) {
         const player = this.getPlayer(playerId);
         if (!player) {
-            return { success: false, message: 'Player not found' };
+            return { success: false, errorCode: ErrorCodes.PLAYER_NOT_FOUND };
         }
 
         const currentRoom = worldManager.getRoom(player.location);
         if (!currentRoom) {
-            return { success: false, message: 'Current room not found' };
+            return { success: false, errorCode: ErrorCodes.ROOM_NOT_FOUND };
         }
 
         if (!currentRoom.exits || !currentRoom.exits[direction]) {
@@ -174,7 +188,7 @@ export class PlayerManager {
         const newLocation = currentRoom.exits[direction];
         const newRoom = worldManager.getRoom(newLocation);
         if (!newRoom) {
-            return { success: false, message: 'Destination room not found' };
+            return { success: false, errorCode: ErrorCodes.ROOM_NOT_FOUND };
         }
 
         // Move the player

@@ -27,6 +27,7 @@ export const UpdateTypes = {
   // Social Updates (400-499)
   MESSAGE_RECEIVED: 400,
   PLAYER_SPOKE: 401,
+  SOCIAL_MESSAGE: 402,
   
   // Error Updates (800-899)
   COMMAND_ERROR: 800,
