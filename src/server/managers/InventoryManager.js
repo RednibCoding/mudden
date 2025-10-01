@@ -220,6 +220,64 @@ export class InventoryManager {
     }
 
     /**
+     * Try to take item from room to player inventory
+     * @param {string} playerId - Player ID
+     * @param {string} itemId - Item ID
+     * @param {number} quantity - Quantity to take
+     * @param {Object} worldManager - World manager instance
+     * @param {string} playerLocation - Player's current location
+     * @returns {Object} Result with success, message, and updated inventory
+     */
+    tryTakeItem(playerId, itemId, quantity, worldManager, playerLocation) {
+        const room = worldManager.getRoom(playerLocation);
+        if (!room || !room.items || !room.items.find(item => item.id === itemId)) {
+            return { success: false, message: 'Item not found in room' };
+        }
+
+        if (!this.canAddItem(playerId, itemId, quantity)) {
+            return { success: false, message: 'Not enough inventory space' };
+        }
+
+        // Remove from room and add to inventory
+        worldManager.removeItemFromRoom(playerLocation, itemId, quantity);
+        this.addItem(playerId, itemId, quantity);
+
+        return {
+            success: true,
+            message: `You take ${quantity} ${itemId}.`,
+            inventory: this.getInventory(playerId)
+        };
+    }
+
+    /**
+     * Try to drop item from player inventory to room
+     * @param {string} playerId - Player ID
+     * @param {string} itemId - Item ID
+     * @param {number} quantity - Quantity to drop
+     * @param {Object} worldManager - World manager instance
+     * @param {string} playerLocation - Player's current location
+     * @returns {Object} Result with success, message, and updated inventory
+     */
+    tryDropItem(playerId, itemId, quantity, worldManager, playerLocation) {
+        if (!this.hasItem(playerId, itemId, quantity)) {
+            return { success: false, message: `You don't have ${quantity} ${itemId} to drop.` };
+        }
+
+        // Remove from inventory and add to room
+        const success = this.removeItem(playerId, itemId, quantity);
+        if (success) {
+            worldManager.addItemToRoom(playerLocation, itemId, quantity);
+            return {
+                success: true,
+                message: `You drop ${quantity} ${itemId}.`,
+                inventory: this.getInventory(playerId)
+            };
+        } else {
+            return { success: false, message: 'Failed to drop item' };
+        }
+    }
+
+    /**
      * Get inventory statistics
      * @param {string} playerId - Player ID
      * @returns {Object} Inventory stats

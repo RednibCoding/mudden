@@ -1,7 +1,10 @@
+import express from 'express'
 import { Server } from 'socket.io'
 import { createServer } from 'http'
-import express from 'express'
 import path from 'path'
+import { fileURLToPath } from 'url'
+import { CommandFactory } from '../shared/CommandFactory.js'
+import { UpdateTypes } from '../shared/UpdateTypes.js'
 
 /**
  * Socket Manager - handles WebSocket connections and communication
@@ -96,7 +99,7 @@ export class SocketManager {
     }
     
     // Authenticate with PlayerManager
-    const result = this.gameEngine.managers.player.authenticatePlayer(socket.id, username, password)
+    const result = this.gameEngine.managers.playerManager.authenticatePlayer(socket.id, username, password)
     
     if (result.success) {
       // Store player connection
@@ -104,20 +107,20 @@ export class SocketManager {
       this.playerSockets.set(socket.id, socket.id)
       
       // Initialize inventory and equipment for the player
-      this.gameEngine.managers.inventory.initializeInventory(socket.id, result.player.inventory)
-      this.gameEngine.managers.equipment.initializeEquipment(socket.id, result.player.equipment)
+      this.gameEngine.managers.inventoryManager.initializeInventory(socket.id, result.player.inventory)
+      this.gameEngine.managers.equipmentManager.initializeEquipment(socket.id, result.player.equipment)
       
       console.log(`Player ${username} authenticated successfully`)
       
       // Send initial state after authentication
       setTimeout(() => {
-        const inventory = this.gameEngine.managers.inventory.getInventory(socket.id)
-        const equipment = this.gameEngine.managers.equipment.getEquipment(socket.id)
+        const inventory = this.gameEngine.managers.inventoryManager.getInventory(socket.id)
+        const equipment = this.gameEngine.managers.equipmentManager.getEquipment(socket.id)
         
         // Send initial inventory state
         if (inventory) {
           socket.emit('gameUpdate', [{
-            type: 'INVENTORY_UPDATE',
+            type: UpdateTypes.INVENTORY_CHANGED,
             data: { inventory: inventory.items }
           }])
         }
@@ -125,7 +128,7 @@ export class SocketManager {
         // Send initial equipment state
         if (equipment) {
           socket.emit('gameUpdate', [{
-            type: 'EQUIPMENT_UPDATE', 
+            type: UpdateTypes.EQUIPMENT_CHANGED, 
             data: { equipment: equipment }
           }])
         }
@@ -147,16 +150,24 @@ export class SocketManager {
       return
     }
     
-    // Add playerId to command data
-    const commandData = {
-      ...data,
-      playerId: playerId
+    try {
+      // Add playerId to command data
+      const commandData = {
+        ...data,
+        playerId: playerId
+      }
+      
+      // Create command instance using CommandFactory
+      const command = CommandFactory.fromJSON(commandData)
+      
+      // Queue the command for processing in next tick
+      this.gameEngine.addCommand(command)
+      
+      console.log(`Queued command from ${playerId}:`, data.type)
+    } catch (error) {
+      console.error('Error creating command:', error)
+      socket.emit('error', { message: 'Invalid command' })
     }
-    
-    // Queue the command for processing in next tick
-    this.gameEngine.commandQueue.add(commandData)
-    
-    console.log(`Queued command from ${playerId}:`, data.type)
   }  /**
    * Handle client disconnection
    */
@@ -166,15 +177,15 @@ export class SocketManager {
     // Check if this socket was authenticated
     if (this.connectedPlayers.has(socket.id)) {
       // Get player info before cleanup
-      const player = this.gameEngine.managers.player.getPlayer(playerId)
+      const player = this.gameEngine.managers.playerManager.getPlayer(playerId)
       const playerName = player ? player.name : 'Unknown'
       
       console.log(`Player ${playerName} (${playerId}) disconnected`)
       
       // Clean up all player state
-      this.gameEngine.managers.player.disconnectPlayer(playerId)
-      this.gameEngine.managers.inventory.removePlayerInventory(playerId)
-      this.gameEngine.managers.equipment.removePlayerEquipment(playerId)
+      this.gameEngine.managers.playerManager.disconnectPlayer(playerId)
+      this.gameEngine.managers.inventoryManager.removePlayerInventory(playerId)
+      this.gameEngine.managers.equipmentManager.removePlayerEquipment(playerId)
       
       // Clean up socket tracking
       this.connectedPlayers.delete(socket.id)

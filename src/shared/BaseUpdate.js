@@ -3,11 +3,20 @@
  * Updates are sent from server to client to communicate game state changes
  */
 export class BaseUpdate {
+    /**
+     * Create a new update
+     * @param {string|string[]} playerId - Single player ID or array of player IDs
+     * @param {string} type - Update type
+     * @param {Object} data - Update data
+     */
     constructor(playerId, type, data = {}) {
         this.playerId = playerId;
         this.type = type;
         this.data = data;
         this.timestamp = Date.now();
+        
+        // Provide affectedPlayers for UpdateDistributor compatibility
+        this.affectedPlayers = Array.isArray(playerId) ? playerId : [playerId];
     }
     
     /**

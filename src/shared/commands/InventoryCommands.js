@@ -1,5 +1,7 @@
 import { BaseCommand } from './BaseCommand.js'
 import { CommandTypes } from '../CommandTypes.js'
+import { BaseUpdate } from '../BaseUpdate.js'
+import { UpdateTypes } from '../UpdateTypes.js'
 
 /**
  * Take item command - pick up items from room
@@ -30,6 +32,50 @@ export class TakeItemCommand extends BaseCommand {
       itemId: this.itemId,
       quantity: this.quantity
     }
+  }
+  
+  execute(managers) {
+    const updates = []
+    const { playerManager, inventoryManager, templateManager } = managers
+    
+    const player = playerManager.getPlayer(this.playerId)
+    if (!player) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { message: 'Player not found' }))
+      return updates
+    }
+
+    // Use manager service method
+    const result = inventoryManager.tryTakeItem(
+      this.playerId, 
+      this.itemId, 
+      this.quantity, 
+      managers.worldManager, 
+      player.location
+    )
+    
+    if (!result.success) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        message: result.message 
+      }))
+      return updates
+    }
+
+    // Create item names mapping for inventory display
+    const itemNames = {}
+    const currentItems = result.inventory ? result.inventory.items : []
+    currentItems.forEach(item => {
+      const template = templateManager.getItem(item.id)
+      itemNames[item.id] = template?.name || item.id
+    })
+    
+    const itemTemplate = templateManager.getItem(this.itemId)
+    updates.push(new BaseUpdate(this.playerId, UpdateTypes.INVENTORY_CHANGED, {
+      message: `You take ${this.quantity} ${itemTemplate?.name || this.itemId}.`,
+      inventory: currentItems,
+      itemNames: itemNames
+    }))
+
+    return updates
   }
   
   static fromJSON(data) {
@@ -68,6 +114,53 @@ export class DropItemCommand extends BaseCommand {
     }
   }
   
+  execute(managers) {
+    const updates = []
+    const { playerManager, inventoryManager, templateManager } = managers
+    
+    const player = playerManager.getPlayer(this.playerId)
+    if (!player) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { message: 'Player not found' }))
+      return updates
+    }
+
+    // Use manager service method
+    const result = inventoryManager.tryDropItem(
+      this.playerId, 
+      this.itemId, 
+      this.quantity || 1, 
+      managers.worldManager, 
+      player.location
+    )
+    
+    if (!result.success) {
+      const itemTemplate = templateManager.getItem(this.itemId)
+      const itemName = itemTemplate?.name || this.itemId
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        message: result.message.replace(this.itemId, itemName)
+      }))
+      return updates
+    }
+
+    // Create item names mapping for inventory display
+    const itemNames = {}
+    const currentItems = result.inventory ? result.inventory.items : []
+    currentItems.forEach(item => {
+      const template = templateManager.getItem(item.id)
+      itemNames[item.id] = template?.name || item.id
+    })
+    
+    const itemTemplate = templateManager.getItem(this.itemId)
+    const itemName = itemTemplate?.name || this.itemId
+    updates.push(new BaseUpdate(this.playerId, UpdateTypes.INVENTORY_CHANGED, {
+      message: `You drop ${this.quantity || 1} ${itemName}.`,
+      inventory: currentItems,
+      itemNames: itemNames
+    }))
+    
+    return updates
+  }
+  
   static fromJSON(data) {
     return new DropItemCommand(data.playerId, data.itemId, data.quantity, data.commandId)
   }
@@ -103,6 +196,42 @@ export class UseItemCommand extends BaseCommand {
       itemId: this.itemId,
       targetId: this.targetId
     }
+  }
+  
+  execute(managers) {
+    const updates = []
+    const { playerManager, inventoryManager, templateManager } = managers
+    const player = playerManager.getPlayer(this.playerId)
+    
+    if (!player) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { message: 'Player not found' }))
+      return updates
+    }
+
+    // Check if player has the item
+    if (!inventoryManager.hasItem(this.playerId, this.itemId, 1)) {
+      const itemTemplate = templateManager.getItem(this.itemId)
+      const itemName = itemTemplate?.name || this.itemId
+      updates.push(new BaseUpdate(this.playerId, 'INVENTORY_UPDATE', { 
+        message: `You don't have ${itemName} to use.` 
+      }))
+      return updates
+    }
+
+    const itemTemplate = templateManager.getItem(this.itemId)
+    if (!itemTemplate) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { 
+        message: 'Unknown item' 
+      }))
+      return updates
+    }
+
+    // For now, just a placeholder - item usage logic would go here
+    updates.push(new BaseUpdate(this.playerId, UpdateTypes.SERVER_MESSAGE, {
+      message: `You use ${itemTemplate.name || this.itemId}.`
+    }))
+    
+    return updates
   }
   
   static fromJSON(data) {

@@ -55,6 +55,15 @@ export class BaseCommand {
   }
   
   /**
+   * Execute the command - must be implemented by subclasses
+   * @param {Object} managers - Object containing all game managers
+   * @returns {Array} Array of BaseUpdate objects
+   */
+  execute(managers) {
+    throw new Error('execute() must be implemented by subclass')
+  }
+  
+  /**
    * Create command instance from JSON data
    */
   static fromJSON(data) {

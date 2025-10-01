@@ -65,26 +65,11 @@ export class UpdateDistributor {
     // Convert updates to sendable format
     const updateData = Array.isArray(updates) ? updates : [updates]
     const serializedUpdates = updateData.map(update => ({
-      type: this.getUpdateTypeName(update.type),
+      type: update.type, // Send numeric type directly
       data: update.data || {}
     }))
     
     socket.emit('gameUpdate', serializedUpdates)
     console.log(`Sent ${serializedUpdates.length} updates to player ${playerId}`)
-  }
-  
-  /**
-   * Convert update type number to string name
-   */
-  getUpdateTypeName(type) {
-    // Map update type numbers to names for client
-    const typeMap = {
-      1: 'ROOM_UPDATE',
-      2: 'INVENTORY_UPDATE', 
-      3: 'EQUIPMENT_UPDATE',
-      4: 'CHAT_UPDATE',
-      5: 'ERROR'
-    }
-    return typeMap[type] || 'UNKNOWN'
   }
 }

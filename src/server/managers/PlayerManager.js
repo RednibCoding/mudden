@@ -150,6 +150,65 @@ export class PlayerManager {
     }
 
     /**
+     * Attempt to move player in a direction
+     * @param {string} playerId - Socket ID
+     * @param {string} direction - Direction to move
+     * @param {Object} worldManager - World manager instance
+     * @returns {Object} Result with success, message, and room data
+     */
+    tryMovePlayer(playerId, direction, worldManager) {
+        const player = this.getPlayer(playerId);
+        if (!player) {
+            return { success: false, message: 'Player not found' };
+        }
+
+        const currentRoom = worldManager.getRoom(player.location);
+        if (!currentRoom) {
+            return { success: false, message: 'Current room not found' };
+        }
+
+        if (!currentRoom.exits || !currentRoom.exits[direction]) {
+            return { success: false, message: `You cannot go ${direction} from here.` };
+        }
+
+        const newLocation = currentRoom.exits[direction];
+        const newRoom = worldManager.getRoom(newLocation);
+        if (!newRoom) {
+            return { success: false, message: 'Destination room not found' };
+        }
+
+        // Move the player
+        this.movePlayer(playerId, newLocation);
+
+        return {
+            success: true,
+            location: newLocation,
+            room: newRoom,
+            playersInRoom: this.getPlayersInRoom(newLocation)
+        };
+    }
+
+    /**
+     * Get room information for player
+     * @param {string} playerId - Socket ID
+     * @param {Object} worldManager - World manager instance
+     * @returns {Object|null} Room information or null if not found
+     */
+    getPlayerRoomInfo(playerId, worldManager) {
+        const player = this.getPlayer(playerId);
+        if (!player) return null;
+
+        const room = worldManager.getRoom(player.location);
+        if (!room) return null;
+
+        return {
+            location: player.location,
+            room: room,
+            playersInRoom: this.getPlayersInRoom(player.location)
+        };
+    }
+
+    /**
      * Save player data to file
      * @param {string} playerId - Socket ID
      */

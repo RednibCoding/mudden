@@ -200,7 +200,7 @@
                 <div class="commands-help">
                     <h4>Available Commands:</h4>
                     <strong>Movement:</strong> north/n, south/s, east/e, west/w, go [direction]<br>
-                    <strong>Items:</strong> take [item], get [item] [quantity], inventory/inv/i<br>
+                    <strong>Items:</strong> take [item], get [item] [quantity], drop [item] [quantity], inventory/inv/i<br>
                     <strong>Equipment:</strong> equip [item] [slot]<br>
                     <strong>Information:</strong> look/l<br>
                     <strong>Social:</strong> say [message]
@@ -264,6 +264,44 @@
     <script>
         const socket = io();
         
+        // Update Type Constants - mirror of server UpdateTypes
+        const UpdateTypes = {
+            // Player Updates (1-99)
+            PLAYER_MOVED: 1,
+            PLAYER_STATS_CHANGED: 2,
+            PLAYER_ENTERED_ROOM: 3,
+            PLAYER_LEFT_ROOM: 4,
+            
+            // Inventory Updates (100-199)
+            INVENTORY_CHANGED: 100,
+            EQUIPMENT_CHANGED: 101,
+            
+            // World Updates (200-299)
+            ROOM_STATE_CHANGED: 200,
+            ITEM_SPAWNED: 201,
+            ITEM_REMOVED: 202,
+            
+            // Combat Updates (300-399)
+            DAMAGE_DEALT: 300,
+            HEALTH_CHANGED: 301,
+            COMBAT_STARTED: 302,
+            COMBAT_ENDED: 303,
+            
+            // Social Updates (400-499)
+            MESSAGE_RECEIVED: 400,
+            PLAYER_SPOKE: 401,
+            
+            // Error Updates (800-899)
+            COMMAND_ERROR: 800,
+            VALIDATION_ERROR: 801,
+            PERMISSION_ERROR: 802,
+            
+            // System Updates (900-999)
+            TICK_UPDATE: 900,
+            SERVER_MESSAGE: 901,
+            TEMPLATE_DATA: 902
+        };
+        
         // Clean game state management
         const GameState = {
             isAuthenticated: false,
@@ -326,9 +364,16 @@
                     return;
                 }
                 
-                inventoryList.innerHTML = this.inventory.map(item => 
-                    `<div>${item.id} (${item.quantity})</div>`
-                ).join('');
+                inventoryList.innerHTML = this.inventory.map(item => {
+                    // Use stored item name if available, otherwise use ID
+                    const displayName = this.itemNames && this.itemNames[item.id] ? this.itemNames[item.id] : item.id;
+                    return `<div title="${item.id}">${displayName} (${item.quantity})</div>`;
+                }).join('');
+            },
+            
+            // Store item names for display
+            updateItemNames(itemNames) {
+                this.itemNames = itemNames || {};
             },
             
             refreshEquipmentUI() {
@@ -407,7 +452,7 @@
 
         function handleUpdate(update) {
             switch (update.type) {
-                case 'ROOM_UPDATE':
+                case UpdateTypes.ROOM_STATE_CHANGED:
                     if (update.data.name) {
                         addToOutput(`\n📍 === ${update.data.name} ===`, 'info');
                         addToOutput(update.data.description);
@@ -417,7 +462,10 @@
                         }
                         
                         if (update.data.items && update.data.items.length > 0) {
-                            const itemList = update.data.items.map(i => `${i.id} (${i.quantity})`).join(', ');
+                            const itemList = update.data.items.map(i => {
+                                const name = update.data.itemNames && update.data.itemNames[i.id] ? update.data.itemNames[i.id] : i.id;
+                                return `${name} (${i.quantity})`;
+                            }).join(', ');
                             addToOutput(`📦 Items: ${itemList}`, 'info');
                         }
                         
@@ -435,18 +483,24 @@
                     if (update.data.message) {
                         addToOutput(update.data.message);
                     }
+                    if (update.data.itemNames) {
+                        GameState.updateItemNames(update.data.itemNames);
+                    }
                     break;
                     
-                case 'INVENTORY_UPDATE':
+                case UpdateTypes.INVENTORY_CHANGED:
                     if (update.data.message) {
                         addToOutput(`🎒 ${update.data.message}`, 'success');
                     }
                     if (update.data.inventory) {
                         GameState.updateInventory(update.data.inventory);
                     }
+                    if (update.data.itemNames) {
+                        GameState.updateItemNames(update.data.itemNames);
+                    }
                     break;
                     
-                case 'EQUIPMENT_UPDATE':
+                case UpdateTypes.EQUIPMENT_CHANGED:
                     if (update.data.message) {
                         addToOutput(`⚔️ ${update.data.message}`, 'success');
                     }
@@ -455,14 +509,20 @@
                     }
                     break;
                     
-                case 'CHAT_UPDATE':
+                case UpdateTypes.MESSAGE_RECEIVED:
                     if (update.data.message) {
                         addToOutput(`💬 ${update.data.message}`);
                     }
                     break;
                     
-                case 'ERROR':
+                case UpdateTypes.COMMAND_ERROR:
                     addToOutput(`❌ ERROR: ${update.data.message}`, 'error');
+                    break;
+                    
+                case UpdateTypes.SERVER_MESSAGE:
+                    if (update.data.message) {
+                        addToOutput(`📢 ${update.data.message}`, 'info');
+                    }
                     break;
                     
                 default:
@@ -557,6 +617,16 @@
                     commandData = {
                         type: 104 // INVENTORY command type
                     };
+                    break;
+                    
+                case 'drop':
+                    if (args.length > 0) {
+                        commandData = {
+                            type: 105, // DROP_ITEM command type
+                            itemId: args[0],
+                            quantity: args[1] ? parseInt(args[1]) : 1
+                        };
+                    }
                     break;
                     
                 default:

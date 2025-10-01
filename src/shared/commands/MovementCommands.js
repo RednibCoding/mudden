@@ -1,5 +1,7 @@
 import { BaseCommand } from './BaseCommand.js'
 import { CommandTypes } from '../CommandTypes.js'
+import { BaseUpdate } from '../BaseUpdate.js'
+import { UpdateTypes } from '../UpdateTypes.js'
 
 /**
  * Move command - handles player movement between rooms
@@ -25,6 +27,43 @@ export class MoveCommand extends BaseCommand {
     return {
       direction: this.direction.toLowerCase()
     }
+  }
+  
+  execute(managers) {
+    const updates = []
+    const { playerManager, worldManager, templateManager } = managers
+    
+    // Use manager to attempt movement
+    const result = playerManager.tryMovePlayer(this.playerId, this.direction.toLowerCase(), worldManager)
+    
+    if (!result.success) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, {
+        message: result.message
+      }))
+      return updates
+    }
+
+    // Create item names mapping for room display
+    const itemNames = {}
+    if (result.room.items) {
+      result.room.items.forEach(item => {
+        const template = templateManager.getItem(item.id)
+        itemNames[item.id] = template?.name || item.id
+      })
+    }
+    
+    updates.push(new BaseUpdate(this.playerId, UpdateTypes.ROOM_STATE_CHANGED, {
+      location: result.location,
+      name: result.room.name,
+      description: result.room.description,
+      exits: Object.keys(result.room.exits),
+      items: result.room.items || [],
+      itemNames: itemNames,
+      npcs: result.room.npcs || [],
+      players: result.playersInRoom
+    }))
+
+    return updates
   }
   
   static fromJSON(data) {
@@ -63,6 +102,41 @@ export class LookCommand extends BaseCommand {
       target: this.target,
       targetType: this.targetType
     }
+  }
+  
+  execute(managers) {
+    const updates = []
+    const { playerManager, templateManager } = managers
+    
+    // Use manager to get room info
+    const roomInfo = playerManager.getPlayerRoomInfo(this.playerId, managers.worldManager)
+    
+    if (!roomInfo) {
+      updates.push(new BaseUpdate(this.playerId, UpdateTypes.COMMAND_ERROR, { message: 'Player or room not found' }))
+      return updates
+    }
+
+    // Create item names mapping for room display
+    const itemNames = {}
+    if (roomInfo.room.items) {
+      roomInfo.room.items.forEach(item => {
+        const template = templateManager.getItem(item.id)
+        itemNames[item.id] = template?.name || item.id
+      })
+    }
+    
+    updates.push(new BaseUpdate(this.playerId, UpdateTypes.ROOM_STATE_CHANGED, {
+      location: roomInfo.location,
+      name: roomInfo.room.name,
+      description: roomInfo.room.description,
+      exits: Object.keys(roomInfo.room.exits),
+      items: roomInfo.room.items || [],
+      itemNames: itemNames,
+      npcs: roomInfo.room.npcs || [],
+      players: roomInfo.playersInRoom
+    }))
+
+    return updates
   }
   
   static fromJSON(data) {

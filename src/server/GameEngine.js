@@ -50,11 +50,11 @@ export class GameEngine {
     const playerManager = new PlayerManager()
     
     return {
-      template: templateManager,
-      world: worldManager,
-      inventory: inventoryManager,
-      equipment: equipmentManager,
-      player: playerManager
+      templateManager: templateManager,
+      worldManager: worldManager,
+      inventoryManager: inventoryManager,
+      equipmentManager: equipmentManager,
+      playerManager: playerManager
     }
   }
   
