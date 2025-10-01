@@ -6,5 +6,7 @@
   "weight": 2,
   "canTake": true,
   "canUse": false,
+  "stackable": true,
+  "tradeable": true,
   "effects": {}
 }

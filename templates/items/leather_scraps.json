@@ -7,5 +7,6 @@
   "stackable": true,
   "canTake": true,
   "canUse": false,
+  "tradeable": true,
   "effects": {}
 }

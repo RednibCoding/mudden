@@ -4,6 +4,7 @@
   "type": "material",
   "value": 5,
   "stackable": true,
+  "tradeable": true,
   "effects": {},
   "stats": {}
 }

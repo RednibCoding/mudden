@@ -7,6 +7,8 @@
   "weight": 12,
   "canTake": true,
   "canUse": true,
+  "stackable": false,
+  "tradeable": true,
   "effects": {
     "defense": 10
   }

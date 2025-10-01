@@ -1,0 +1,16 @@
+{
+  "name": "Leather Boots",
+  "description": "Sturdy leather boots that provide good footing and protection.",
+  "type": "armor",
+  "slot": "feet",
+  "value": 30,
+  "weight": 2,
+  "canTake": true,
+  "canUse": true,
+  "stackable": false,
+  "tradeable": true,
+  "effects": {
+    "speed": 2,
+    "defense": 2
+  }
+}
