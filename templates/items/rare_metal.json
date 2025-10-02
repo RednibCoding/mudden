@@ -1,9 +1,0 @@
-{
-  "name": "Rare Metal",
-  "description": "An exotic metal with unique properties, highly prized by master smiths.",
-  "type": "material",
-  "value": 50,
-  "stackable": true,
-  "effects": {},
-  "stats": {}
-}

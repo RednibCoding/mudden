@@ -1,24 +1,28 @@
 {
-  "name": "mudden-v2",
-  "version": "2.0.0",
-  "description": "Modern MUD server with tick-based architecture and data-driven protocol",
-  "main": "src/server/index.js",
-  "type": "module",
+  "name": "mudden",
+  "version": "1.0.0",
+  "description": "A minimal multiplayer MUD server with TypeScript and Socket.IO",
   "scripts": {
-    "start": "node src/server/index.js",
-    "dev": "node --watch src/server/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "dev": "fuser -k 3000/tcp 2>/dev/null || true; npm run build && node dist/server.js",
+    "dev-ts": "ts-node src/server.ts",
+    "start": "node dist/server.js",
+    "validate-map": "ts-node tools/map-validator.ts",
+    "validate-ids": "ts-node tools/id-validator.ts"
   },
-  "keywords": [
-    "mud",
-    "game",
-    "server",
-    "websocket",
-    "multiplayer"
-  ],
-  "author": "RednibCoding",
-  "license": "MIT",
   "dependencies": {
-    "socket.io": "^4.7.2"
-  }
+    "socket.io": "^4.7.5",
+    "bcrypt": "^5.1.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.2",
+    "ts-node": "^10.9.1"
+  },
+  "keywords": ["mud", "game", "multiplayer", "typescript", "socket.io"],
+  "author": "",
+  "license": "MIT"
 }

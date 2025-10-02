@@ -1,0 +1,115 @@
+[
+  {
+    "id": "town_crier",
+    "name": "Town Crier",
+    "description": "A loud man in colorful robes who announces news to the town.",
+    "dialogue": [
+      "Hear ye, hear ye! Welcome to our fair town!",
+      "Beware the forest paths - monsters lurk in the shadows!",
+      "The weapon shop has the finest blades in the realm!"
+    ],
+    "quests": []
+  },
+  {
+    "id": "homestone_keeper",
+    "name": "Sage Meridia",
+    "description": "An elderly woman in flowing white robes, emanating a calming magical aura.",
+    "dialogue": [
+      "I am the keeper of the sacred homestones. I can bind your spirit to this place.",
+      "Should you fall in battle, the homestone will guide your soul back here for resurrection.",
+      "Speak 'homestone bind' if you wish to make this your sanctuary."
+    ],
+    "quests": [],
+    "healer": true
+  },
+  {
+    "id": "weapon_merchant",
+    "name": "Gareth the Smith",
+    "description": "A burly blacksmith with arms like tree trunks and a friendly smile.",
+    "dialogue": [
+      "Welcome to my shop! I've got the finest weapons and armor.",
+      "Every adventurer needs a good blade. What can I get for you?",
+      "Type 'list' or 'shop' to see what I have for sale!"
+    ],
+    "quests": ["goblin_problem"]
+  },
+  {
+    "id": "potion_merchant",
+    "name": "Mystara the Alchemist",
+    "description": "A mysterious woman in violet robes, her fingers stained with various alchemical substances. Her eyes gleam with arcane knowledge.",
+    "dialogue": [
+      "Welcome, seeker of mystical wares! I deal in potions and scrolls of great power.",
+      "My healing potions can mend even the gravest wounds. My combat scrolls unleash devastating magic.",
+      "For those lost in the wilderness, I even have teleportation scrolls to bring you home.",
+      "Type 'list' or 'shop' to browse my collection!"
+    ],
+    "quests": []
+  },
+  {
+    "id": "bartender",
+    "name": "Innkeeper Tom",
+    "description": "A jovial man with a red face and a welcoming manner.",
+    "dialogue": [
+      "Welcome to the Prancing Pony! Can I get you a drink?",
+      "I hear tales of brave adventurers from far and wide.",
+      "If you're looking for work, the locals always need help with something."
+    ],
+    "quests": ["wolf_pelts_needed"]
+  },
+  {
+    "id": "gate_guard",
+    "name": "Captain Marcus",
+    "description": "A stern-looking guard captain in polished armor.",
+    "dialogue": [
+      "State your business in our city.",
+      "Keep the peace while you're here, adventurer.",
+      "We've had reports of increased wolf activity outside the city. Be careful."
+    ],
+    "quests": ["dangerous_wolves"]
+  },
+  {
+    "id": "worried_scholar",
+    "name": "Scholar Aldric",
+    "description": "A middle-aged man in scholarly robes, pacing nervously and clutching a worn book.",
+    "dialogue": [
+      "I spend my days researching ancient texts and botanical studies.",
+      "The library has many fascinating books about the natural world.",
+      "Knowledge is the greatest treasure an adventurer can possess."
+    ],
+    "quests": ["find_missing_colleague"]
+  },
+  {
+    "id": "forest_botanist",
+    "name": "Botanist Elara",
+    "description": "A nature-loving scholar with dirt-stained robes and a satchel full of plant samples.",
+    "dialogue": [
+      "The forest holds so many botanical secrets waiting to be discovered.",
+      "I've catalogued dozens of rare plant species in these woods.",
+      "Nature's wisdom far exceeds anything we can learn from books.",
+      "These deep woods are dangerous, but the knowledge they offer is invaluable."
+    ],
+    "quests": ["deliver_good_news"]
+  },
+  {
+    "id": "farmer_john",
+    "name": "Farmer John",
+    "description": "A weathered farmer with calloused hands and a worried expression.",
+    "dialogue": [
+      "These fields have fed my family for generations.",
+      "Farming is honest work, but these are troubled times.",
+      "I worry about the safety of my crops and livestock."
+    ],
+    "quests": ["bandit_problem"]
+  },
+  {
+    "id": "militia_captain",
+    "name": "Captain Thorne",
+    "description": "A battle-hardened militia captain with scars and a stern demeanor.",
+    "dialogue": [
+      "The militia keeps this town safe from threats.",
+      "We need strong adventurers to help protect our citizens.",
+      "Every bandit we stop is one less threat to innocent people."
+    ],
+    "quests": ["report_to_farmer"]
+  }
+]

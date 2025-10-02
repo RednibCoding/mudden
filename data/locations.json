@@ -1,0 +1,189 @@
+[
+  {
+    "id": "town_square",
+    "name": "Town Square",
+    "description": "You stand in the center of a bustling town square. A fountain bubbles merrily in the middle, surrounded by cobblestone paths. Merchants hawk their wares from nearby stalls.",
+    "exits": {
+      "north": "potion_shop",
+      "east": "farm_fields",
+      "west": "tavern",
+      "south": "city_gates",
+      "northeast": "forest_path",
+      "northwest": "militia_barracks"
+    },
+    "enemies": [],
+    "npcs": [
+      "town_crier",
+      "homestone_keeper",
+      "worried_scholar"
+    ],
+    "shop": null,
+    "homestone": true
+  },
+  {
+    "id": "weapon_shop",
+    "name": "The Rusty Blade",
+    "description": "A dimly lit weapon shop filled with the smell of oil and metal. Weapons of various sizes hang from the walls, and a gruff shopkeeper eyes you from behind the counter.",
+    "exits": {
+      "west": "town_square",
+      "north": "forest_path",
+      "northwest": "potion_shop",
+      "southwest": "city_gates"
+    },
+    "enemies": [],
+    "npcs": [
+      "weapon_merchant"
+    ],
+    "shop": "weapon_shop"
+  },
+  {
+    "id": "potion_shop",
+    "name": "The Mystic Apothecary",
+    "description": "Strange herbs hang from the rafters, filling the air with exotic scents. Glowing potions line the shelves in bottles of every color. Mystical scrolls are carefully arranged behind the counter, and a cauldron bubbles quietly in the corner.",
+    "exits": {
+      "south": "town_square",
+      "east": "forest_path",
+      "west": "militia_barracks",
+      "northeast": "deep_forest",
+      "southeast": "farm_fields",
+      "southwest": "tavern"
+    },
+    "enemies": [],
+    "npcs": [
+      "potion_merchant"
+    ],
+    "shop": "potion_shop"
+  },
+  {
+    "id": "tavern",
+    "name": "The Prancing Pony",
+    "description": "A cozy tavern filled with the warmth of a crackling fireplace. Adventurers sit at wooden tables, sharing tales of their exploits over mugs of ale.",
+    "exits": {
+      "east": "town_square",
+      "north": "militia_barracks",
+      "northeast": "potion_shop",
+      "southeast": "city_gates"
+    },
+    "enemies": [],
+    "npcs": [
+      "bartender"
+    ],
+    "shop": null,
+    "groundItems": [
+      {
+        "itemId": "health_potion",
+        "respawnTime": 10000
+      }
+    ]
+  },
+  {
+    "id": "forest_path",
+    "name": "Forest Path",
+    "description": "A winding dirt path leads through a dense forest. Tall trees create a canopy overhead, filtering the sunlight into dappled patterns on the ground.",
+    "exits": {
+      "southwest": "town_square",
+      "south": "farm_fields",
+      "north": "deep_forest",
+      "west": "potion_shop"
+    },
+    "enemies": [
+      {
+        "enemyId": "goblin"
+      },
+      {
+        "enemyId": "wolf"
+      }
+    ],
+    "npcs": [],
+    "shop": null,
+    "groundItems": [
+      {
+        "itemId": "rusty_sword"
+      }
+    ]
+  },
+  {
+    "id": "deep_forest",
+    "name": "Deep Forest",
+    "description": "The forest grows darker and more menacing here. Strange sounds echo from the shadows between the ancient trees.",
+    "exits": {
+      "south": "forest_path",
+      "southwest": "potion_shop"
+    },
+    "enemies": [
+      {
+        "enemyId": "orc"
+      },
+      {
+        "enemyId": "wolf"
+      }
+    ],
+    "npcs": [
+      "forest_botanist"
+    ],
+    "shop": null
+  },
+  {
+    "id": "city_gates",
+    "name": "City Gates",
+    "description": "Massive stone gates mark the southern entrance to the city. Guards in chainmail stand watch, keeping an eye on all who pass through.",
+    "exits": {
+      "north": "town_square",
+      "south": "farm_house",
+      "northeast": "farm_fields",
+      "northwest": "tavern"
+    },
+    "enemies": [],
+    "npcs": [
+      "gate_guard",
+      "town_crier"
+    ],
+    "shop": null
+  },
+  {
+    "id": "farm_house",
+    "name": "Farm House",
+    "description": "A modest wooden farmhouse with a thatched roof. Chickens peck at the ground in the yard, and the smell of fresh bread wafts from the open door. The fields stretch out to the west.",
+    "exits": {
+      "north": "city_gates"
+    },
+    "enemies": [],
+    "npcs": [
+      "farmer_john"
+    ],
+    "shop": null
+  },
+  {
+    "id": "farm_fields",
+    "name": "Farm Fields",
+    "description": "Rows of crops stretch across the fertile fields. The hard work of farming is evident in the neat furrows and healthy plants. Unfortunately, signs of recent bandit activity are visible - trampled crops and scattered belongings.",
+    "exits": {
+      "north": "forest_path",
+      "west": "town_square",
+      "northwest": "potion_shop",
+      "southwest": "city_gates"
+    },
+    "enemies": [
+      {
+        "enemyId": "bandit"
+      }
+    ],
+    "npcs": [],
+    "shop": null
+  },
+  {
+    "id": "militia_barracks",
+    "name": "Militia Barracks",
+    "description": "A sturdy stone building that serves as headquarters for the town militia. Training dummies stand in the yard, and the sound of steel on steel rings out. Maps and weapons line the walls inside.",
+    "exits": {
+      "south": "tavern",
+      "east": "potion_shop",
+      "southeast": "town_square"
+    },
+    "enemies": [],
+    "npcs": [
+      "militia_captain"
+    ],
+    "shop": null
+  }
+]

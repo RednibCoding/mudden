@@ -1,0 +1,14 @@
+[
+  {
+    "id": "weapon_shop",
+    "name": "The Rusty Blade",
+    "items": ["rusty_sword", "iron_sword", "steel_sword", "wooden_shield", "iron_shield", "leather_armor"],
+    "margin": 1.2
+  },
+  {
+    "id": "potion_shop",
+    "name": "The Mystic Apothecary",
+    "items": ["health_potion", "greater_health_potion", "fireball_scroll", "lightning_scroll", "town_teleport_scroll"],
+    "margin": 1.5
+  }
+]

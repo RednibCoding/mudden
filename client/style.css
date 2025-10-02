@@ -1,0 +1,231 @@
+/* Terminal-style MUD client */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #6bcf7f;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#header {
+    background-color: #2a2a2a;
+    padding: 8px;
+    border-bottom: 1px solid #6bcf7f;
+    text-align: center;
+    position: relative;
+}
+
+#header h1 {
+    color: #6bcf7f;
+    font-size: 16px;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+#logout-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: 1px solid #6bcf7f;
+    color: #6bcf7f;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    padding: 4px 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+#logout-btn:hover {
+    background-color: #6bcf7f;
+    color: #2a2a2a;
+}
+
+/* Login Screen */
+#login-screen {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1a1a1a;
+}
+
+.login-form {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border: 1px solid #6bcf7f;
+    width: 300px;
+}
+
+.login-form h2 {
+    color: #6bcf7f;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.login-form div {
+    margin-bottom: 15px;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 6px;
+    background-color: #1a1a1a;
+    border: 1px solid #6bcf7f;
+    color: #6bcf7f;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: #ffffff;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.login-form button {
+    padding: 6px 12px;
+    background-color: #1a1a1a;
+    border: 1px solid #6bcf7f;
+    color: #6bcf7f;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.login-form button:hover {
+    background-color: #6bcf7f;
+    color: #000;
+}
+
+.login-error {
+    color: #ff0000;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+/* Game Screen */
+#game-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#output {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #333;
+    font-size: 14px;
+    line-height: 1.4;
+    min-height: 0;
+}
+
+#output::-webkit-scrollbar {
+    width: 8px;
+}
+
+#output::-webkit-scrollbar-track {
+    background: #111;
+}
+
+#output::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+
+#output::-webkit-scrollbar-thumb:hover {
+    background: #6bcf7f;
+}
+
+#input-area {
+    background-color: #2a2a2a;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #333;
+    flex-shrink: 0;
+}
+
+.prompt {
+    color: #6bcf7f;
+    margin-right: 5px;
+    font-weight: bold;
+    text-shadow: 0 0 5px #6bcf7f;
+}
+
+#command-input {
+    flex: 1;
+    background-color: transparent;
+    border: none;
+    color: #6bcf7f;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    outline: none;
+}
+
+/* Message types */
+.message {
+    margin-bottom: 5px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.message.echo { color: #9d9d9d; } /* command echo - only used by client */
+/* Message types from server */
+.message.normal { color: #e0e0e0; }
+.message.error { color: #ff6b6b; }
+.message.success { color: #6bcf7f; }
+.message.system { color: #ffd93d; }
+.message.info { color: #74b9ff; }
+.message.dialogue { color: #54bd9f; }
+.message.chat { color: #90baaf; }
+.message.whisper { color: #fd79a8; }
+.message.status { color: #74b9ff; }
+.message.player-combat { color: #ff9f40; }
+.message.enemy-combat { color: #ff6b9d; }
+.message.pvp-combat { color: #e04c4c; }
+.message.combat-death { color: #ff4757; }
+
+/* Scrollbar animation */
+#output {
+    scrollbar-color: #333 #111;
+    scrollbar-width: thin;
+}
+
+/* Blinking cursor effect */
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+#command-input::after {
+    content: '_';
+    animation: blink 1s infinite;
+}

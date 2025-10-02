@@ -1,275 +1,294 @@
-# Mudden v2 - Clean Architecture MUD# Mudden - Simple MUD Game
+# MUDDEN - A Small, Clean, Data-Driven MUD Server Engine
 
+A complete yet compact multiplayer MUD (Multi-User Dungeon) server engine built with TypeScript and Socket.IO. Approximately **3,000-4,000 lines of code** providing full MUD gameplay with a clean, maintainable codebase.
 
+## 🎯 Project Philosophy
 
-A modern Multi-User Dungeon (MUD) game built with clean architecture principles, featuring tick-based processing and complete client-server separation.A clean, extensible Multi-User Dungeon (MUD) game built with modern web technologies, prioritizing simplicity and maintainability.
+- **Small & Clean**: ~3,800 lines of well-organized TypeScript
+- **Data-Driven**: All game content in JSON files (locations, items, enemies, NPCs, quests, shops)
+- **Type-Safe**: Full TypeScript with comprehensive interfaces
+- **No Dependencies**: Just Socket.IO, bcrypt, and uuid - no heavy frameworks
+- **Developer-Friendly**: Built-in validators, clear architecture, easy to understand
 
+## ✨ Features
 
+### Core Gameplay
+- **Real-time Multiplayer** - Socket.IO for instant updates across all players
+- **Grid-Based World** - 10-direction movement (N/S/E/W/NE/NW/SE/SW/Up/Down)
+- **Visual ASCII Map** - See surrounding areas with connection lines
+- **Shared Combat** - Multiple players can fight the same enemies
+- **Equipment System** - Weapons, shields, and armor with stat bonuses
+- **Ground Items** - Pick up items from locations with quest prerequisites and respawn timers
+- **Natural Quest Discovery** - Talk to NPCs to discover and activate quests
+- **Quest-Based Spawning** - Enemies and items appear based on player quest progression
+- **Player Trading** - Trade items and gold between players
+- **Teleportation** - Homestone system for quick travel
 
-## 🎯 Design Philosophy## 🎯 Design Philosophy
+### Progression & Social
+- **Experience & Leveling** - Gain XP, level up, increase stats
+- **Quest System** - Kill, collect, and visit quests with prerequisites
+- **Shop System** - Buy and sell items with gold
+- **Friends List** - Add friends and see who's online
+- **Communication** - Say, whisper, reply commands
+- **Inventory Management** - 16-slot limited inventory
 
+### Authentication & Persistence
+- **Secure Auth** - bcrypt password hashing with salt
+- **File-Based Storage** - Player data saved to JSON files
+- **Auto-Save** - Changes saved automatically
 
+## 🛠️ Development Tools
 
-**Clean Architecture MUD** with professional separation of concerns and modern development practices.**Simple, JSON-driven MUD** that can be built and modified quickly while maintaining rich content systems.
-
-
-
-- **Clean Architecture** - Complete separation between client and server- **Simplicity First** - Minimal code, maximum functionality
-
-- **Tick-Based Processing** - Centralized game loop with 1-second ticks- **JSON-Driven Content** - All game data in easily editable JSON files
-
-- **Data-Driven Protocol** - Structured communication using numeric constants- **File-Based Persistence** - No database complexity, just JSON saves
-
-- **Manager Pattern** - Business logic in dedicated manager classes- **Real-Time Experience** - WebSocket-based communication
-
-- **Multiple Client Support** - Architecture supports web, desktop, mobile clients- **Zero Build Process** - Run with `npm run dev`
-
-- **Security First** - Server serves no files, pure WebSocket communication
+- **Map Validator** - Validates grid consistency, checks bidirectional connections, auto-fix capability
+- **ID Reference Validator** - Validates all cross-references between game data files
+- **Pre-Build Validation** - Runs validators automatically on `npm run dev`
 
 ## 🚀 Quick Start
 
-## 🚀 Quick Start
-
+### Prerequisites
 ```bash
-
-### 1. Start the Servernpm install
-
-```bashnpm run dev
-
-npm install```
-
-npm start
-
-# Server runs on WebSocket port 3000Open http://localhost:3000 and start playing!
-
+npm install
 ```
 
-## 🏗️ Architecture
-
-### 2. Run Web Client
-
-```bash### Core Systems
-
-# Use VS Code Live Server extension- **Movement**: Navigate between rooms using cardinal directions
-
-# Open src/client/web/index.html with Live Server- **Inventory**: Pick up, drop, examine, and equip items
-
-# Client will connect to WebSocket server automatically- **Combat**: Turn-based fighting with NPCs and automatic health recovery
-
-```- **Quests**: JSON-driven quest system with progression tracking and reward inspection
-
-- **Friends**: Add friends, track online status, and add personal notes
-
-## 🏗️ Architecture- **Social**: Player communication, messaging system, and NPC interactions
-
-
-
-### Server (src/server/)### Technical Features
-
-- **Pure WebSocket Server** - No file serving, only game logic- **Modular Commands**: Organized in 8 logical categories (Movement, Combat, Social, Friends, etc.)
-
-- **Tick-Based Engine** - 1-second game loop for all processing- **Global Tick System**: Centralized timing for combat and health recovery
-
-- **Manager Pattern** - Dedicated managers for each game system- **Fuzzy Matching**: Intelligent command and item matching
-
-- **Command Queue** - Collects and processes commands in batches- **Real-time Communication**: WebSocket connections via Socket.io
-
-- **Update Distribution** - Efficient update broadcasting to clients- **Password Protection**: Secure character authentication with PBKDF2
-
-- **Duplicate Login Prevention**: Robust session management
-
-### Client (src/client/)
-
-- **Web Client** (`web/`) - Browser-based interface using Socket.IO## 📁 Project Structure
-
-- **Modular Design** - Ready for additional client implementations
-
-- **Local Constants** - No server dependencies for shared constants```
-
-- **Clean UI** - Modern, responsive interfacemudden/
-
-├── server.js              # Main server file
-
-### Shared (src/shared/)├── lib/
-
-- **Protocol Definition** - Command types, update types, error codes│   ├── Player.js          # Player class and file operations
-
-- **Command Factory** - Structured command creation and validation│   ├── WorldManager.js    # World state and content loading
-
-- **Update System** - Standardized update format for all game events│   ├── CommandManager.js  # Command orchestration
-
-│   ├── GameTickManager.js # Global tick system management
-
-## 📁 Project Structure│   └── commands/          # Modular command system (8 categories)
-
-├── persist/               # Player save files
-
-```├── templates/             # Game content templates (JSON files)
-
-mudden/│   ├── areas/             # Area and room definitions
-
-├── src/│   ├── items/             # Item definitions with stats
-
-│   ├── server/                # Game server│   ├── npcs/              # NPC definitions
-
-│   │   ├── index.js          # Server entry point│   ├── quests/            # Quest definitions
-
-│   │   ├── GameEngine.js     # Main game engine with tick processing│   └── enemies/           # Enemy definitions with loot tables
-
-│   │   ├── SocketManager.js  # WebSocket connection management└── public/               # Client-side files
-
-│   │   ├── CommandQueue.js   # Command collection and batching```
-
-│   │   ├── TickProcessor.js  # Command processing and execution
-
-│   │   ├── UpdateDistributor.js # Update broadcasting## 🎮 Key Features
-
-│   │   └── managers/         # Business logic managers
-
-│   │       ├── PlayerManager.js     # Player data and authentication### For Players
-
-│   │       ├── WorldManager.js      # World state and rooms- **Rich World**: Explore areas, collect items, fight enemies
-
-│   │       ├── InventoryManager.js  # Item management workflows- **Quest System**: Discover and complete quests, inspect reward items
-
-│   │       ├── EquipmentManager.js  # Equipment system workflows- **Character Progression**: Level up, gain stats, equip better gear
-
-│   │       ├── MovementManager.js   # Movement and room inspection- **Friends System**: Add friends, track online status, add personal notes
-
-│   │       ├── SocialManager.js     # Chat and messaging systems- **Social Features**: Tell/reply messaging, chat with players, interact with NPCs
-
-│   │       └── TemplateManager.js   # Game content loading- **Automatic Recovery**: Health regenerates automatically when not in combat
-
-│   ├── client/
-
-│   │   └── web/              # Web client implementation### For Developers
-
-│   │       ├── index.html    # Main HTML file- **Easy Content Creation**: Add areas, items, NPCs, quests, and enemies via JSON files
-
-│   │       ├── styles.css    # All CSS styles- **Modular Architecture**: Commands organized in 8 logical categories
-
-│   │       └── js/           # Client JavaScript- **Global Tick System**: Centralized timing system for all game mechanics
-
-│   │           ├── client.js       # Main client application- **Clean Codebase**: Modern ES6+ modules with consistent patterns
-
-│   │           ├── ErrorCodes.js   # Error code constants- **Simple State Management**: File-based persistence without complex abstractions
-
-│   │           ├── UpdateTypes.js  # Update type constants
-
-│   │           └── CommandTypes.js # Command type constants## 🔧 Adding Content
-
-│   └── shared/               # Shared protocol definitions
-
-│       ├── ErrorCodes.js     # Centralized error constants### New Areas
-
-│       ├── UpdateTypes.js    # Update type definitionsCreate JSON files in `templates/areas/` with room definitions and connections.
-
-│       ├── CommandTypes.js   # Command type definitions
-
-│       ├── CommandFactory.js # Command creation and validation### New Items
-
-│       ├── BaseUpdate.js     # Base update classAdd item definitions to `templates/items/` with stats, descriptions, and effects.
-
-│       └── commands/         # Command implementations
-
-│           ├── BaseCommand.js      # Base command class### New Quests
-
-│           ├── MovementCommands.js # Movement and lookingCreate quest files in `templates/quests/` with objectives, rewards, and dialogue.
-
-│           ├── InventoryCommands.js # Item management
-
-│           ├── EquipmentCommands.js # Equipment management### New Commands
-
-│           └── SocialCommands.js   # Chat and messagingExtend `BaseCommand` and add to appropriate command category file.
-
-├── templates/                # Game content (JSON files)
-
-│   ├── areas/               # Room and area definitions## 📚 Documentation
-
-│   ├── items/               # Item definitions with stats
-
-│   ├── npcs/                # NPC definitions and dialogues- **[Design Document](mudden-design.md)** - Complete architecture overview
-
-│   ├── quests/              # Quest definitions and rewards- **[Copilot Instructions](.github/copilot-instructions.md)** - Development guidelines
-
-│   └── enemies/             # Enemy definitions and loot tables
-
-└── persist/                 # Player save files and game state## 🎯 Philosophy
-
-    └── players/             # Individual player data files
-
-```This is a **Simple MUD** - emphasis on:
-
-- **Clarity over cleverness**
-
-## 🔧 Key Features- **Function over form** 
-
-- **Maintainability over features**
-
-### Clean Architecture Benefits- **User experience over technical complexity**
-
-- **Testable Components** - Each manager can be unit tested independently
-
-- **Maintainable Code** - Clear separation of concerns and responsibilitiesThe goal is to create an enjoyable, bug-free gaming experience with code that's easy to understand and modify.
-- **Extensible Design** - Easy to add new features without breaking existing code
-- **Multiple Clients** - Server architecture supports any client implementation
-
-### Game Features
-- **Movement System** - Navigate between rooms with intelligent room state management
-- **Inventory System** - Complete item management with effects and consumables
-- **Equipment System** - Multi-slot equipment affecting player stats
-- **Social System** - Chat, messaging, and player interaction
-- **Error Handling** - Structured error codes for internationalization
-
-### Technical Features
-- **Tick-Based Processing** - Consistent 1-second game loop for all operations
-- **Command Batching** - Efficient processing of multiple commands per tick
-- **Update Broadcasting** - Targeted update distribution to relevant players
-- **Session Management** - Secure player authentication with duplicate login prevention
-- **Real-time Communication** - WebSocket-based client-server communication
-
-## 🎮 Development
-
-### Adding New Features
-1. **Business Logic** - Add methods to appropriate manager in `src/server/managers/`
-2. **Commands** - Create command classes in `src/shared/commands/`
-3. **Client Support** - Update client handlers in `src/client/web/js/`
-4. **Constants** - Add error codes, update types, command types as needed
-
-### Command Pattern
-Commands follow clean architecture:
-- **Validation** - Commands validate input parameters
-- **Orchestration** - Commands call manager methods for business logic
-- **Updates** - Commands create structured updates from manager results
-
-### Manager Pattern
-Managers handle all business logic:
-- **State Management** - Managers own and modify game state
-- **Workflow Methods** - High-level methods that handle complete operations
-- **Data Integrity** - Managers ensure data consistency and validation
-
-## 🚀 Deployment
-
-### Development
-- **Server**: `npm start` (WebSocket server on port 3000)
-- **Client**: VS Code Live Server extension for web client
-
-### Production
-- **Server**: Deploy Node.js application with WebSocket support
-- **Client**: Serve static files from any web server or CDN
-- **Configuration**: Update client connection URL for production server
-
-## 📚 Documentation
-
-- **[Web Client README](src/client/web/README.md)** - Web client setup and usage
-- **[Copilot Instructions](.github/copilot-instructions.md)** - Development guidelines
-
-## 🎯 Philosophy
-
-This is a **Professional MUD Architecture** emphasizing:
-- **Clean Code** - Readable, maintainable, and testable
-- **Separation of Concerns** - Each component has a single responsibility  
-- **Scalability** - Architecture supports growth and multiple clients
-- **Developer Experience** - Easy to understand, modify, and extend
-
-The goal is to provide a solid foundation for MUD development with modern software engineering practices.
+### Development Mode (with validators)
+```bash
+npm run dev
+```
+This will:
+1. Validate map grid consistency
+2. Validate all ID references
+3. Compile TypeScript
+4. Start the server on port 3000
+
+### Play the Game
+1. Open your browser to `http://localhost:3000`
+2. Create a new account or login
+3. Type `help` to see available commands
+
+### Development Tools
+```bash
+npm run validate-map      # Run map validator standalone
+npm run validate-ids      # Run ID validator standalone
+npm run build            # Compile TypeScript only
+```
+
+## 🎮 Commands
+
+### Movement
+- `north, south, east, west` (or `n, s, e, w`) - Move in cardinal directions
+- `northeast, northwest, southeast, southwest` (or `ne, nw, se, sw`) - Move diagonally
+- `up, down` (or `u, d`) - Move vertically
+- `map` or `m` - Show visual ASCII map
+
+### Combat
+- `attack <enemy>` (or `hit, strike`) - Attack an enemy
+- `flee` (or `run`) - Escape from combat
+
+### Items & Equipment
+- `inventory` or `i` - Show your inventory
+- `get <item>` or `take <item>` - Pick up an item from the ground
+- `equip <item>` - Equip a weapon, armor, or shield
+- `wield <weapon>` - Wield a weapon
+- `wear <armor/shield>` - Wear armor or shield
+- `remove <slot>` - Remove equipment (weapon, armor, shield)
+- `use <item>` - Use a consumable item
+- `give <item> <player>` - Give an item to another player
+
+### Social & Communication
+- `say <message>` - Say something to everyone in the room
+- `whisper <player> <message>` (or `wis`) - Send a private message
+- `reply <message>` (or `r`) - Reply to last whisper
+- `who` or `online` - See who's online
+- `friend <player>` - Add/remove friend
+- `friends` - Show friends list
+
+### Trading
+- `trade <player>` - Start a trade with another player
+- `offer <item>` - Offer an item in trade
+- `offer <amount> gold` - Offer gold in trade
+- `ready` - Mark yourself as ready in trade
+- `accept` - Accept and complete the trade
+- `cancel` - Cancel the trade
+
+### NPCs, Quests & Shops
+- `talk <npc>` (or `speak`) - Talk to an NPC (discover quests)
+- `quest` or `quests` - Show your active and completed quests
+- `list` - List shop inventory
+- `buy <item>` - Buy an item from a shop
+- `sell <item>` - Sell an item to a shop
+
+### Teleportation
+- `homestone` - Set your homestone to current location
+- `recall` - Teleport to your homestone
+
+### Info Commands
+- `look` or `l` - Look around your current location
+- `help` - Show available commands
+
+## 📁 Project Structure
+
+```
+mudden/
+├── src/                      # TypeScript source code
+│   ├── server.ts            # Main game server (~3,800 lines)
+│   ├── types.ts             # TypeScript interfaces (~180 lines)
+│   └── auth.ts              # Authentication system (~250 lines)
+├── tools/                    # Development tools
+│   ├── map-validator.ts     # Grid consistency checker & auto-fix
+│   └── id-validator.ts      # Reference validator
+├── client/                   # Web-based terminal client
+│   ├── index.html           # Client HTML
+│   └── style.css            # Terminal-style CSS
+├── data/                     # JSON game content (data-driven)
+│   ├── locations.json       # World map with grid coordinates
+│   ├── items.json           # All items (weapons, armor, consumables)
+│   ├── enemies.json         # Enemy definitions with drops
+│   ├── npcs.json            # NPCs with dialogue
+│   ├── quests.json          # Quest definitions
+│   ├── shops.json           # Shop inventories
+│   └── defaults.json        # Game configuration
+├── persist/                  # Player data storage
+│   └── players/             # Individual player JSON files
+└── dist/                     # Compiled JavaScript
+```
+
+## 🎨 Game Content (Data-Driven)
+
+All game content is defined in JSON files in the `data/` directory:
+
+- **Locations** - Rooms with descriptions, exits, enemies, NPCs, and shops
+- **Items** - Weapons, armor, shields, consumables, and teleportation items
+- **Enemies** - Monsters with stats, gold, XP, drop rates, and respawn timers
+- **NPCs** - Characters with dialogue, quests, and homestone services
+- **Quests** - Kill, collect, and visit quests with prerequisites and rewards
+- **Shops** - Item inventories with pricing and margins
+- **Defaults** - Global game configuration (level progression, combat, items)
+
+### Quest-Based Spawning System
+
+The game features a powerful quest-based spawning system that allows enemies and ground items to appear based on player quest progression.
+
+#### Ground Items (locations.json)
+
+Ground items in locations can have quest prerequisites, respawn timers, and one-time flags:
+
+```json
+"groundItems": [
+  {
+    "itemId": "health_potion",
+    "respawnTime": 60000
+  },
+  {
+    "itemId": "quest_sword",
+    "prerequisiteActiveQuests": ["find_legendary_sword"],
+    "oneTime": true
+  },
+  {
+    "itemId": "magic_scroll",
+    "prerequisiteCompletedQuests": ["wizard_quest"],
+    "respawnTime": 300000
+  }
+]
+```
+
+**Properties:**
+- `itemId` (required) - Reference to item in items.json
+- `respawnTime` (optional) - Milliseconds before item respawns after pickup
+- `prerequisiteActiveQuests` (optional) - Only visible if player has ALL these quests active
+- `prerequisiteCompletedQuests` (optional) - Only visible if player completed ALL these quests
+- `oneTime` (optional) - If true, item only appears once per player (never respawns after pickup)
+
+**Behavior:**
+- Items without `respawnTime` can only be picked up once (disappear forever)
+- Items with `respawnTime` reappear after specified time (unless `oneTime` is true)
+- One-time items are tracked per player and location (`locationId.itemId`)
+- Each player sees different items based on their quest progression
+
+#### Enemies (locations.json)
+
+Enemies in locations can also have quest prerequisites and one-time flags:
+
+```json
+"enemies": [
+  {
+    "enemyId": "goblin"
+  },
+  {
+    "enemyId": "quest_boss",
+    "prerequisiteActiveQuests": ["find_dragon"],
+    "oneTime": true
+  },
+  {
+    "enemyId": "guardian",
+    "prerequisiteCompletedQuests": ["complete_trial"],
+    "oneTime": false
+  }
+]
+```
+
+**Properties:**
+- `enemyId` (required) - Reference to enemy in enemies.json
+- `prerequisiteActiveQuests` (optional) - Only spawns if player has ALL these quests active
+- `prerequisiteCompletedQuests` (optional) - Only spawns if player completed ALL these quests
+- `oneTime` (optional) - If true, enemy only spawns once per player (never respawns after defeat)
+
+**Behavior:**
+- Simple string format `"goblin"` works for enemies without prerequisites
+- Enemies are always in the location, but only visible to players who meet prerequisites
+- One-time enemies are tracked per player and location (`locationId.enemyId`)
+- Each player sees different enemies based on their quest progression
+- Respawn time comes from enemy definition in enemies.json
+
+**Use Cases:**
+- Quest-specific boss fights that only appear when quest is active
+- Tutorial enemies that disappear after first defeat
+- Progression-gated content that unlocks after completing previous quests
+- Location-specific one-time encounters
+- Dynamic world that changes based on player progression
+
+## 📊 Code Statistics
+
+- **Total LOC**: ~3,800 lines
+- **Server**: ~3,800 lines (server.ts)
+- **Auth**: ~250 lines (auth.ts)
+- **Types**: ~180 lines (types.ts)
+- **Validators**: ~400 lines (tools/)
+- **Client**: Minimal terminal interface
+- **Status**: ~95% complete (5 features remaining, see TODO.md)
+
+## 🎯 Remaining Features
+
+See [TODO.md](TODO.md) for the 5 final features needed for feature-complete status:
+1. Drop items to ground
+2. Take items from ground
+3. Pre-defined ground items with respawn
+4. Examine enemies (difficulty assessment)
+5. Examine players (equipment inspection)
+
+## 📖 Documentation
+
+- [ROADMAP.md](ROADMAP.md) - Development roadmap and progress
+- [TODO.md](TODO.md) - Final features checklist
+- [.github/copilot-instructions.md](.github/copilot-instructions.md) - Development guidelines
+
+## 🧪 Architecture
+
+- **Server**: Pure TypeScript, no game engine frameworks
+- **Real-time**: Socket.IO for multiplayer
+- **Storage**: File-based JSON (no database needed)
+- **Validation**: Pre-build validators ensure data integrity
+- **Grid System**: Coordinate-based world with 10-direction movement
+- **Type Safety**: Full TypeScript interfaces for all entities
+
+## 📝 Development
+
+- Server runs on port 3000
+- Web client served from server
+- Player data stored in `persist/players/`
+- Real-time updates via Socket.IO
+- Hot reload with `npm run dev`
+- Validators run automatically on build
+
+## 📄 License
+
+MIT

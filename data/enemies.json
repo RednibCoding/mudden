@@ -1,0 +1,60 @@
+[
+  {
+    "id": "goblin",
+    "name": "Goblin",
+    "health": 30,
+    "maxHealth": 30,
+    "damage": 4,
+    "defense": 2,
+    "gold": 5,
+    "experience": 25,
+    "drops": [
+      {
+        "itemId": "goblin_ear",
+        "dropChance": 0.3
+      }
+    ],
+    "respawnTime": 30000
+  },
+  {
+    "id": "orc",
+    "name": "Orc",
+    "health": 60,
+    "maxHealth": 60,
+    "damage": 15,
+    "defense": 5,
+    "gold": 15,
+    "experience": 50,
+    "drops": [],
+    "respawnTime": 60000
+  },
+  {
+    "id": "wolf",
+    "name": "Gray Wolf",
+    "health": 45,
+    "maxHealth": 45,
+    "damage": 12,
+    "defense": 3,
+    "gold": 8,
+    "experience": 35,
+    "drops": [
+      {
+        "itemId": "wolf_pelt",
+        "dropChance": 0.4
+      }
+    ],
+    "respawnTime": 45000
+  },
+  {
+    "id": "bandit",
+    "name": "Bandit",
+    "health": 50,
+    "maxHealth": 50,
+    "damage": 10,
+    "defense": 4,
+    "gold": 12,
+    "experience": 40,
+    "drops": [],
+    "respawnTime": 50000
+  }
+]

@@ -1,0 +1,129 @@
+[
+  {
+    "id": "goblin_problem",
+    "name": "Goblin Problem",
+    "type": "kill",
+    "target": "goblin",
+    "amount": 3,
+    "levelRequirement": 1,
+    "prerequisiteQuests": [],
+    "giver": "weapon_merchant",
+    "turnInNPC": "weapon_merchant",
+    "questDialogue": "That goblin problem in the forest is getting worse. Someone should do something about it. I've seen at least 3 of them causing trouble.",
+    "killCompleteMessage": "You dealt with the goblin threat!",
+    "rewardDialogue": "You've dealt with those pesky goblins! Here's something for your trouble.",
+    "reward": {
+      "gold": 75,
+      "experience": 50
+    }
+  },
+  {
+    "id": "dangerous_wolves", 
+    "name": "Dangerous Wolves",
+    "type": "kill",
+    "target": "wolf",
+    "amount": 4,
+    "levelRequirement": 1,
+    "prerequisiteQuests": [],
+    "giver": "gate_guard",
+    "turnInNPC": "gate_guard",
+    "questDialogue": "We've had reports of increased wolf activity outside the city. At least 4 dangerous wolves are terrorizing travelers. Someone needs to deal with them.",
+    "killCompleteMessage": "You eliminated the dangerous wolves!",
+    "rewardDialogue": "Excellent work! Those wolves were a real threat to our citizens. Take this as thanks.",
+    "reward": {
+      "gold": 120,
+      "experience": 75
+    }
+  },
+  {
+    "id": "find_missing_colleague",
+    "name": "Find the Missing Colleague",
+    "type": "visit",
+    "target": "",
+    "amount": 1,
+    "levelRequirement": 1,
+    "prerequisiteQuests": [],
+    "giver": "worried_scholar",
+    "turnInNPC": "forest_botanist",
+    "questDialogue": "Please, brave adventurer! My colleague Elara went into the deep forest to study rare plants weeks ago. She hasn't returned and I fear the worst. Could you venture into the deep forest and find her? I just need to know she's safe!",
+    "rewardDialogue": "Thank goodness you found me! I completely lost track of time studying these amazing plants. I'm perfectly safe and making wonderful discoveries. Here, take this - it's a rare herb I found that has healing properties!",
+    "reward": {
+      "gold": 50,
+      "experience": 100,
+      "items": ["rare_herb"]
+    }
+  },
+  {
+    "id": "deliver_good_news",
+    "name": "Deliver Good News",
+    "type": "visit",
+    "target": "",
+    "amount": 1,
+    "levelRequirement": 1,
+    "prerequisiteQuests": ["find_missing_colleague"],
+    "giver": "forest_botanist",
+    "turnInNPC": "worried_scholar",
+    "questDialogue": "Please tell Aldric I'm perfectly safe and making wonderful discoveries. He must be worried sick about me!",
+    "rewardDialogue": "Oh, what wonderful news! Thank you so much for bringing me word of Elara's safety. I was beside myself with worry. Please, take this reward for your kindness and for reuniting us through your efforts!",
+    "reward": {
+      "gold": 75,
+      "experience": 150,
+      "items": []
+    }
+  },
+  {
+    "id": "bandit_problem",
+    "name": "Bandit Problem",
+    "type": "kill",
+    "target": "bandit",
+    "amount": 3,
+    "levelRequirement": 1,
+    "prerequisiteQuests": [],
+    "giver": "farmer_john",
+    "turnInNPC": "militia_captain",
+    "questDialogue": "These bandits have been terrorizing my farm! They've stolen crops and threatened my family. Please, brave adventurer, stop them! I've seen at least 3 of them on the forest path. When you're done, report to Captain Thorne at the militia barracks - he needs to know the militia's protection is working.",
+    "killCompleteMessage": "You've dealt with the bandits!",
+    "rewardDialogue": "Excellent work, adventurer! Those bandits won't be troubling anyone anymore. The farmer will be relieved to hear this. Here's your reward from the militia fund.",
+    "reward": {
+      "gold": 90,
+      "experience": 120,
+      "items": []
+    }
+  },
+  {
+    "id": "report_to_farmer",
+    "name": "Report to the Farmer",
+    "type": "visit",
+    "target": "",
+    "amount": 1,
+    "levelRequirement": 1,
+    "prerequisiteQuests": ["bandit_problem"],
+    "giver": "militia_captain",
+    "turnInNPC": "farmer_john",
+    "questDialogue": "The farmer will want to hear the good news personally. Please return to Farmer John at the farm house and let him know his family is safe now.",
+    "rewardDialogue": "Thank the heavens! You've saved my farm and my family. I can sleep peacefully now knowing those bandits are gone. Please, take this - it's not much, but it's all I can offer.",
+    "reward": {
+      "gold": 60,
+      "experience": 80,
+      "items": []
+    }
+  },
+  {
+    "id": "wolf_pelts_needed",
+    "name": "Wolf Pelts Needed",
+    "type": "collect",
+    "target": "wolf_pelt",
+    "amount": 3,
+    "levelRequirement": 1,
+    "prerequisiteQuests": [],
+    "giver": "bartender",
+    "turnInNPC": "bartender",
+    "questDialogue": "Winter is coming and I need warm pelts to make blankets for the tavern. Bring me 3 wolf pelts and I'll make it worth your while. You can find wolves on the forest path and in the deep forest.",
+    "rewardDialogue": "Excellent! These pelts are in great condition. Here's your payment - you've earned it!",
+    "reward": {
+      "gold": 100,
+      "experience": 90,
+      "items": []
+    }
+  }
+]
