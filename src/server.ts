@@ -4591,7 +4591,7 @@ Social:
 Information:
 - look (l): Look around
 - inventory (i): Check your health, level, gold and inventory (also: inv)
-- examine (x) <item>: Examine an item in your inventory or equipped (also: inspect, lookat, ex)
+- examine (x) <item>|<player>: Examine an item in your inventory or equipped or a player (also: inspect, lookat, ex)
 - help: Show this help message
 
 Equipment:
@@ -4605,7 +4605,7 @@ Shopping:
 - sell <item>: Sell an item from your inventory to a shop
 
 Other:
-- homestone bind: Bind your homestone to current location (requires homestone keeper)
+- homestone bind: Bind your homestone to current location
 - homestone where: Show your current homestone location
 - homestone recall: Teleport to your homestone location (cannot use in combat)
 - quit: Log out of the game
