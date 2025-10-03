@@ -79,7 +79,10 @@ export function look(player: Player): void {
   if (exits.length > 0) {
     send(player, '\nExits:', 'info');
     for (const dir of exits) {
-      send(player, `  - ${dir}`, 'info');
+      const destinationId = location.exits[dir];
+      const destination = gameState.gameData.locations.get(destinationId);
+      const destinationName = destination ? destination.name : destinationId;
+      send(player, `  - ${dir}: ${destinationName}`, 'info');
     }
   }
   
