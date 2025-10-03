@@ -1980,7 +1980,7 @@ function getXpNeeded(level: number): number {
 
 ### **Traditional MUD Pattern: Find & Learn Recipes**
 
-**Recipe Items (Consumable Type):**
+**Recipe Items (can be consumed by the use command):**
 ```json
 {
   "id": "recipe_iron_sword",
@@ -2013,7 +2013,7 @@ interface Recipe {
   name: string;
   result: string;                    // Item ID to create
   materials: { [materialId: string]: number };  // Material requirements
-  requiredLevel: number;
+  requiredLevel: number;  // The level required to learn this recipe
 }
 ```
 
@@ -2064,9 +2064,14 @@ export function useRecipe(player: Player, recipeItem: Item): void {
   if (player.knownRecipes.includes(recipeId)) {
     return send(player, "You already know this recipe!");
   }
-  
-  player.knownRecipes.push(recipeId);
+
   const recipe = gameState.recipes.get(recipeId);
+
+  if (player.level < recipe.requiredLevel) {
+    return send(player, `Your level is too low to learn ${recipe.name}.`);
+  }
+
+  player.knownRecipes.push(recipeId);
   send(player, `You learn how to craft: ${recipe.name}!`);
   
   // Remove recipe item from inventory
