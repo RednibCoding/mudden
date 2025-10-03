@@ -40,6 +40,40 @@ export async function loadGameData(): Promise<GameData> {
 // Enrich location data with full enemy and item objects from IDs
 function enrichLocations(gameData: GameData): void {
   for (const location of gameData.locations.values()) {
+    // Enrich NPCs: convert ID strings to full NPC objects
+    if (location.npcs && Array.isArray(location.npcs)) {
+      const enrichedNPCs: NPC[] = [];
+      
+      for (const npcId of location.npcs as any[]) {
+        // If it's already an object, skip it (old format)
+        if (typeof npcId === 'object') {
+          enrichedNPCs.push(npcId);
+          continue;
+        }
+        
+        // If it's a string ID, enrich it
+        const npcTemplate = gameData.npcs.get(npcId as string);
+        if (npcTemplate) {
+          enrichedNPCs.push({ ...npcTemplate });
+        } else {
+          console.warn(`NPC ID "${npcId}" not found in location "${location.id}"`);
+        }
+      }
+      
+      location.npcs = enrichedNPCs;
+    }
+    
+    // Enrich shop: convert shop ID string to full Shop object
+    if (location.shop && typeof location.shop === 'string') {
+      const shopTemplate = gameData.shops.get(location.shop);
+      if (shopTemplate) {
+        location.shop = { ...shopTemplate };
+      } else {
+        console.warn(`Shop ID "${location.shop}" not found in location "${location.id}"`);
+        location.shop = undefined;
+      }
+    }
+    
     // Enrich enemies: convert ID strings to full Enemy objects
     if (location.enemies && Array.isArray(location.enemies)) {
       const enrichedEnemies: Enemy[] = [];
@@ -152,7 +186,8 @@ function getDefaultConfig(): Config {
       fleeSuccessChance: 0.5,
       enemyRespawnTime: 60000,
       deathGoldLossPct: 0.1,
-      deathRespawnLocation: 'town_square'
+      deathRespawnLocation: 'town_square',
+      damageVariance: 0.1
     },
     progression: {
       baseXpPerLevel: 100,

@@ -10,6 +10,8 @@ import { move, look } from './movement';
 import { attack, flee, isInCombat } from './combat';
 import { say } from './messaging';
 import { inventory, equipment, equip, unequip, drop, get, use, examine } from './items';
+import { talk } from './npcs';
+import { list, buy, sell } from './shops';
 import { Player } from './types';
 
 const PORT = 3000;
@@ -151,6 +153,31 @@ async function startServer() {
     console.log(`✓ Server running on port ${PORT}`);
     console.log(`✓ Ready for connections!\n`);
   });
+  
+  // Graceful shutdown handlers
+  const shutdown = async () => {
+    console.log('\n🛑 Server shutting down...');
+    console.log('💾 Saving all player data...');
+    
+    // Save all online players
+    let savedCount = 0;
+    for (const player of gameState.players.values()) {
+      try {
+        await savePlayer(player);
+        savedCount++;
+      } catch (error) {
+        console.error(`Failed to save player ${player.username}:`, error);
+      }
+    }
+    
+    console.log(`✓ Saved ${savedCount} player(s)`);
+    console.log('👋 Goodbye!\n');
+    process.exit(0);
+  };
+  
+  // Handle shutdown signals
+  process.on('SIGINT', shutdown);   // Ctrl+C
+  process.on('SIGTERM', shutdown);  // Kill command
 }
 
 // Command handler (placeholder - will be expanded)
@@ -299,8 +326,37 @@ function handleCommand(player: Player, input: string): void {
       }
       break;
       
+    case 'talk':
+      if (args.length === 0) {
+        send(player, 'Talk to who?', 'error');
+      } else {
+        talk(player, args.join(' '));
+      }
+      break;
+      
     case 'who':
       cmdWho(player);
+      break;
+      
+    // Shop
+    case 'list':
+      list(player);
+      break;
+      
+    case 'buy':
+      if (args.length === 0) {
+        send(player, 'Buy what?', 'error');
+      } else {
+        buy(player, args.join(' '));
+      }
+      break;
+      
+    case 'sell':
+      if (args.length === 0) {
+        send(player, 'Sell what?', 'error');
+      } else {
+        sell(player, args.join(' '));
+      }
       break;
       
     // Help
@@ -357,12 +413,18 @@ Items & Equipment:
   get <item>         - Pick up an item (shortcuts: take)
   use <item>         - Use a consumable item
 
+Shop:
+  list               - View shop inventory
+  buy <item>         - Buy an item from the shop
+  sell <item>        - Sell an item to the shop
+
 Information:
   look (l)           - Look at your surroundings
   stats              - View your character stats
 
 Social:
   say <message>      - Talk to everyone in the room
+  talk <npc>         - Talk to an NPC
   who                - List online players
 
 Info:
@@ -403,7 +465,7 @@ function cmdStats(player: Player): void {
     (player.equipped.accessory?.mana || 0);
   const totalMaxMana = player.maxMana + equipmentMana;
   
-  let message = `\n=== Character Stats ===\nName:     ${player.username}\nLevel:    ${player.level}\nXP:       ${player.xp}\nGold:     ${player.gold}\n\n`;
+  let message = `\n=== Character Stats ===\nName:     ${player.username}\nLevel:    ${player.level}\nXP:       ${player.xp}\nGold:     ${player.gold}\nDeaths:   ${player.deaths}\nCombats:  ${player.combats}\n\n`;
   
   // Show current/max with equipment bonuses
   if (equipmentHealth > 0) {

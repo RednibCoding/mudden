@@ -64,6 +64,8 @@ export async function createPlayer(username: string, password: string): Promise<
     damage: config.newPlayer.startingDamage,
     defense: config.newPlayer.startingDefense,
     gold: config.newPlayer.startingGold,
+    deaths: 0,
+    combats: 0,
     inventory: startingInventory,
     equipped: startingEquipment,
     questItems: {},
@@ -89,6 +91,16 @@ export async function loadPlayer(username: string): Promise<Player | null> {
   
   try {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    
+    // Backward compatibility: Add deaths field if missing
+    if (data.deaths === undefined) {
+      data.deaths = 0;
+    }
+    
+    // Backward compatibility: Add combats field if missing
+    if (data.combats === undefined) {
+      data.combats = 0;
+    }
     
     // Enrich inventory: convert item IDs to full Item objects
     if (data.inventory && Array.isArray(data.inventory)) {

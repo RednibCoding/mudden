@@ -4,5 +4,6 @@
   "description": "A grand temple with vaulted ceilings and stained glass windows. Candles flicker along the walls, casting dancing shadows. The air is thick with incense.",
   "exits": {
     "south": "town_square"
-  }
+  },
+  "shop": "magic_shop"
 }

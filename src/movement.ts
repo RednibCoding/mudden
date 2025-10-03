@@ -78,7 +78,9 @@ export function look(player: Player): void {
     return;
   }
   
-  let message = `\n=== ${location.name} ===\n${location.description}`;
+  // Add (Shop) to title if location has a shop
+  const shopTag = location.shop ? ' (Shop)' : '';
+  let message = `\n=== ${location.name}${shopTag} ===\n${location.description}`;
   
   // Exits
   const exits = Object.keys(location.exits);

@@ -1,0 +1,5 @@
+{
+  "id": "magic_shop",
+  "name": "The Mystic Emporium",
+  "items": ["fireball_scroll", "teleport_scroll", "jade_amulet", "mana_potion"]
+}

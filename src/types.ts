@@ -37,6 +37,8 @@ export interface Player {
   damage: number;
   defense: number;
   gold: number;
+  deaths: number;                              // Death counter
+  combats: number;                             // Combat counter
   inventory: Item[];
   equipped: {
     weapon: Item | null;
@@ -130,7 +132,6 @@ export interface NPC {
   name: string;
   dialogue: string;
   quest?: string;          // Quest ID this NPC offers
-  shop?: string;           // Shop ID this NPC runs
   healer?: boolean;        // Can heal players for gold
   portals?: {
     [keyword: string]: {
@@ -219,6 +220,7 @@ export interface Config {
     enemyRespawnTime: number;
     deathGoldLossPct: number;
     deathRespawnLocation: string;
+    damageVariance: number;
   };
   progression: {
     baseXpPerLevel: number;

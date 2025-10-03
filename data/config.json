@@ -20,7 +20,8 @@
     "fleeSuccessChance": 0.5,
     "enemyRespawnTime": 30000,
     "deathGoldLossPct": 0.1,
-    "deathRespawnLocation": "town_square"
+    "deathRespawnLocation": "town_square",
+    "damageVariance": 0.1
   },
   "progression": {
     "baseXpPerLevel": 100,

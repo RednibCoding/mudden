@@ -250,10 +250,26 @@ export function flee(player: Player): void {
     return send(player, "You're not fighting anything!", 'error');
   }
   
+  // Find the enemy player is fighting
+  let fightingEnemy: Enemy | null = null;
+  for (const enemy of location.enemies) {
+    if (enemy.fighters.includes(player.username)) {
+      fightingEnemy = enemy;
+      break;
+    }
+  }
+  
   // Success chance from config (default 0.5 = 50%)
   const fleeChance = config.gameplay.fleeSuccessChance;
   if (Math.random() > fleeChance) {
-    return send(player, "You failed to flee!", 'error');
+    send(player, "You failed to flee!", 'error');
+    
+    // Enemy gets a free attack on failed flee attempt
+    if (fightingEnemy) {
+      enemyAttack(player, fightingEnemy);
+    }
+    
+    return;
   }
   
   // Remove from all enemy fighter lists
@@ -289,6 +305,7 @@ export function flee(player: Player): void {
 **Flee Mechanics:**
 - ✅ Combat only (can't flee if not fighting)
 - ✅ **Configurable success chance** (set in `config.gameplay.fleeSuccessChance`, default 0.5 = 50%)
+- ✅ **Enemy attacks on failed flee** - Prevents spam-fleeing until success
 - ✅ Random exit direction (can't choose)
 - ✅ Removes player from enemy fighters list
 - ✅ Fails if no exits available
@@ -426,6 +443,15 @@ attack goblin
 
 **Code (~200 lines total):**
 ```typescript
+// Apply damage variance to make combat less predictable
+function applyDamageVariance(baseDamage: number): number {
+  const variance = config.gameplay.damageVariance;  // Default 0.1 = 10%
+  const minDamage = Math.floor(baseDamage * (1 - variance));
+  const maxDamage = Math.ceil(baseDamage * (1 + variance));
+  const randomDamage = Math.floor(Math.random() * (maxDamage - minDamage + 1)) + minDamage;
+  return Math.max(1, randomDamage);
+}
+
 // Server receives enemy/player ID from client (already mapped from name)
 export function attack(player: Player, targetId: string): void {
   const enemy = findEnemy(location, target);
@@ -439,7 +465,8 @@ export function attack(player: Player, targetId: string): void {
   const playerDamage = player.damage 
     + (player.equipped.weapon?.damage || 0)
     + (player.equipped.accessory?.damage || 0);
-  const damage = Math.max(1, playerDamage - enemy.defense);
+  const baseDamage = Math.max(1, playerDamage - enemy.defense);
+  const damage = applyDamageVariance(baseDamage);  // Apply variance!
   enemy.health -= damage;
   
   send(player, `You hit ${enemy.name} for ${damage} damage.`, 'combat');
@@ -484,7 +511,8 @@ export function attack(player: Player, targetId: string): void {
     + (player.equipped.armor?.defense || 0)
     + (player.equipped.shield?.defense || 0)
     + (player.equipped.accessory?.defense || 0);
-  const enemyDamage = Math.max(1, enemy.damage - playerDefense);
+  const baseEnemyDamage = Math.max(1, enemy.damage - playerDefense);
+  const enemyDamage = applyDamageVariance(baseEnemyDamage);  // Apply variance!
   player.health -= enemyDamage;
   send(player, `${enemy.name} hits you for ${enemyDamage} damage.`, 'combat');
   
@@ -1099,6 +1127,20 @@ export function examine(player: Player, itemName: string): void {
 }
 ```
 
+**Location with Shop:**
+```json
+{
+  "id": "town_square",
+  "name": "Town Square",
+  "description": "...",
+  "exits": { "north": "temple" },
+  "shop": "weapon_shop",
+  "npcs": ["blacksmith"]
+}
+```
+
+**Note:** Shops are location-based (one per location max), not tied to NPCs. NPCs are for dialogue/quests only.
+
 **Commands:**
 ```
 list                → Show shop inventory
@@ -1327,9 +1369,8 @@ export function updateQuestProgress(player: Player, type: string, target: string
 {
   "id": "blacksmith",
   "name": "Gareth the Smith",
-  "dialogue": "Welcome to my shop!",
-  "quest": "goblin_problem",
-  "shop": "weapon_shop"
+  "dialogue": "Welcome to my forge!",
+  "quest": "goblin_problem"
 }
 ```
 
@@ -1338,13 +1379,15 @@ export function updateQuestProgress(player: Player, type: string, target: string
 **NPC Types:**
 - Regular - Just dialogue
 - Quest Giver - Offers quest
-- Shop - Has shop inventory
 - Healer - Paid healing/mana recovery (money sink)
+- Portal Master - Fast travel (money sink)
+
+**Note:** Shops are location-based, not NPC-based. A location can have a shop AND NPCs.
 
 **Talk Command:**
 ```
 talk blacksmith
-> Gareth the Smith: "Welcome to my shop!"
+> Gareth the Smith: "Welcome to my forge!"
 > [accepts/completes quest if applicable]
 ```
 
@@ -2198,7 +2241,8 @@ Examples:
     "fleeSuccessChance": 0.5,
     "enemyRespawnTime": 60000,
     "deathGoldLossPct": 0.1,
-    "deathRespawnLocation": "town_square"
+    "deathRespawnLocation": "town_square",
+    "damageVariance": 0.1
   },
   "progression": {
     "baseXpPerLevel": 100,
@@ -2246,11 +2290,18 @@ function getXpNeeded(level: number): number {
 - `enemyRespawnTime` (60000): 60 seconds enemy respawn
 - `deathGoldLossPct` (0.1): Lose 10% gold on death
 - `deathRespawnLocation` ("town_square"): Where players respawn
+- `damageVariance` (0.1): 10% damage randomness (±10% from base damage)
 
 **Economy Balance:**
 - `shopBuyMultiplier` (1.2): Players pay 120% of item value
 - `shopSellMultiplier` (0.5): Players get 50% of item value
 - `healerCostFactor` (50): Healing costs 0.5 gold per HP/mana (50/100)
+
+**Damage Variance Examples:**
+- Base damage: 10 → Actual damage: 9-11 (with 0.1 variance)
+- Base damage: 20 → Actual damage: 18-22 (with 0.1 variance)
+- Base damage: 5 → Actual damage: 4-6 (with 0.1 variance)
+- Minimum damage is always 1 (even if variance would go lower)
 
 **Why configurable:**
 - ✅ Easy game balance tweaks without code changes

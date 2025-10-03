@@ -8,5 +8,7 @@
     "east": "market",
     "west": "tavern"
   },
+  "npcs": ["blacksmith"],
+  "shop": "weapon_shop",
   "items": ["health_potion", "mana_potion"]
 }

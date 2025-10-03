@@ -485,8 +485,14 @@ export function examine(player: Player, itemName: string): void {
     return;
   }
   
+  let item = null;
+  let source = '';
+  
   // Search in inventory
-  let item = findItemInInventory(player, itemName);
+  item = findItemInInventory(player, itemName);
+  if (item) {
+    source = 'Inventory';
+  }
   
   // Search in equipped items
   if (!item) {
@@ -495,7 +501,10 @@ export function examine(player: Player, itemName: string): void {
       i && (i.name.toLowerCase().includes(itemLower) || 
             i.id.toLowerCase().includes(itemLower))
     );
-    if (equipped) item = equipped;
+    if (equipped) {
+      item = equipped;
+      source = 'Equipped';
+    }
   }
   
   // Search on ground
@@ -503,10 +512,34 @@ export function examine(player: Player, itemName: string): void {
     const location = gameState.gameData.locations.get(player.location);
     if (location?.items) {
       const itemLower = itemName.toLowerCase();
-      item = location.items.find(i => 
+      const groundItem = location.items.find(i => 
         i.name.toLowerCase().includes(itemLower) ||
         i.id.toLowerCase().includes(itemLower)
-      ) || null;
+      );
+      if (groundItem) {
+        item = groundItem;
+        source = 'Ground';
+      }
+    }
+  }
+  
+  // Search in shop
+  if (!item) {
+    const location = gameState.gameData.locations.get(player.location);
+    if (location?.shop) {
+      const itemLower = itemName.toLowerCase();
+      // Check each item ID in shop
+      for (const itemId of location.shop.items) {
+        const shopItem = gameState.gameData.items.get(itemId);
+        if (shopItem && (
+          shopItem.name.toLowerCase().includes(itemLower) ||
+          shopItem.id.toLowerCase().includes(itemLower)
+        )) {
+          item = shopItem;
+          source = 'Shop';
+          break;
+        }
+      }
     }
   }
   
@@ -515,8 +548,8 @@ export function examine(player: Player, itemName: string): void {
     return;
   }
   
-  // Display item details
-  let message = `\n=== ${item.name} ===\n`;
+  // Display item details with source
+  let message = `\n=== ${item.name} (${source}) ===\n`;
   
   // Type with usage info for consumables
   if (item.type === 'consumable' && item.usableIn) {
@@ -529,7 +562,14 @@ export function examine(player: Player, itemName: string): void {
     message += `Type: ${typeText}\n`;
   }
   
-  message += `Value: ${item.value} gold\n`;
+  // Show shop prices when examining in shop
+  if (source === 'Shop') {
+    const config = gameState.gameData.config;
+    const buyPrice = Math.floor(item.value * config.economy.shopBuyMultiplier);
+    message += `Price: ${buyPrice} gold\n`;
+  } else {
+    message += `Value: ${item.value} gold\n`;
+  }
   
   // Stats
   const stats = [];

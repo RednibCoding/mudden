@@ -5,6 +5,19 @@ import { gameState } from './game';
 import { send, broadcast } from './messaging';
 import { savePlayer } from './player';
 
+/**
+ * Apply damage variance to make combat less predictable
+ * @param baseDamage - The calculated base damage
+ * @returns Final damage with variance applied (minimum 1)
+ */
+function applyDamageVariance(baseDamage: number): number {
+  const variance = gameState.gameData.config.gameplay.damageVariance;
+  const minDamage = Math.floor(baseDamage * (1 - variance));
+  const maxDamage = Math.ceil(baseDamage * (1 + variance));
+  const randomDamage = Math.floor(Math.random() * (maxDamage - minDamage + 1)) + minDamage;
+  return Math.max(1, randomDamage);
+}
+
 // Check if player is in combat
 export function isInCombat(player: Player): boolean {
   const location = gameState.gameData.locations.get(player.location);
@@ -52,6 +65,7 @@ export function attack(player: Player, targetName: string): void {
   // Add player to fighters list if not already fighting
   if (!enemy.fighters.includes(player.username)) {
     enemy.fighters.push(player.username);
+    player.combats++;  // Increment combat counter
     broadcast(player.location, `${player.username} attacks ${enemy.name}!`, 'combat');
   }
   
@@ -63,8 +77,9 @@ export function attack(player: Player, targetName: string): void {
     (player.equipped.accessory?.damage || 0);
   const totalDamage = player.damage + equipmentDamage;
   
-  // Calculate damage dealt (after enemy defense)
-  const damageDealt = Math.max(1, totalDamage - enemy.defense);
+  // Calculate damage dealt (after enemy defense, with variance)
+  const baseDamage = Math.max(1, totalDamage - enemy.defense);
+  const damageDealt = applyDamageVariance(baseDamage);
   enemy.health -= damageDealt;
   
   send(player, `You hit ${enemy.name} for ${damageDealt} damage.`, 'combat');
@@ -90,8 +105,9 @@ function enemyAttack(player: Player, enemy: Enemy): void {
     (player.equipped.accessory?.defense || 0);
   const totalDefense = player.defense + equipmentDefense;
   
-  // Calculate damage taken (after player defense)
-  const damageTaken = Math.max(1, enemy.damage - totalDefense);
+  // Calculate damage taken (after player defense, with variance)
+  const baseDamage = Math.max(1, enemy.damage - totalDefense);
+  const damageTaken = applyDamageVariance(baseDamage);
   player.health -= damageTaken;
   
   send(player, `${enemy.name} hits you for ${damageTaken} damage.`, 'combat');
@@ -197,6 +213,9 @@ function handlePlayerDeath(player: Player): void {
   const config = gameState.gameData.config;
   const oldLocation = player.location;
   
+  // Increment death counter
+  player.deaths++;
+  
   // Calculate gold loss
   const goldLost = Math.floor(player.gold * config.gameplay.deathGoldLossPct);
   player.gold -= goldLost;
@@ -283,10 +302,27 @@ export function flee(player: Player): void {
     return;
   }
   
+  // Find the enemy player is fighting
+  let fightingEnemy: Enemy | null = null;
+  if (location.enemies) {
+    for (const enemy of location.enemies) {
+      if (enemy.fighters.includes(player.username)) {
+        fightingEnemy = enemy;
+        break;
+      }
+    }
+  }
+  
   // Success chance from config
   const fleeChance = gameState.gameData.config.gameplay.fleeSuccessChance;
   if (Math.random() > fleeChance) {
     send(player, 'You failed to flee!', 'error');
+    
+    // Enemy gets a free attack on failed flee attempt
+    if (fightingEnemy) {
+      enemyAttack(player, fightingEnemy);
+    }
+    
     return;
   }
   

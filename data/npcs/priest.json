@@ -1,0 +1,6 @@
+{
+  "id": "priest",
+  "name": "Father Marcus",
+  "dialogue": "I can heal your wounds for a donation. May the light guide you.",
+  "healer": true
+}
