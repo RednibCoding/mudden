@@ -1,0 +1,11 @@
+{
+  "id": "town_square",
+  "name": "Town Square",
+  "description": "You stand in the bustling town square. Merchants hawk their wares while adventurers prepare for their journeys. The stone fountain in the center provides a peaceful backdrop to the activity.",
+  "exits": {
+    "north": "temple",
+    "south": "gates",
+    "east": "market",
+    "west": "tavern"
+  }
+}

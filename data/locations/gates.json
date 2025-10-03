@@ -1,0 +1,9 @@
+{
+  "id": "gates",
+  "name": "City Gates",
+  "description": "Massive wooden gates stand open, allowing travelers to come and go. Guards in gleaming armor watch over the entrance. Beyond lies the wilderness.",
+  "exits": {
+    "north": "town_square",
+    "south": "forest_path"
+  }
+}

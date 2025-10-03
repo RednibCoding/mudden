@@ -135,6 +135,51 @@ export function harvest(player: Player, materialId: string): void {
 - Maintain game state
 - Send updates to clients
 
+### **Server Architecture: Stand-Alone Socket.IO Server**
+
+**CRITICAL: The server is a pure Socket.IO server - NO web server functionality!**
+
+- ❌ **NO Express.js** - Don't serve web pages
+- ❌ **NO static file serving** - Client files are separate
+- ❌ **NO HTTP routes** - Only WebSocket connections
+- ✅ **Socket.IO ONLY** - Pure real-time game server
+- ✅ **Separation of concerns** - Client is served independently (e.g., via `python -m http.server` or any web server)
+
+**Why this matters:**
+1. **Simplicity**: Server focuses solely on game logic
+2. **Deployment flexibility**: Client and server can be hosted separately
+3. **Scalability**: Pure Socket.IO server is lightweight and fast
+4. **Development**: Client can be developed/served independently
+5. **Production**: Client can be served from CDN, server runs standalone
+
+**Server Setup (Correct Pattern):**
+```typescript
+// server.ts - Pure Socket.IO server
+import { Server } from 'socket.io';
+import { createServer } from 'http';
+
+const httpServer = createServer();  // Empty HTTP server (no Express!)
+const io = new Server(httpServer, {
+  cors: { origin: '*', methods: ['GET', 'POST'] }
+});
+
+// Only Socket.IO event handlers - no HTTP routes!
+io.on('connection', (socket) => {
+  // Game logic here
+});
+
+httpServer.listen(3000);
+```
+
+**Client Development:**
+- Serve `client/` folder separately: `python -m http.server 8000`
+- Or use VS Code Live Server extension
+- Or any static file server
+
+**Production:**
+- Server: Deploy Socket.IO server to Node.js hosting
+- Client: Deploy static files to CDN/static hosting (Netlify, Vercel, S3, etc.)
+
 ---
 
 ## 🗺️ World Design

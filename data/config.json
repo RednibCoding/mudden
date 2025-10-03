@@ -1,0 +1,38 @@
+{
+  "newPlayer": {
+    "startingLocation": "town_square",
+    "startingLevel": 1,
+    "startingGold": 50,
+    "startingHealth": 100,
+    "startingMana": 50,
+    "startingDamage": 5,
+    "startingDefense": 3,
+    "startingEquipment": {
+      "weapon": null,
+      "armor": null,
+      "shield": null,
+      "accessory": null
+    },
+    "startingInventory": []
+  },
+  "gameplay": {
+    "maxInventorySlots": 16,
+    "fleeSuccessChance": 0.5,
+    "enemyRespawnTime": 60000,
+    "deathGoldLossPct": 0.1,
+    "deathRespawnLocation": "town_square"
+  },
+  "progression": {
+    "baseXpPerLevel": 100,
+    "xpMultiplier": 1.5,
+    "healthPerLevel": 10,
+    "manaPerLevel": 5,
+    "damagePerLevel": 2,
+    "defensePerLevel": 1
+  },
+  "economy": {
+    "shopBuyMultiplier": 1.2,
+    "shopSellMultiplier": 0.5,
+    "healerCostFactor": 50
+  }
+}

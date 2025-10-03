@@ -1,0 +1,9 @@
+{
+  "id": "forest_path",
+  "name": "Forest Path",
+  "description": "A winding dirt path leads through a dense forest. Sunlight filters through the canopy above. The sounds of wildlife echo all around you.",
+  "exits": {
+    "north": "gates",
+    "south": "deep_forest"
+  }
+}

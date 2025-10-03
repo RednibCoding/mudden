@@ -1,0 +1,8 @@
+{
+  "id": "market",
+  "name": "Marketplace",
+  "description": "Colorful stalls line the street, offering everything from fresh bread to gleaming weapons. The smell of spices fills the air. Shoppers bustle about, haggling with merchants.",
+  "exits": {
+    "west": "town_square"
+  }
+}

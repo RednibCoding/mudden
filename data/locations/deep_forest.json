@@ -1,0 +1,8 @@
+{
+  "id": "deep_forest",
+  "name": "Deep Forest",
+  "description": "The forest grows darker here. Twisted roots snake across the path, and the air feels heavy. Strange sounds emanate from the shadows.",
+  "exits": {
+    "north": "forest_path"
+  }
+}
