@@ -393,7 +393,7 @@ export function attack(player: Player, targetId: string): void {
   // Calculate damage (with equipment bonuses)
   const playerDamage = player.damage 
     + (player.equipped.weapon?.damage || 0)
-    + (player.equipped.necklace?.damage || 0);
+    + (player.equipped.accessory?.damage || 0);
   const damage = Math.max(1, playerDamage - enemy.defense);
   enemy.health -= damage;
   
@@ -438,7 +438,7 @@ export function attack(player: Player, targetId: string): void {
   const playerDefense = player.defense
     + (player.equipped.armor?.defense || 0)
     + (player.equipped.shield?.defense || 0)
-    + (player.equipped.necklace?.defense || 0);
+    + (player.equipped.accessory?.defense || 0);
   const enemyDamage = Math.max(1, enemy.damage - playerDefense);
   player.health -= enemyDamage;
   send(player, `${enemy.name} hits you for ${enemyDamage} damage.`, 'combat');
@@ -467,7 +467,7 @@ export function attack(player: Player, targetId: string): void {
 interface Item {
   id: string;
   name: string;
-  type: 'weapon' | 'armor' | 'shield' | 'necklace' | 'consumable' | 'recipe';
+  type: 'weapon' | 'armor' | 'shield' | 'accessory' | 'consumable' | 'recipe';
   value: number;  // Gold value
   damage?: number;
   defense?: number;
@@ -521,9 +521,9 @@ interface Item {
 
 {
   "id": "jade_amulet",
-  "type": "necklace",
+  "type": "accessory",
   "value": 120,
-  "health": 15  // +15 max HP (necklaces can have any stat!)
+  "health": 15  // +15 max HP (accessory can have any stat!)
 }
 
 {
@@ -538,7 +538,7 @@ interface Item {
 - `weapon` - One weapon
 - `armor` - One armor
 - `shield` - One shield
-- `necklace` - One necklace (can have any stat!)
+- `accessory` - One accessory (can have any stat!)
 
 **Commands:**
 ```
@@ -728,24 +728,24 @@ You drink Health Potion. Healed 50 HP!
 - Weapon (damage bonus)
 - Armor (defense bonus)
 - Shield (defense bonus)
-- Necklace (any stat: health/mana/damage/defense) **NEW!**
+- accessory (any stat: health/mana/damage/defense)
 
 **How it works:**
 ```typescript
 const totalDamage = player.damage 
   + (player.equipped.weapon?.damage || 0)
-  + (player.equipped.necklace?.damage || 0);
+  + (player.equipped.accessory?.damage || 0);
   
 const totalDefense = player.defense 
   + (player.equipped.armor?.defense || 0) 
   + (player.equipped.shield?.defense || 0)
-  + (player.equipped.necklace?.defense || 0);
+  + (player.equipped.accessory?.defense || 0);
   
-const maxHealth = player.maxHealth + (player.equipped.necklace?.health || 0);
-const maxMana = player.maxMana + (player.equipped.necklace?.mana || 0);
+const maxHealth = player.maxHealth + (player.equipped.accessory?.health || 0);
+const maxMana = player.maxMana + (player.equipped.accessory?.mana || 0);
 ```
 
-**Why necklaces are valuable:**
+**Why accessorys are valuable:**
 - Can roll ANY of the 4 stats (health/mana/damage/defense)
 - Adds build variety and loot excitement
 - Traditional MUD accessory slot
@@ -755,7 +755,7 @@ const maxMana = player.maxMana + (player.equipped.necklace?.mana || 0);
 export function equip(player: Player, itemName: string): void {
   const item = findItem(player.inventory, itemName);
   
-  if (!item.type.match(/weapon|armor|shield|necklace/)) {
+  if (!item.type.match(/weapon|armor|shield|accessory/)) {
     return send(player, "You can't equip that!");
   }
   
@@ -1488,7 +1488,7 @@ interface Player {
     weapon: Item | null;
     armor: Item | null;
     shield: Item | null;
-    necklace: Item | null;  // Can have any stat!
+    accessory: Item | null;  // Can have any stat!
   };
   questItems: { [id: string]: number };   // Temporary quest tracking (auto-removed on complete)
   materials: { [id: string]: number };    // Permanent crafting materials (unlimited storage)
@@ -1692,7 +1692,7 @@ You are wearing:
   Weapon:   Iron Sword (+12 damage)
   Armor:    Leather Armor (+8 defense)
   Shield:   (none)
-  Necklace: Jade Amulet (+15 health)
+  accessory: Jade Amulet (+15 health)
 ```
 
 **NO ASCII maps, NO fancy boxes, NO color codes in core**
@@ -1898,7 +1898,7 @@ Examples:
       "weapon": "rusty_sword",
       "armor": "cloth_shirt",
       "shield": null,
-      "necklace": null
+      "accessory": null
     },
     "startingInventory": [
       "health_potion",
@@ -2546,7 +2546,7 @@ Total: ~1,520 lines
 - [x] Flee command (combat only, configurable success chance)
 - [x] Shared enemy combat
 - [x] 4-stat system (health/mana/damage/defense)
-- [x] Equipment (weapon/armor/shield/necklace)
+- [x] Equipment (weapon/armor/shield/accessory)
 - [x] Consumables (situation-based: potions anytime, attack scrolls combat-only, teleport scrolls peaceful-only)
 - [x] Shop system (buy/sell)
 - [x] Quest system (kill/collect/visit)
@@ -2636,7 +2636,7 @@ Total: ~1,520 lines
 
 ### Phase 3: Items & Equipment (~300 lines)
 13. 4-stat item system (health/mana/damage/defense)
-14. Equipment (weapon/armor/shield/necklace)
+14. Equipment (weapon/armor/shield/accessory)
 15. Consumables (potions & scrolls)
 16. Mana cost system (no cooldowns!)
 17. Drop/get commands
