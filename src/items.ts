@@ -34,8 +34,6 @@ export function inventory(player: Player): void {
       }
     });
   }
-  
-  send(player, '', 'info');
 }
 
 // Equipment command
@@ -61,8 +59,6 @@ export function equipment(player: Player): void {
   } else {
     send(player, `Accessory: (none)`, 'info');
   }
-  
-  send(player, '', 'info');
 }
 
 // Equip command

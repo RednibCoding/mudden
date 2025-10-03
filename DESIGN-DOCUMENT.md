@@ -2470,6 +2470,176 @@ export async function loadGameData(): Promise<GameData> {
 - Items in shops (item IDs → full Item objects)
 - Materials in recipes (material IDs → full Material objects)
 - Quest rewards (item IDs → full Item objects)
+- **Player inventory** (item IDs → full Item objects)
+- **Player equipment** (item IDs → full Item objects)
+
+---
+
+### **Player Persistence with ID-Based Storage**
+
+**CRITICAL:** Player save files store only IDs for inventory and equipped items, which get enriched when loading. This keeps player files clean and ensures item stats are always up-to-date.
+
+**Player Save File (JSON on disk):**
+```json
+{
+  "id": "uuid-here",
+  "username": "player1",
+  "passwordHash": "$2b$10$...",
+  "location": "town_square",
+  "level": 5,
+  "xp": 450,
+  "health": 120,
+  "maxHealth": 150,
+  "mana": 80,
+  "maxMana": 100,
+  "damage": 15,
+  "defense": 10,
+  "gold": 350,
+  "inventory": ["health_potion", "iron_sword", "health_potion"],
+  "equipped": {
+    "weapon": "iron_sword",
+    "armor": "leather_armor",
+    "shield": null,
+    "accessory": "jade_amulet"
+  },
+  "materials": {
+    "wolf_pelt": 5,
+    "iron_ore": 3
+  },
+  "knownRecipes": ["iron_sword_recipe"]
+}
+```
+
+**Player Object (enriched in memory):**
+```typescript
+{
+  id: "uuid-here",
+  username: "player1",
+  // ... other fields same ...
+  inventory: [
+    {
+      id: "health_potion",
+      name: "Health Potion",
+      type: "consumable",
+      healAmount: 50,
+      // ... full item object from items/health_potion.json
+    },
+    {
+      id: "iron_sword",
+      name: "Iron Sword",
+      type: "equipment",
+      slot: "weapon",
+      damage: 12,
+      // ... full item object from items/iron_sword.json
+    },
+    // ... another health potion
+  ],
+  equipped: {
+    weapon: {
+      id: "iron_sword",
+      name: "Iron Sword",
+      // ... full item object
+    },
+    armor: {
+      id: "leather_armor",
+      name: "Leather Armor",
+      // ... full item object
+    },
+    shield: null,
+    accessory: {
+      id: "jade_amulet",
+      name: "Jade Amulet",
+      // ... full item object
+    }
+  }
+}
+```
+
+**Player Save/Load Code (~130 lines in player.ts):**
+```typescript
+export async function savePlayer(player: Player): Promise<void> {
+  const filePath = path.join(PERSIST_DIR, `${player.username}.json`);
+  
+  // Remove socket (runtime only)
+  const { socket, ...playerData } = player;
+  
+  // Convert inventory items to IDs only
+  const inventoryIds = player.inventory.map(item => item.id);
+  
+  // Convert equipped items to IDs only
+  const equippedIds = {
+    weapon: player.equipped.weapon?.id || null,
+    armor: player.equipped.armor?.id || null,
+    shield: player.equipped.shield?.id || null,
+    accessory: player.equipped.accessory?.id || null
+  };
+  
+  // Create save data with IDs instead of full objects
+  const saveData = {
+    ...playerData,
+    inventory: inventoryIds,
+    equipped: equippedIds
+  };
+  
+  fs.writeFileSync(filePath, JSON.stringify(saveData, null, 2));
+}
+
+export async function loadPlayer(username: string): Promise<Player | null> {
+  const filePath = path.join(PERSIST_DIR, `${username}.json`);
+  
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+  
+  const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  
+  // Enrich inventory: convert item IDs to full Item objects
+  if (data.inventory && Array.isArray(data.inventory)) {
+    const enrichedInventory: Item[] = [];
+    for (const itemId of data.inventory) {
+      if (typeof itemId === 'string') {
+        const item = gameState.gameData.items.get(itemId);
+        if (item) {
+          enrichedInventory.push({ ...item });
+        } else {
+          console.warn(`Item ID "${itemId}" not found for player ${username}`);
+        }
+      }
+    }
+    data.inventory = enrichedInventory;
+  }
+  
+  // Enrich equipped items: convert item IDs to full Item objects
+  if (data.equipped) {
+    const slots = ['weapon', 'armor', 'shield', 'accessory'] as const;
+    for (const slot of slots) {
+      const itemId = data.equipped[slot];
+      if (itemId && typeof itemId === 'string') {
+        const item = gameState.gameData.items.get(itemId);
+        data.equipped[slot] = item ? { ...item } : null;
+      }
+    }
+  }
+  
+  return data as Player;
+}
+```
+
+**Benefits:**
+- ✅ **Clean save files**: Just IDs, not 100s of lines of duplicated item data
+- ✅ **Always current**: Item stats updated? All players get new stats on next load
+- ✅ **Smaller files**: Player saves are tiny (~30 lines vs 300+ with full objects)
+- ✅ **Easy debugging**: Can read/edit player files by hand
+- ✅ **Type-safe**: Runtime still has full Item objects with all properties
+- ✅ **Backward compatible**: Code handles both old (objects) and new (IDs) formats
+
+**Example:**
+```
+Change iron_sword damage from 12 → 15 in items/iron_sword.json
+→ All players with iron_sword get +15 damage on next login (no player file edits!)
+```
+- Materials in recipes (material IDs → full Material objects)
+- Quest rewards (item IDs → full Item objects)
 
 ---
 
