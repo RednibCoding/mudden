@@ -18,7 +18,7 @@
   "gameplay": {
     "maxInventorySlots": 16,
     "fleeSuccessChance": 0.5,
-    "enemyRespawnTime": 60000,
+    "enemyRespawnTime": 30000,
     "deathGoldLossPct": 0.1,
     "deathRespawnLocation": "town_square"
   },

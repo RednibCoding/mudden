@@ -5,8 +5,10 @@ import { createServer } from 'http';
 import { loadGameData } from './data';
 import { gameState, addPlayer, removePlayer } from './game';
 import { createPlayer, authenticatePlayer, playerExists, savePlayer } from './player';
-import { send, sendToAll, say } from './messaging';
+import { send, sendToAll } from './messaging';
 import { move, look } from './movement';
+import { attack, flee, isInCombat } from './combat';
+import { say } from './messaging';
 import { Player } from './types';
 
 const PORT = 3000;
@@ -198,10 +200,31 @@ function handleCommand(player: Player, input: string): void {
       move(player, 'down');
       break;
       
+    case 'flee':
+    case 'fl':
+      flee(player);
+      break;
+      
+    // Combat
+    case 'attack':
+    case 'kill':
+    case 'k':
+      if (args.length === 0) {
+        send(player, 'Attack what?', 'error');
+      } else {
+        attack(player, args.join(' '));
+      }
+      break;
+      
     // Information
     case 'look':
     case 'l':
       look(player);
+      break;
+      
+    case 'stats':
+    case 'score':
+      cmdStats(player);
       break;
       
     // Social
@@ -254,8 +277,16 @@ function cmdWho(player: Player): void {
 function cmdHelp(player: Player): void {
   send(player, '\n=== Mudden MUD Commands ===\n', 'info');
   send(player, 'Movement:', 'info');
-  send(player, '  north, south, east, west, up, down (n/s/e/w/u/d)', 'info');
+  send(player, '  north (n), south (s), east (e), west (w), up (u), down (d)', 'info');
+  send(player, '  flee (fl)          - Escape from combat (random direction)', 'info');
+  send(player, '', 'info');
+  send(player, 'Combat:', 'info');
+  send(player, '  attack <target>    - Attack an enemy (shortcuts: kill, k)', 'info');
+  send(player, '  flee (fl)          - Attempt to escape combat', 'info');
+  send(player, '', 'info');
+  send(player, 'Information:', 'info');
   send(player, '  look (l)           - Look at your surroundings', 'info');
+  send(player, '  stats              - View your character stats', 'info');
   send(player, '', 'info');
   send(player, 'Social:', 'info');
   send(player, '  say <message>      - Talk to everyone in the room', 'info');
@@ -264,6 +295,20 @@ function cmdHelp(player: Player): void {
   send(player, 'Info:', 'info');
   send(player, '  help               - Show this help', 'info');
   send(player, '\nType any message to say it to the room!\n', 'info');
+}
+
+function cmdStats(player: Player): void {
+  send(player, '\n=== Character Stats ===', 'info');
+  send(player, `Name:     ${player.username}`, 'info');
+  send(player, `Level:    ${player.level}`, 'info');
+  send(player, `XP:       ${player.xp}`, 'info');
+  send(player, `Gold:     ${player.gold}`, 'info');
+  send(player, '', 'info');
+  send(player, `Health:   ${player.health}/${player.maxHealth}`, 'info');
+  send(player, `Mana:     ${player.mana}/${player.maxMana}`, 'info');
+  send(player, `Damage:   ${player.damage}`, 'info');
+  send(player, `Defense:  ${player.defense}`, 'info');
+  send(player, '', 'info');
 }
 
 // Start the server

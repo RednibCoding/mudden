@@ -4,5 +4,47 @@
   "description": "The forest grows darker here. Twisted roots snake across the path, and the air feels heavy. Strange sounds emanate from the shadows.",
   "exits": {
     "north": "forest_path"
-  }
+  },
+  "enemies": [
+    {
+      "id": "wolf",
+      "name": "Gray Wolf",
+      "description": "A lean gray wolf with sharp fangs and hungry eyes.",
+      "health": 60,
+      "maxHealth": 60,
+      "damage": 12,
+      "defense": 3,
+      "gold": 10,
+      "xp": 25,
+      "materialDrops": {
+        "wolf_pelt": {
+          "chance": 0.6,
+          "amount": "1-2"
+        }
+      },
+      "fighters": []
+    },
+    {
+      "id": "spider",
+      "name": "Giant Spider",
+      "description": "A massive spider with glistening fangs and multiple eyes.",
+      "health": 40,
+      "maxHealth": 40,
+      "damage": 10,
+      "defense": 1,
+      "gold": 8,
+      "xp": 18,
+      "materialDrops": {
+        "spider_web": {
+          "chance": 0.8,
+          "amount": "1-1"
+        },
+        "spider_venom": {
+          "chance": 0.3,
+          "amount": "1-1"
+        }
+      },
+      "fighters": []
+    }
+  ]
 }
