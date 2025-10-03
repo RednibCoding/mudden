@@ -5,7 +5,8 @@ import { createServer } from 'http';
 import { loadGameData } from './data';
 import { gameState, addPlayer, removePlayer } from './game';
 import { createPlayer, authenticatePlayer, playerExists, savePlayer } from './player';
-import { send, sendToAll } from './messaging';
+import { send, sendToAll, say } from './messaging';
+import { move, look } from './movement';
 import { Player } from './types';
 
 const PORT = 3000;
@@ -165,18 +166,49 @@ function handleCommand(player: Player, input: string): void {
   const [command, ...args] = trimmed.split(/\s+/);
   const cmd = command.toLowerCase();
   
-  // Basic commands
   switch (cmd) {
-    case 'look':
-    case 'l':
-      cmdLook(player);
+    // Movement
+    case 'north':
+    case 'n':
+      move(player, 'north');
       break;
       
+    case 'south':
+    case 's':
+      move(player, 'south');
+      break;
+      
+    case 'east':
+    case 'e':
+      move(player, 'east');
+      break;
+      
+    case 'west':
+    case 'w':
+      move(player, 'west');
+      break;
+      
+    case 'up':
+    case 'u':
+      move(player, 'up');
+      break;
+      
+    case 'down':
+    case 'd':
+      move(player, 'down');
+      break;
+      
+    // Information
+    case 'look':
+    case 'l':
+      look(player);
+      break;
+      
+    // Social
     case 'say':
       if (args.length === 0) {
         send(player, 'Say what?', 'error');
       } else {
-        const { say } = require('./messaging');
         say(player, args.join(' '));
       }
       break;
@@ -185,6 +217,7 @@ function handleCommand(player: Player, input: string): void {
       cmdWho(player);
       break;
       
+    // Help
     case 'help':
       cmdHelp(player);
       break;
@@ -192,7 +225,6 @@ function handleCommand(player: Player, input: string): void {
     default:
       // If message doesn't start with a command, treat as "say"
       if (!cmd.startsWith('/')) {
-        const { say } = require('./messaging');
         say(player, trimmed);
       } else {
         send(player, 'Unknown command. Type "help" for a list of commands.', 'error');
@@ -201,39 +233,6 @@ function handleCommand(player: Player, input: string): void {
 }
 
 // Basic command implementations
-
-function cmdLook(player: Player): void {
-  const location = gameState.gameData.locations.get(player.location);
-  
-  if (!location) {
-    send(player, 'You are nowhere!', 'error');
-    return;
-  }
-  
-  send(player, `\n[${location.name}]`, 'info');
-  send(player, location.description, 'info');
-  
-  // Exits
-  const exits = Object.keys(location.exits);
-  if (exits.length > 0) {
-    send(player, '\nExits:', 'info');
-    for (const [dir, dest] of Object.entries(location.exits)) {
-      send(player, `  - ${dir}`, 'info');
-    }
-  }
-  
-  // Players in location
-  const players = gameState.players;
-  const playersHere = Array.from(players.values())
-    .filter(p => p.location === player.location && p.id !== player.id);
-  
-  if (playersHere.length > 0) {
-    send(player, '\nPlayers:', 'info');
-    send(player, `  - ${playersHere.map(p => p.username).join(', ')}`, 'info');
-  }
-  
-  send(player, '', 'info'); // Blank line
-}
 
 function cmdWho(player: Player): void {
   const onlinePlayers = Array.from(gameState.players.values())
@@ -255,6 +254,7 @@ function cmdWho(player: Player): void {
 function cmdHelp(player: Player): void {
   send(player, '\n=== Mudden MUD Commands ===\n', 'info');
   send(player, 'Movement:', 'info');
+  send(player, '  north, south, east, west, up, down (n/s/e/w/u/d)', 'info');
   send(player, '  look (l)           - Look at your surroundings', 'info');
   send(player, '', 'info');
   send(player, 'Social:', 'info');

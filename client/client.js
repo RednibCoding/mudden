@@ -134,9 +134,15 @@ class MudClient {
             return;
         }
         
-        this.socket.emit('message', {
-            type: 'login',
-            data: { username, password }
+        // Send login event with callback
+        this.socket.emit('login', { username, password }, (response) => {
+            if (response.success) {
+                this.authenticated = true;
+                this.showGameScreen();
+                this.clearLoginError();
+            } else {
+                this.showLoginError(response.message);
+            }
         });
     }
     
@@ -154,9 +160,15 @@ class MudClient {
             return;
         }
         
-        this.socket.emit('message', {
-            type: 'register',
-            data: { username, password }
+        // Send register event with callback
+        this.socket.emit('register', { username, password }, (response) => {
+            if (response.success) {
+                this.authenticated = true;
+                this.showGameScreen();
+                this.clearLoginError();
+            } else {
+                this.showLoginError(response.message);
+            }
         });
     }
     
@@ -173,14 +185,11 @@ class MudClient {
         }
         this.historyIndex = -1;
         
-        // Display command
-        this.addMessage('\n> ' + command, 'echo');
+        // Display command (echo)
+        this.addMessage('> ' + command, 'echo');
         
         // Send to server
-        this.socket.emit('message', {
-            type: 'command',
-            data: { command }
-        });
+        this.socket.emit('command', command);
         
         // Clear input
         this.commandInput.value = '';
@@ -204,48 +213,12 @@ class MudClient {
     }
     
     handleServerMessage(msg) {
-        switch (msg.type) {
-            case 'auth':
-                if (msg.data.success) {
-                    this.authenticated = true;
-                    this.showGameScreen();
-                    this.addMessage('Welcome to Mudden!', 'success');
-                    this.addMessage('Type "help" for available commands.', 'system');
-                    // Auto-look when entering game
-                    setTimeout(() => {
-                        this.socket.emit('message', {
-                            type: 'command',
-                            data: { command: 'look' }
-                        });
-                    }, 500);
-                } else {
-                    this.showLoginError('Authentication failed');
-                }
-                break;
-                
-            case 'message':
-                this.addMessage(msg.data.text, msg.data.type || 'normal');
-                break;
-                
-            case 'error':
-                this.addMessage('Error: ' + msg.data, 'error');
-                if (!this.authenticated) {
-                    this.showLoginError(msg.data);
-                }
-                break;
-                
-            case 'quit':
-                // Handle server-initiated logout (quit/logout commands)
-                this.authenticated = false;
-                this.showLoginScreen();
-                setTimeout(() => {
-                    this.connect();
-                }, 500);
-                break;
-                
-            case 'update':
-                // Handle game state updates
-                break;
+        // Message format: { type: 'info'|'error'|'success'|etc, text: 'message', timestamp: number }
+        if (msg.type && msg.text) {
+            this.addMessage(msg.text, msg.type);
+        } else {
+            // Fallback for any other message format
+            this.addMessage(JSON.stringify(msg), 'info');
         }
     }
     

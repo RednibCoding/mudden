@@ -197,21 +197,48 @@ body {
     word-wrap: break-word;
 }
 
-.message.echo { color: #9d9d9d; } /* command echo - only used by client */
-/* Message types from server */
-.message.normal { color: #e0e0e0; }
-.message.error { color: #ff6b6b; }
-.message.success { color: #6bcf7f; }
-.message.system { color: #ffd93d; }
-.message.info { color: #74b9ff; }
-.message.dialogue { color: #54bd9f; }
-.message.chat { color: #90baaf; }
-.message.whisper { color: #fd79a8; }
-.message.status { color: #74b9ff; }
-.message.player-combat { color: #ff9f40; }
-.message.enemy-combat { color: #ff6b9d; }
-.message.pvp-combat { color: #e04c4c; }
-.message.combat-death { color: #ff4757; }
+/* Client-only echo */
+.message.echo { 
+    color: #9d9d9d; 
+}
+
+/* Server message types (matching types.ts MessageType) */
+.message.info { 
+    color: #aaa;          /* Gray - general information */
+}
+
+.message.success { 
+    color: #0f0;          /* Green - positive actions */
+}
+
+.message.error { 
+    color: #f00;          /* Red - failed actions */
+}
+
+.message.combat { 
+    color: #ff0;          /* Yellow - combat messages */
+}
+
+.message.say { 
+    color: #0ff;          /* Cyan - public chat */
+}
+
+.message.whisper { 
+    color: #f0f;          /* Magenta - private messages */
+}
+
+.message.npc { 
+    color: #fff;          /* White - NPC dialogue */
+    font-weight: bold;
+}
+
+.message.system { 
+    color: #888;          /* Dark gray - server announcements */
+}
+
+.message.loot { 
+    color: #fa0;          /* Gold - rewards/drops */
+}
 
 /* Scrollbar animation */
 #output {
