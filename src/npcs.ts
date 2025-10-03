@@ -35,8 +35,77 @@ export function talk(player: Player, npcName: string): void {
     handleHealer(player, npc);
   }
   
+  // Portal Master? Show available destinations
+  if (npc.portals) {
+    let portalList = '\nAvailable destinations:\n';
+    for (const [keyword, portal] of Object.entries(npc.portals)) {
+      const destination = gameState.gameData.locations.get(portal.destination);
+      const destName = destination ? destination.name : portal.destination;
+      portalList += `  - "${keyword}" → ${destName} (${portal.cost}g)\n`;
+    }
+    send(player, portalList, 'info');
+  }
+  
   // Quest interactions will be added in Phase 5
-  // Shop interactions will be added separately
+}
+
+// Say to Portal Master NPC (for portals)
+export function sayToNPC(player: Player, message: string): void {
+  const location = gameState.gameData.locations.get(player.location);
+  
+  if (!location || !location.npcs) {
+    return; // No NPCs here, just regular say
+  }
+  
+  // Find portal master in location
+  const portalMaster = location.npcs.find(npc => npc.portals);
+  
+  if (!portalMaster) {
+    return; // No portal master, just regular say
+  }
+  
+  // Check if message matches a portal keyword
+  const keyword = message.toLowerCase();
+  const portal = portalMaster.portals![keyword];
+  
+  if (!portal) {
+    send(player, `${portalMaster.name}: "I don't know that destination."`, 'npc');
+    return;
+  }
+  
+  // Check if player has enough gold
+  if (player.gold < portal.cost) {
+    send(player, `${portalMaster.name}: "You need ${portal.cost} gold for that journey."`, 'npc');
+    return;
+  }
+  
+  // Check if destination exists
+  const destination = gameState.gameData.locations.get(portal.destination);
+  if (!destination) {
+    send(player, `${portalMaster.name}: "That portal seems to be broken..."`, 'error');
+    return;
+  }
+  
+  // Charge gold
+  player.gold -= portal.cost;
+  
+  // Announce departure
+  const oldLocation = player.location;
+  send(player, `${portalMaster.name}: "Step into the portal..."`, 'npc');
+  broadcast(oldLocation, `${player.username} steps into a shimmering portal and vanishes!`, 'system', player.id);
+  
+  // Teleport
+  player.location = portal.destination;
+  
+  // Announce arrival
+  send(player, 'You step through the portal...', 'success');
+  broadcast(portal.destination, `A portal shimmers into existence and ${player.username} steps through!`, 'system', player.id);
+  
+  // Save and show location
+  savePlayer(player);
+  
+  const { look } = require('./movement');
+  look(player);
 }
 
 // Helper: Find NPC by name (fuzzy matching)

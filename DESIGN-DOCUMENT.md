@@ -1462,30 +1462,48 @@ export function talk(player: Player, npcName: string): void {
 **NO trade windows!** Use social trust:
 
 ```
-give iron sword bob     → Transfer item to Bob
-give 50 gold bob        → Transfer gold to Bob
+give bob iron sword     → Transfer item to Bob
+give bob 50 gold        → Transfer gold to Bob
 ```
 
-**Code (~25 lines):**
+**Code (~160 lines):**
 ```typescript
-export function give(player: Player, itemName: string, targetName: string): void {
-  const target = findPlayer(location, targetName);
+export function give(player: Player, args: string[]): void {
+  const targetName = args[0]; // First arg is always the player
+  const target = findPlayerInLocation(player.location, targetName);
   
-  if (itemName === 'gold') {
-    const amount = parseInt(targetName); // "give 50 gold bob" 
+  // Check if it's gold: "give bob 50 gold"
+  if (args.length >= 3 && args[args.length - 1].toLowerCase() === 'gold') {
+    const amount = parseInt(args[1]);
+    
+    if (player.gold < amount) {
+      return send(player, `You don't have ${amount} gold.`, 'error');
+    }
+    
     player.gold -= amount;
     target.gold += amount;
-    send(player, `You give ${amount} gold to ${target.name}.`);
-    send(target, `${player.name} gives you ${amount} gold.`);
+    send(player, `You give ${amount} gold to ${target.username}.`, 'success');
+    send(target, `${player.username} gives you ${amount} gold.`, 'success');
+    savePlayer(player);
+    savePlayer(target);
     return;
   }
   
-  const item = findItem(player.inventory, itemName);
-  player.inventory.remove(item);
+  // Otherwise it's an item: "give bob iron sword"
+  const itemName = args.slice(1).join(' ');
+  const item = findItemInInventory(player.inventory, itemName);
+  
+  if (target.inventory.length >= maxInventorySlots) {
+    return send(player, `${target.username}'s inventory is full!`, 'error');
+  }
+  
+  player.inventory.splice(player.inventory.indexOf(item), 1);
   target.inventory.push(item);
   
-  send(player, `You give ${item.name} to ${target.name}.`);
-  send(target, `${player.name} gives you ${item.name}.`);
+  send(player, `You give ${item.name} to ${target.username}.`, 'success');
+  send(target, `${player.username} gives you ${item.name}.`, 'success');
+  savePlayer(player);
+  savePlayer(target);
 }
 ```
 

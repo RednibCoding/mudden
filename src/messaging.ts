@@ -81,6 +81,17 @@ export function say(player: Player, message: string): void {
     return;
   }
   
+  // Check if there's a portal master here (portal interaction)
+  const { sayToNPC } = require('./npcs');
+  sayToNPC(player, message);
+  
+  // If sayToNPC handled it (portal master found and valid keyword), it will teleport
+  // Otherwise, continue with regular say
+  const portalMaster = location.npcs?.find(npc => npc.portals);
+  if (portalMaster && portalMaster.portals![message.toLowerCase()]) {
+    return; // Portal master handled it, don't broadcast
+  }
+  
   send(player, `You say: ${message}`, 'say');
   broadcast(player.location, `${player.username} says: ${message}`, 'say', player.id);
 }

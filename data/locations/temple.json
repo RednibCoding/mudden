@@ -5,5 +5,6 @@
   "exits": {
     "south": "town_square"
   },
-  "shop": "magic_shop"
+  "shop": "magic_shop",
+  "npcs": ["portal_master"]
 }

@@ -12,6 +12,7 @@ import { say } from './messaging';
 import { inventory, equipment, equip, unequip, drop, get, use, examine } from './items';
 import { talk } from './npcs';
 import { list, buy, sell } from './shops';
+import { give } from './give';
 import { Player } from './types';
 
 const PORT = 3000;
@@ -334,6 +335,14 @@ function handleCommand(player: Player, input: string): void {
       }
       break;
       
+    case 'give':
+      if (args.length === 0) {
+        send(player, 'Give what? Usage: give <player> <item> OR give <player> <amount> gold', 'error');
+      } else {
+        give(player, args);
+      }
+      break;
+      
     case 'who':
       cmdWho(player);
       break;
@@ -418,13 +427,18 @@ Shop:
   buy <item>         - Buy an item from the shop
   sell <item>        - Sell an item to the shop
 
+NPCs:
+  talk <npc>         - Talk to an NPC (healers, portal masters, etc.)
+  say <destination>  - When talking to portal master, teleport for gold
+
 Information:
   look (l)           - Look at your surroundings
   stats              - View your character stats
 
 Social:
   say <message>      - Talk to everyone in the room
-  talk <npc>         - Talk to an NPC
+  give <player> <item>       - Give an item to another player
+  give <player> <amount> gold - Give gold to another player
   who                - List online players
 
 Info:
