@@ -9,7 +9,7 @@ import { send, sendToAll } from './messaging';
 import { move, look } from './movement';
 import { attack, flee, isInCombat } from './combat';
 import { say } from './messaging';
-import { inventory, equipment, equip, unequip, drop, get, use } from './items';
+import { inventory, equipment, equip, unequip, drop, get, use, examine } from './items';
 import { Player } from './types';
 
 const PORT = 3000;
@@ -67,9 +67,7 @@ async function startServer() {
       callback({ success: true, message: 'Login successful!' });
       
       // Welcome message
-      send(player, '\n=================================', 'system');
-      send(player, '   Welcome to Mudden MUD!', 'system');
-      send(player, '=================================\n', 'system');
+      send(player, '\n=================================\n   Welcome to Mudden MUD!\n=================================\n', 'system');
       
       // Announce to others
       sendToAll(`${username} has entered the realm.`, 'system');
@@ -110,10 +108,7 @@ async function startServer() {
       callback({ success: true, message: 'Registration successful!' });
       
       // Welcome message
-      send(player, '\n=================================', 'system');
-      send(player, '   Welcome to Mudden MUD!', 'system');
-      send(player, '      Character Created!', 'system');
-      send(player, '=================================\n', 'system');
+      send(player, '\n=================================\n   Welcome to Mudden MUD!\n      Character Created!\n=================================\n', 'system');
       
       // Announce to others
       sendToAll(`${username} has entered the realm for the first time!`, 'system');
@@ -284,6 +279,17 @@ function handleCommand(player: Player, input: string): void {
       }
       break;
       
+    case 'examine':
+    case 'exam':
+    case 'ex':
+    case 'x':
+      if (args.length === 0) {
+        send(player, 'Examine what?', 'error');
+      } else {
+        examine(player, args.join(' '));
+      }
+      break;
+      
     // Social
     case 'say':
       if (args.length === 0) {
@@ -303,12 +309,9 @@ function handleCommand(player: Player, input: string): void {
       break;
       
     default:
-      // If message doesn't start with a command, treat as "say"
-      if (!cmd.startsWith('/')) {
-        say(player, trimmed);
-      } else {
-        send(player, 'Unknown command. Type "help" for a list of commands.', 'error');
-      }
+      send(player, 'Unknown command. Type "help" for a list of commands.', 'error');
+      break;
+      
   }
 }
 
@@ -318,63 +321,117 @@ function cmdWho(player: Player): void {
   const onlinePlayers = Array.from(gameState.players.values())
     .filter(p => p.socket);
   
-  send(player, '\n=== Online Players ===', 'info');
+  let message = '\n=== Online Players ===\n';
   
   if (onlinePlayers.length === 0) {
-    send(player, 'No players online.', 'info');
+    message += 'No players online.\n';
   } else {
     onlinePlayers.forEach(p => {
-      send(player, `  ${p.username} [Level ${p.level}]`, 'info');
+      message += `  ${p.username} [Level ${p.level}]\n`;
     });
   }
   
-  send(player, `\nTotal: ${onlinePlayers.length} player(s)\n`, 'info');
+  message += `\nTotal: ${onlinePlayers.length} player(s)\n`;
+  send(player, message, 'info');
 }
 
 function cmdHelp(player: Player): void {
-  send(player, '\n=== Mudden MUD Commands ===\n', 'info');
-  send(player, 'Movement:', 'info');
-  send(player, '  north (n), south (s), east (e), west (w), up (u), down (d)', 'info');
-  send(player, '  flee (fl)          - Escape from combat (random direction)', 'info');
-  send(player, '', 'info');
-  send(player, 'Combat:', 'info');
-  send(player, '  attack <target>    - Attack an enemy (shortcuts: kill, k)', 'info');
-  send(player, '  flee (fl)          - Attempt to escape combat', 'info');
-  send(player, '', 'info');
-  send(player, 'Items & Equipment:', 'info');
-  send(player, '  inventory (inv, i) - View your inventory', 'info');
-  send(player, '  equipment (eq)     - View equipped items', 'info');
-  send(player, '  equip <item>       - Equip an item (shortcuts: wear, wield)', 'info');
-  send(player, '  unequip <item>     - Unequip an item (shortcuts: remove)', 'info');
-  send(player, '  drop <item>        - Drop an item on the ground', 'info');
-  send(player, '  get <item>         - Pick up an item (shortcuts: take)', 'info');
-  send(player, '  use <item>         - Use a consumable item', 'info');
-  send(player, '', 'info');
-  send(player, 'Information:', 'info');
-  send(player, '  look (l)           - Look at your surroundings', 'info');
-  send(player, '  stats              - View your character stats', 'info');
-  send(player, '', 'info');
-  send(player, 'Social:', 'info');
-  send(player, '  say <message>      - Talk to everyone in the room', 'info');
-  send(player, '  who                - List online players', 'info');
-  send(player, '', 'info');
-  send(player, 'Info:', 'info');
-  send(player, '  help               - Show this help', 'info');
-  send(player, '\nType any message to say it to the room!\n', 'info');
+  const message = `
+=== Mudden MUD Commands ===
+
+Movement:
+  north (n), south (s), east (e), west (w), up (u), down (d)
+  flee (fl)          - Escape from combat (random direction)
+
+Combat:
+  attack <target>    - Attack an enemy (shortcuts: kill, k)
+  flee (fl)          - Attempt to escape combat
+
+Items & Equipment:
+  inventory (inv, i) - View your inventory
+  equipment (eq)     - View equipped items
+  examine <item>     - View detailed item info (exam, ex, x)
+  equip <item>       - Equip an item (shortcuts: wear, wield)
+  unequip <item>     - Unequip an item (shortcuts: remove)
+  drop <item>        - Drop an item on the ground
+  get <item>         - Pick up an item (shortcuts: take)
+  use <item>         - Use a consumable item
+
+Information:
+  look (l)           - Look at your surroundings
+  stats              - View your character stats
+
+Social:
+  say <message>      - Talk to everyone in the room
+  who                - List online players
+
+Info:
+  help               - Show this help
+
+Type any message to say it to the room!
+`;
+  send(player, message, 'info');
 }
 
 function cmdStats(player: Player): void {
-  send(player, '\n=== Character Stats ===', 'info');
-  send(player, `Name:     ${player.username}`, 'info');
-  send(player, `Level:    ${player.level}`, 'info');
-  send(player, `XP:       ${player.xp}`, 'info');
-  send(player, `Gold:     ${player.gold}`, 'info');
-  send(player, '', 'info');
-  send(player, `Health:   ${player.health}/${player.maxHealth}`, 'info');
-  send(player, `Mana:     ${player.mana}/${player.maxMana}`, 'info');
-  send(player, `Damage:   ${player.damage}`, 'info');
-  send(player, `Defense:  ${player.defense}`, 'info');
-  send(player, '', 'info');
+  // Calculate total stats with equipment bonuses from ALL equipment types
+  const equipmentDamage = 
+    (player.equipped.weapon?.damage || 0) +
+    (player.equipped.armor?.damage || 0) +
+    (player.equipped.shield?.damage || 0) +
+    (player.equipped.accessory?.damage || 0);
+  const totalDamage = player.damage + equipmentDamage;
+  
+  const equipmentDefense = 
+    (player.equipped.weapon?.defense || 0) +
+    (player.equipped.armor?.defense || 0) +
+    (player.equipped.shield?.defense || 0) +
+    (player.equipped.accessory?.defense || 0);
+  const totalDefense = player.defense + equipmentDefense;
+  
+  const equipmentHealth = 
+    (player.equipped.weapon?.health || 0) +
+    (player.equipped.armor?.health || 0) +
+    (player.equipped.shield?.health || 0) +
+    (player.equipped.accessory?.health || 0);
+  const totalMaxHealth = player.maxHealth + equipmentHealth;
+  
+  const equipmentMana = 
+    (player.equipped.weapon?.mana || 0) +
+    (player.equipped.armor?.mana || 0) +
+    (player.equipped.shield?.mana || 0) +
+    (player.equipped.accessory?.mana || 0);
+  const totalMaxMana = player.maxMana + equipmentMana;
+  
+  let message = `\n=== Character Stats ===\nName:     ${player.username}\nLevel:    ${player.level}\nXP:       ${player.xp}\nGold:     ${player.gold}\n\n`;
+  
+  // Show current/max with equipment bonuses
+  if (equipmentHealth > 0) {
+    message += `Health:   ${player.health}/${totalMaxHealth} (${player.maxHealth} + ${equipmentHealth})\n`;
+  } else {
+    message += `Health:   ${player.health}/${player.maxHealth}\n`;
+  }
+  
+  if (equipmentMana > 0) {
+    message += `Mana:     ${player.mana}/${totalMaxMana} (${player.maxMana} + ${equipmentMana})\n`;
+  } else {
+    message += `Mana:     ${player.mana}/${player.maxMana}\n`;
+  }
+  
+  // Show total with equipment bonuses
+  if (equipmentDamage > 0) {
+    message += `Damage:   ${totalDamage} (${player.damage} + ${equipmentDamage})\n`;
+  } else {
+    message += `Damage:   ${player.damage}\n`;
+  }
+  
+  if (equipmentDefense > 0) {
+    message += `Defense:  ${totalDefense} (${player.defense} + ${equipmentDefense})\n`;
+  } else {
+    message += `Defense:  ${player.defense}\n`;
+  }
+  
+  send(player, message, 'info');
 }
 
 // Start the server

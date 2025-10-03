@@ -55,10 +55,13 @@ export function attack(player: Player, targetName: string): void {
     broadcast(player.location, `${player.username} attacks ${enemy.name}!`, 'combat');
   }
   
-  // Calculate player damage (base + weapon + accessory)
-  const weaponDamage = player.equipped.weapon?.damage || 0;
-  const accessoryDamage = player.equipped.accessory?.damage || 0;
-  const totalDamage = player.damage + weaponDamage + accessoryDamage;
+  // Calculate player damage (base + ALL equipment)
+  const equipmentDamage = 
+    (player.equipped.weapon?.damage || 0) +
+    (player.equipped.armor?.damage || 0) +
+    (player.equipped.shield?.damage || 0) +
+    (player.equipped.accessory?.damage || 0);
+  const totalDamage = player.damage + equipmentDamage;
   
   // Calculate damage dealt (after enemy defense)
   const damageDealt = Math.max(1, totalDamage - enemy.defense);
@@ -79,11 +82,13 @@ export function attack(player: Player, targetName: string): void {
 
 // Enemy attacks player
 function enemyAttack(player: Player, enemy: Enemy): void {
-  // Calculate player defense (base + armor + shield + accessory)
-  const armorDefense = player.equipped.armor?.defense || 0;
-  const shieldDefense = player.equipped.shield?.defense || 0;
-  const accessoryDefense = player.equipped.accessory?.defense || 0;
-  const totalDefense = player.defense + armorDefense + shieldDefense + accessoryDefense;
+  // Calculate player defense (base + ALL equipment)
+  const equipmentDefense = 
+    (player.equipped.weapon?.defense || 0) +
+    (player.equipped.armor?.defense || 0) +
+    (player.equipped.shield?.defense || 0) +
+    (player.equipped.accessory?.defense || 0);
+  const totalDefense = player.defense + equipmentDefense;
   
   // Calculate damage taken (after player defense)
   const damageTaken = Math.max(1, enemy.damage - totalDefense);
@@ -248,8 +253,7 @@ export function checkLevel(player: Player): void {
     player.health = player.maxHealth;
     player.mana = player.maxMana;
     
-    send(player, `\nLevel up! You are now level ${player.level}.`, 'success');
-    send(player, `+${config.progression.healthPerLevel} HP, +${config.progression.manaPerLevel} Mana, +${config.progression.damagePerLevel} Damage, +${config.progression.defensePerLevel} Defense`, 'success');
+    send(player, `\nLevel up! You are now level ${player.level}. +${config.progression.healthPerLevel} HP, +${config.progression.manaPerLevel} Mana, +${config.progression.damagePerLevel} Damage, +${config.progression.defensePerLevel} Defense`, 'success');
     broadcast(player.location, `${player.username} has reached level ${player.level}!`, 'system', player.id);
     
     // Save player

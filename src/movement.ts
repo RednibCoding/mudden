@@ -78,45 +78,41 @@ export function look(player: Player): void {
     return;
   }
   
-  send(player, `\n[${location.name}]`, 'info');
-  send(player, location.description, 'info');
+  let message = `\n=== ${location.name} ===\n${location.description}`;
   
   // Exits
   const exits = Object.keys(location.exits);
   if (exits.length > 0) {
-    send(player, '\nExits:', 'info');
+    message += '\n\nExits:\n';
     for (const dir of exits) {
       const destinationId = location.exits[dir];
       const destination = gameState.gameData.locations.get(destinationId);
       const destinationName = destination ? destination.name : destinationId;
-      send(player, `  - ${dir}: ${destinationName}`, 'info');
+      message += `  - ${dir}: ${destinationName}\n`;
     }
   }
   
   // NPCs
   if (location.npcs && location.npcs.length > 0) {
-    send(player, '\nNPCs:', 'info');
     const npcNames = location.npcs.map(npc => npc.name).join(', ');
-    send(player, `  - ${npcNames}`, 'info');
+    message += `\nNPCs:\n  - ${npcNames}\n`;
   }
   
   // Enemies
   if (location.enemies && location.enemies.length > 0) {
-    send(player, '\nEnemies:', 'info');
     const enemyNames = location.enemies.map(enemy => enemy.name).join(', ');
-    send(player, `  - ${enemyNames}`, 'error');
+    message += `\nEnemies:\n  - ${enemyNames}\n`;
   }
   
   // Items on ground
   if (location.items && location.items.length > 0) {
-    send(player, '\nItems:', 'info');
     const itemNames = location.items.map(item => item.name).join(', ');
-    send(player, `  - ${itemNames}`, 'info');
+    message += `\nItems:\n  - ${itemNames}\n`;
   }
   
   // Resources
   if (location.resources && location.resources.length > 0) {
-    send(player, '\nResources:', 'info');
+    message += '\nResources:\n';
     for (const node of location.resources) {
       const material = gameState.gameData.materials.get(node.materialId);
       if (!material) continue;
@@ -127,10 +123,10 @@ export function look(player: Player): void {
       const timeLeft = node.cooldown - (now - lastHarvest);
       
       if (timeLeft <= 0) {
-        send(player, `  - ${material.name} (ready to harvest!)`, 'success');
+        message += `  - ${material.name} (ready to harvest!)\\n`;
       } else {
         const mins = Math.ceil(timeLeft / 60000);
-        send(player, `  - ${material.name} (available in ${mins} minutes)`, 'info');
+        message += `  - ${material.name} (available in ${mins} minutes)\\n`;
       }
     }
   }
@@ -141,8 +137,9 @@ export function look(player: Player): void {
     .filter(p => p.location === player.location && p.id !== player.id && p.socket);
   
   if (playersHere.length > 0) {
-    send(player, '\nPlayers:', 'info');
     const playerNames = playersHere.map(p => p.username).join(', ');
-    send(player, `  - ${playerNames}`, 'info');
+    message += `\\nPlayers:\\n  - ${playerNames}\\n`;
   }
+  
+  send(player, message, 'info');
 }

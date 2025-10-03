@@ -11,13 +11,29 @@ export function inventory(player: Player): void {
   const maxSlots = gameState.gameData.config.gameplay.maxInventorySlots;
   const itemCount = player.inventory.length;
   
-  send(player, `\n=== Inventory (${itemCount}/${maxSlots}) ===`, 'info');
-  send(player, `Gold: ${player.gold}`, 'info');
+  let message = `\n=== Inventory (${itemCount}/${maxSlots}) ===\nGold: ${player.gold}`;
   
+  // Show equipped items
+  const equipped = [
+    player.equipped.weapon,
+    player.equipped.armor,
+    player.equipped.shield,
+    player.equipped.accessory
+  ].filter(item => item !== null);
+  
+  if (equipped.length > 0) {
+    message += '\n\nEquipped:\n';
+    if (player.equipped.weapon) message += `  - ${player.equipped.weapon.name} (weapon)\n`;
+    if (player.equipped.armor) message += `  - ${player.equipped.armor.name} (armor)\n`;
+    if (player.equipped.shield) message += `  - ${player.equipped.shield.name} (shield)\n`;
+    if (player.equipped.accessory) message += `  - ${player.equipped.accessory.name} (accessory)\n`;
+  }
+  
+  // Show inventory items
   if (player.inventory.length === 0) {
-    send(player, '\nYour inventory is empty.', 'info');
+    message += '\n\nInventory: empty\n';
   } else {
-    send(player, '\nItems:', 'info');
+    message += '\n\nInventory:\n';
     
     // Group items by ID for stacking display
     const itemGroups = new Map<string, number>();
@@ -28,26 +44,26 @@ export function inventory(player: Player): void {
     itemGroups.forEach((count, itemId) => {
       const item = player.inventory.find(i => i.id === itemId);
       if (item) {
-        const equipped = isItemEquipped(player, item) ? ' (equipped)' : '';
         const countStr = count > 1 ? ` x${count}` : '';
-        send(player, `  - ${item.name}${countStr}${equipped}`, 'info');
+        message += `  - ${item.name}${countStr}\n`;
       }
     });
   }
+  
+  send(player, message, 'info');
 }
 
 // Equipment command
 export function equipment(player: Player): void {
-  send(player, '\n=== Equipment ===', 'info');
-  
   const weapon = player.equipped.weapon;
   const armor = player.equipped.armor;
   const shield = player.equipped.shield;
   const accessory = player.equipped.accessory;
   
-  send(player, `Weapon:    ${weapon ? `${weapon.name} (+${weapon.damage} damage)` : '(none)'}`, 'info');
-  send(player, `Armor:     ${armor ? `${armor.name} (+${armor.defense} defense)` : '(none)'}`, 'info');
-  send(player, `Shield:    ${shield ? `${shield.name} (+${shield.defense} defense)` : '(none)'}`, 'info');
+  let message = '\n=== Equipment ===\n';
+  message += `Weapon:    ${weapon ? `${weapon.name} (+${weapon.damage} damage)` : '(none)'}\n`;
+  message += `Armor:     ${armor ? `${armor.name} (+${armor.defense} defense)` : '(none)'}\n`;
+  message += `Shield:    ${shield ? `${shield.name} (+${shield.defense} defense)` : '(none)'}\n`;
   
   if (accessory) {
     const stats = [];
@@ -55,10 +71,12 @@ export function equipment(player: Player): void {
     if (accessory.defense) stats.push(`+${accessory.defense} defense`);
     if (accessory.health) stats.push(`+${accessory.health} health`);
     if (accessory.mana) stats.push(`+${accessory.mana} mana`);
-    send(player, `Accessory: ${accessory.name} (${stats.join(', ')})`, 'info');
+    message += `Accessory: ${accessory.name} (${stats.join(', ')})\n`;
   } else {
-    send(player, `Accessory: (none)`, 'info');
+    message += `Accessory: (none)\n`;
   }
+  
+  send(player, message, 'info');
 }
 
 // Equip command
@@ -77,13 +95,13 @@ export function equip(player: Player, itemName: string): void {
   }
   
   // Check if item is equippable
-  if (!['weapon', 'armor', 'shield', 'accessory'].includes(item.type)) {
+  if (item.type !== 'equipment' || !item.slot) {
     send(player, `You can't equip ${item.name}.`, 'error');
     return;
   }
   
   // Unequip current item in that slot
-  const slot = item.type as 'weapon' | 'armor' | 'shield' | 'accessory';
+  const slot = item.slot;
   const currentItem = player.equipped[slot];
   
   if (currentItem) {
@@ -97,6 +115,30 @@ export function equip(player: Player, itemName: string): void {
   const index = player.inventory.indexOf(item);
   if (index > -1) {
     player.inventory.splice(index, 1);
+  }
+  
+  // If equipping ANY item with health/mana bonuses, cap current values
+  if (item.health) {
+    // Calculate new total max health from ALL equipped items
+    const equipmentHealth = 
+      (player.equipped.weapon?.health || 0) +
+      (player.equipped.armor?.health || 0) +
+      (player.equipped.shield?.health || 0) +
+      (player.equipped.accessory?.health || 0);
+    const newMaxHealth = player.maxHealth + equipmentHealth;
+    // Don't exceed new max (player may have been damaged)
+    player.health = Math.min(player.health, newMaxHealth);
+  }
+  if (item.mana) {
+    // Calculate new total max mana from ALL equipped items
+    const equipmentMana = 
+      (player.equipped.weapon?.mana || 0) +
+      (player.equipped.armor?.mana || 0) +
+      (player.equipped.shield?.mana || 0) +
+      (player.equipped.accessory?.mana || 0);
+    const newMaxMana = player.maxMana + equipmentMana;
+    // Don't exceed new max (player may have used mana)
+    player.mana = Math.min(player.mana, newMaxMana);
   }
   
   send(player, `You equip ${item.name}.`, 'success');
@@ -134,6 +176,30 @@ export function unequip(player: Player, slotName: string): void {
   // Move to inventory
   player.inventory.push(item);
   player.equipped[slot] = null;
+  
+  // If unequipping ANY item with health/mana bonuses, cap current values
+  if (item.health) {
+    // Calculate remaining max health from ALL equipped items (after unequipping)
+    const equipmentHealth = 
+      (player.equipped.weapon?.health || 0) +
+      (player.equipped.armor?.health || 0) +
+      (player.equipped.shield?.health || 0) +
+      (player.equipped.accessory?.health || 0);
+    const newMaxHealth = player.maxHealth + equipmentHealth;
+    // Cap current health to new max (losing this item's bonus)
+    player.health = Math.min(player.health, newMaxHealth);
+  }
+  if (item.mana) {
+    // Calculate remaining max mana from ALL equipped items (after unequipping)
+    const equipmentMana = 
+      (player.equipped.weapon?.mana || 0) +
+      (player.equipped.armor?.mana || 0) +
+      (player.equipped.shield?.mana || 0) +
+      (player.equipped.accessory?.mana || 0);
+    const newMaxMana = player.maxMana + equipmentMana;
+    // Cap current mana to new max (losing this item's bonus)
+    player.mana = Math.min(player.mana, newMaxMana);
+  }
   
   send(player, `You unequip ${item.name}.`, 'success');
   savePlayer(player);
@@ -269,7 +335,15 @@ function useConsumable(player: Player, item: Item): void {
   
   // Health potions (anytime)
   if (item.health && !item.damage) {
-    const healed = Math.min(item.health, player.maxHealth - player.health);
+    // Calculate max health with ALL equipment bonuses
+    const equipmentHealth = 
+      (player.equipped.weapon?.health || 0) +
+      (player.equipped.armor?.health || 0) +
+      (player.equipped.shield?.health || 0) +
+      (player.equipped.accessory?.health || 0);
+    const totalMaxHealth = player.maxHealth + equipmentHealth;
+    
+    const healed = Math.min(item.health, totalMaxHealth - player.health);
     player.health += healed;
     send(player, `You drink ${item.name}. Healed ${healed} HP!`, 'success');
     removeItemFromInventory(player, item);
@@ -279,7 +353,15 @@ function useConsumable(player: Player, item: Item): void {
   
   // Mana potions (anytime)
   if (item.mana && !item.manaCost && !item.damage) {
-    const restored = Math.min(item.mana, player.maxMana - player.mana);
+    // Calculate max mana with ALL equipment bonuses
+    const equipmentMana = 
+      (player.equipped.weapon?.mana || 0) +
+      (player.equipped.armor?.mana || 0) +
+      (player.equipped.shield?.mana || 0) +
+      (player.equipped.accessory?.mana || 0);
+    const totalMaxMana = player.maxMana + equipmentMana;
+    
+    const restored = Math.min(item.mana, totalMaxMana - player.mana);
     player.mana += restored;
     send(player, `You drink ${item.name}. Restored ${restored} mana!`, 'success');
     removeItemFromInventory(player, item);
@@ -316,8 +398,7 @@ function useConsumable(player: Player, item: Item): void {
     player.mana -= item.manaCost;
     enemy.health -= item.damage;
     
-    send(player, `You use ${item.name}! ${enemy.name} takes ${item.damage} damage!`, 'combat');
-    send(player, `(-${item.manaCost} mana)`, 'info');
+    send(player, `You use ${item.name}! ${enemy.name} takes ${item.damage} damage! (-${item.manaCost} mana)`, 'combat');
     broadcast(player.location, `${player.username} uses ${item.name}!`, 'combat', player.id);
     
     removeItemFromInventory(player, item);
@@ -343,8 +424,7 @@ function useConsumable(player: Player, item: Item): void {
     player.mana -= item.manaCost;
     player.location = item.destination;
     
-    send(player, `You use ${item.name} and are teleported!`, 'success');
-    send(player, `(-${item.manaCost} mana)`, 'info');
+    send(player, `You use ${item.name} and are teleported! (-${item.manaCost} mana)`, 'success');
     broadcast(oldLocation, `${player.username} vanishes in a flash of light!`, 'system', player.id);
     broadcast(item.destination, `${player.username} appears in a flash of light!`, 'system', player.id);
     
@@ -396,4 +476,92 @@ function removeItemFromInventory(player: Player, item: Item): void {
   if (index > -1) {
     player.inventory.splice(index, 1);
   }
+}
+
+// Examine command - view detailed item information
+export function examine(player: Player, itemName: string): void {
+  if (!itemName) {
+    send(player, 'Examine what?', 'error');
+    return;
+  }
+  
+  // Search in inventory
+  let item = findItemInInventory(player, itemName);
+  
+  // Search in equipped items
+  if (!item) {
+    const itemLower = itemName.toLowerCase();
+    const equipped = Object.values(player.equipped).find(i => 
+      i && (i.name.toLowerCase().includes(itemLower) || 
+            i.id.toLowerCase().includes(itemLower))
+    );
+    if (equipped) item = equipped;
+  }
+  
+  // Search on ground
+  if (!item) {
+    const location = gameState.gameData.locations.get(player.location);
+    if (location?.items) {
+      const itemLower = itemName.toLowerCase();
+      item = location.items.find(i => 
+        i.name.toLowerCase().includes(itemLower) ||
+        i.id.toLowerCase().includes(itemLower)
+      ) || null;
+    }
+  }
+  
+  if (!item) {
+    send(player, `You don't see "${itemName}" anywhere.`, 'error');
+    return;
+  }
+  
+  // Display item details
+  let message = `\n=== ${item.name} ===\n`;
+  
+  // Type with usage info for consumables
+  if (item.type === 'consumable' && item.usableIn) {
+    const usageText = item.usableIn === 'any' ? 'Usable anytime' :
+                      item.usableIn === 'combat' ? 'Combat only' :
+                      'Peaceful only';
+    message += `Type: Consumable (${usageText})\n`;
+  } else {
+    const typeText = item.type.charAt(0).toUpperCase() + item.type.slice(1);
+    message += `Type: ${typeText}\n`;
+  }
+  
+  message += `Value: ${item.value} gold\n`;
+  
+  // Stats
+  const stats = [];
+  if (item.damage) stats.push(`  Damage: +${item.damage}`);
+  if (item.defense) stats.push(`  Defense: +${item.defense}`);
+  if (item.health && item.type !== 'consumable') stats.push(`  Health: +${item.health}`);
+  if (item.mana && item.type !== 'consumable') stats.push(`  Mana: +${item.mana}`);
+  
+  if (stats.length > 0) {
+    message += '\nStats:\n';
+    stats.forEach(s => message += `${s}\n`);
+  }
+  
+  // Consumable effects
+  if (item.type === 'consumable') {
+    const effects = [];
+    if (item.health) effects.push(`  Restores ${item.health} health`);
+    if (item.mana && !item.manaCost) effects.push(`  Restores ${item.mana} mana`);
+    if (item.damage) effects.push(`  Deals ${item.damage} damage`);
+    if (item.manaCost) effects.push(`  Costs ${item.manaCost} mana`);
+    if (item.destination) effects.push(`  Teleports to ${item.destination}`);
+    
+    if (effects.length > 0) {
+      message += '\nEffect:\n';
+      effects.forEach(e => message += `${e}\n`);
+    }
+  }
+  
+  // Description
+  if (item.description) {
+    message += `\n"${item.description}"\n`;
+  }
+  
+  send(player, message, 'info');
 }

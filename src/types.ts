@@ -66,7 +66,8 @@ export interface Item {
   id: string;
   name: string;
   description: string;
-  type: 'weapon' | 'armor' | 'shield' | 'accessory' | 'consumable' | 'recipe' | 'quest';
+  type: 'equipment' | 'consumable' | 'recipe' | 'quest';
+  slot?: 'weapon' | 'armor' | 'shield' | 'accessory';  // For equipment items
   value: number;
   damage?: number;
   defense?: number;

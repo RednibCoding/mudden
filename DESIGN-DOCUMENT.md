@@ -512,7 +512,9 @@ export function attack(player: Player, targetId: string): void {
 interface Item {
   id: string;
   name: string;
-  type: 'weapon' | 'armor' | 'shield' | 'accessory' | 'consumable' | 'recipe';
+  description: string;
+  type: 'equipment' | 'consumable' | 'recipe' | 'quest';
+  slot?: 'weapon' | 'armor' | 'shield' | 'accessory';  // For equipment items
   value: number;  // Gold value
   damage?: number;
   defense?: number;
@@ -529,14 +531,20 @@ interface Item {
 ```json
 {
   "id": "iron_sword",
-  "type": "weapon",
+  "name": "Iron Sword",
+  "description": "A well-crafted iron blade.",
+  "type": "equipment",
+  "slot": "weapon",
   "value": 50,
   "damage": 12
 }
 
 {
   "id": "wizard_robe",
-  "type": "armor",
+  "name": "Wizard Robe",
+  "description": "A mystical robe woven with arcane threads.",
+  "type": "equipment",
+  "slot": "armor",
   "value": 80,
   "defense": 5,
   "mana": 20  // +20 max mana bonus
@@ -544,35 +552,50 @@ interface Item {
 
 {
   "id": "health_potion",
+  "name": "Health Potion",
+  "description": "A small red vial that restores 50 health.",
   "type": "consumable",
   "value": 20,
-  "health": 50  // Heals 50 HP
+  "health": 50,
+  "usableIn": "any"
 }
 
 {
   "id": "mana_potion",
+  "name": "Mana Potion",
+  "description": "A small blue vial that restores 30 mana.",
   "type": "consumable", 
   "value": 25,
-  "mana": 30  // Restores 30 mana
+  "mana": 30,
+  "usableIn": "any"
 }
 
 {
   "id": "fireball_scroll",
+  "name": "Fireball Scroll",
+  "description": "A magical scroll that unleashes a devastating fireball.",
   "type": "consumable",
   "value": 40,
   "damage": 30,
-  "manaCost": 15  // Costs 15 mana to use
+  "manaCost": 15,
+  "usableIn": "combat"
 }
 
 {
   "id": "jade_amulet",
-  "type": "accessory",
+  "name": "Jade Amulet",
+  "description": "A mystical jade amulet radiating power.",
+  "type": "equipment",
+  "slot": "accessory",
   "value": 120,
-  "health": 15  // +15 max HP (accessory can have any stat!)
+  "health": 15,
+  "mana": 10  // Accessory can have any stat!
 }
 
 {
   "id": "recipe_iron_sword",
+  "name": "Iron Sword Recipe",
+  "description": "Instructions for crafting an iron sword.",
   "type": "recipe",
   "value": 50,
   "teachesRecipe": "iron_sword"
@@ -587,6 +610,9 @@ interface Item {
 
 **Commands:**
 ```
+inventory (inv, i)      → View inventory
+equipment (eq)          → View equipped items
+examine <item>          → View detailed item info (exam, ex, look at)
 equip iron sword        → Equip weapon
 unequip weapon          → Remove weapon
 use health potion       → Consume potion (restore HP)
@@ -684,8 +710,7 @@ export function useConsumable(player: Player, item: Item): void {
     player.mana -= item.manaCost;
     enemy.health -= item.damage;
     
-    send(player, `You use ${item.name}! ${enemy.name} takes ${item.damage} damage!`, 'combat');
-    send(player, `(-${item.manaCost} mana)`, 'info');
+    send(player, `You use ${item.name}! ${enemy.name} takes ${item.damage} damage! (-${item.manaCost} mana)`, 'combat');
     broadcast(player.location, `${player.name} uses ${item.name}!`, 'combat');
     
     removeItem(player.inventory, item);
@@ -707,8 +732,7 @@ export function useConsumable(player: Player, item: Item): void {
     player.mana -= item.manaCost;
     player.location = item.destination;
     
-    send(player, `You use ${item.name} and are teleported!`, 'success');
-    send(player, `(-${item.manaCost} mana)`, 'info');
+    send(player, `You use ${item.name} and are teleported! (-${item.manaCost} mana)`, 'success');
     broadcast(oldLocation, `${player.name} vanishes in a flash of light!`, 'system', player.id);
     broadcast(item.destination, `${player.name} appears in a flash of light!`, 'system', player.id);
     
@@ -781,19 +805,75 @@ const totalDamage = player.damage
   + (player.equipped.weapon?.damage || 0)
   + (player.equipped.accessory?.damage || 0);
   
+**Total Stat Calculation:**
+```typescript
+// Damage and Defense: Sum from ALL equipment slots
+const totalDamage = player.damage 
+  + (player.equipped.weapon?.damage || 0)
+  + (player.equipped.armor?.damage || 0)
+  + (player.equipped.shield?.damage || 0)
+  + (player.equipped.accessory?.damage || 0);
+  
 const totalDefense = player.defense 
+  + (player.equipped.weapon?.defense || 0)
   + (player.equipped.armor?.defense || 0) 
   + (player.equipped.shield?.defense || 0)
   + (player.equipped.accessory?.defense || 0);
   
-const maxHealth = player.maxHealth + (player.equipped.accessory?.health || 0);
-const maxMana = player.maxMana + (player.equipped.accessory?.mana || 0);
+// Health and Mana: Sum from ALL equipment slots
+const maxHealth = player.maxHealth 
+  + (player.equipped.weapon?.health || 0)
+  + (player.equipped.armor?.health || 0)
+  + (player.equipped.shield?.health || 0)
+  + (player.equipped.accessory?.health || 0);
+  
+const maxMana = player.maxMana 
+  + (player.equipped.weapon?.mana || 0)
+  + (player.equipped.armor?.mana || 0)
+  + (player.equipped.shield?.shield || 0)
+  + (player.equipped.accessory?.mana || 0);
 ```
 
-**Why accessorys are valuable:**
-- Can roll ANY of the 4 stats (health/mana/damage/defense)
-- Adds build variety and loot excitement
-- Traditional MUD accessory slot
+**Equipment Bonus Mechanics:**
+
+1. **Any Equipment Can Have Any Stat:**
+   - ALL equipment types (weapon, armor, shield, accessory) can provide ANY of the 4 stats
+   - Designers can create unique items like "Vampire Sword" (+damage, +health) or "Mage Plate" (+defense, +mana)
+   - Health/mana bonuses increase your **maximum** health/mana
+   - All bonuses from ALL equipped items are summed together
+   - When equipping: Current health/mana is capped to new total max (won't overheal)
+   - When unequipping: Current health/mana is capped to remaining total max (excess removed)
+
+2. **Stats Display:**
+   ```
+   > stats
+   
+   === Character Stats ===
+   Name:     Player1
+   Level:    5
+   
+   Health:   120/150 (130 + 20)    ← Shows base + total equipment bonus
+   Mana:     80/110 (100 + 10)     ← Shows base + total equipment bonus
+   Damage:   15 (5 + 10)           ← Shows base + total equipment bonus
+   Defense:  18 (3 + 15)           ← Shows base + total equipment bonus
+   ```
+   
+   If no equipment bonuses for a stat, just shows base value:
+   ```
+   Health:   100/100
+   Damage:   5
+   ```
+
+3. **Potion Healing:**
+   - Health potions heal up to calculated max (base + sum of all equipment health bonuses)
+   - Mana potions restore up to calculated max (base + sum of all equipment mana bonuses)
+
+**Why flexible equipment stats are valuable:**
+- Creates interesting itemization (unusual stat combinations)
+- More build variety and loot excitement
+- Designers can create thematic items (vampire weapons, mage armor, etc.)
+- Traditional MUD flexibility
+- All stats are equally valuable across all equipment slots
 
 **Equip/Unequip Code (~50 lines):**
 ```typescript
@@ -842,6 +922,167 @@ export function unequip(player: Player, slot: string): void {
 - Still simple: 4 stats total
 
 **NO cooldowns needed** - mana cost is the limiting factor!
+
+### **Examining Items**
+
+**Command:**
+```
+examine <item>         → View detailed item information
+```
+
+**Aliases:** `exam`, `ex`, `x`
+
+**Works for:**
+- Items in your inventory
+- Items you have equipped
+- Items on the ground in your current location
+
+**Display Format:**
+```
+> examine iron sword
+
+=== Iron Sword ===
+Type: Weapon
+Value: 50 gold
+
+Stats:
+  Damage: +12
+
+"A well-crafted blade of iron, perfectly balanced for combat."
+
+> examine jade amulet
+
+=== Jade Amulet ===
+Type: Accessory
+Value: 150 gold
+
+Stats:
+  Health: +20
+  Mana: +10
+
+"A mystical jade amulet radiating power."
+
+> examine health potion
+
+=== Health Potion ===
+Type: Consumable (Usable anytime)
+Value: 25 gold
+
+Effect:
+  Restores 50 health
+
+"A small red vial that restores 50 health."
+
+> examine fireball scroll
+
+=== Fireball Scroll ===
+Type: Consumable (Combat only)
+Value: 75 gold
+
+Effect:
+  Deals 25 damage
+  Costs 15 mana
+
+"A magical scroll that unleashes a devastating fireball."
+```
+
+**Code (~60 lines):**
+```typescript
+export function examine(player: Player, itemName: string): void {
+  if (!itemName) {
+    send(player, 'Examine what?', 'error');
+    return;
+  }
+  
+  // Search in inventory
+  let item = findItemInInventory(player, itemName);
+  
+  // Search in equipped items
+  if (!item) {
+    const equipped = Object.values(player.equipped).find(i => 
+      i && (i.name.toLowerCase().includes(itemName.toLowerCase()) || 
+            i.id.toLowerCase().includes(itemName.toLowerCase()))
+    );
+    if (equipped) item = equipped;
+  }
+  
+  // Search on ground
+  if (!item) {
+    const location = gameState.gameData.locations.get(player.location);
+    if (location?.items) {
+      item = location.items.find(i => 
+        i.name.toLowerCase().includes(itemName.toLowerCase()) ||
+        i.id.toLowerCase().includes(itemName.toLowerCase())
+      );
+    }
+  }
+  
+  if (!item) {
+    send(player, `You don't see "${itemName}" anywhere.`, 'error');
+    return;
+  }
+  
+  // Display item details
+  let message = `\n=== ${item.name} ===\n`;
+  
+  // Type with usage info for consumables
+  if (item.type === 'consumable' && item.usableIn) {
+    const usageText = item.usableIn === 'any' ? 'Usable anytime' :
+                      item.usableIn === 'combat' ? 'Combat only' :
+                      'Peaceful only';
+    message += `Type: Consumable (${usageText})\n`;
+  } else {
+    const typeText = item.type.charAt(0).toUpperCase() + item.type.slice(1);
+    message += `Type: ${typeText}\n`;
+  }
+  
+  message += `Value: ${item.value} gold\n`;
+  
+  // Stats
+  const stats = [];
+  if (item.damage) stats.push(`  Damage: +${item.damage}`);
+  if (item.defense) stats.push(`  Defense: +${item.defense}`);
+  if (item.health && item.type !== 'consumable') stats.push(`  Health: +${item.health}`);
+  if (item.mana && item.type !== 'consumable') stats.push(`  Mana: +${item.mana}`);
+  
+  if (stats.length > 0) {
+    message += '\nStats:\n';
+    stats.forEach(s => message += `${s}\n`);
+  }
+  
+  // Consumable effects
+  if (item.type === 'consumable') {
+    const effects = [];
+    if (item.health) effects.push(`  Restores ${item.health} health`);
+    if (item.mana && !item.manaCost) effects.push(`  Restores ${item.mana} mana`);
+    if (item.damage) effects.push(`  Deals ${item.damage} damage`);
+    if (item.manaCost) effects.push(`  Costs ${item.manaCost} mana`);
+    if (item.destination) effects.push(`  Teleports to ${item.destination}`);
+    
+    if (effects.length > 0) {
+      message += '\nEffect:\n';
+      effects.forEach(e => message += `${e}\n`);
+    }
+  }
+  
+  // Description
+  if (item.description) {
+    message += `\n"${item.description}"\n`;
+  }
+  
+  send(player, message, 'info');
+}
+```
+
+**Why This Design:**
+- ✅ Works for inventory, equipped, and ground items
+- ✅ Shows all relevant stats clearly
+- ✅ Only shows "Stats:" or "Effect:" headers when there's content
+- ✅ Consumables show usage restrictions
+- ✅ Different format for equipment vs consumables
+- ✅ Fuzzy name matching (same as other commands)
+- ✅ Helps players make informed decisions (buy/equip/use)
+- ✅ Traditional MUD feature (~60 lines)
 
 ---
 
@@ -1237,7 +1478,8 @@ talk portal master
 say midgaard
 > Portal Master: "That will be 100 gold."
 > You step through the portal...
-> [City of Midgaard]
+
+=== City of Midgaard ===
 ```
 
 **Code (~25 lines):**
@@ -1670,7 +1912,7 @@ function handleDeath(player: Player): void {
 ```
 > look
 
-[Town Square]
+=== Town Square ===
 A bustling marketplace.
 
 Exits:
@@ -1695,7 +1937,7 @@ Resources:
 ```
 > look
 
-[Iron Mine]
+=== Iron Mine ===
 A dark mine filled with iron deposits.
 
 Exits:
@@ -1709,7 +1951,7 @@ You harvest 2x Iron Ore!
 
 > look
 
-[Iron Mine]
+=== Iron Mine ===
 A dark mine filled with iron deposits.
 
 Exits:
@@ -1747,20 +1989,19 @@ You are wearing:
 export function look(player: Player): void {
   const location = gameState.locations.get(player.location);
   
-  send(player, `\n[${location.name}]`, 'info');
-  send(player, location.description, 'info');
+  let message = `\n=== ${location.name} ===\n${location.description}`;
   
   // Exits
   if (Object.keys(location.exits).length > 0) {
-    send(player, '\nExits:', 'info');
+    message += '\n\nExits:\n';
     for (const [dir, dest] of Object.entries(location.exits)) {
-      send(player, `  - ${dir}: ${dest}`, 'info');
+      message += `  - ${dir}: ${dest}\n`;
     }
   }
   
   // Resources (with cooldown status per material)
   if (location.resources && location.resources.length > 0) {
-    send(player, '\nResources:', 'info');
+    message += '\nResources:\n';
     for (const node of location.resources) {
       const material = gameState.materials.get(node.materialId);
       const cooldownKey = `${location.id}_${node.materialId}`;
@@ -1769,10 +2010,10 @@ export function look(player: Player): void {
       const timeLeft = node.cooldown - (now - lastHarvest);
       
       if (timeLeft <= 0) {
-        send(player, `  - ${material.name} (ready to harvest!)`, 'success');
+        message += `  - ${material.name} (ready to harvest!)\n`;
       } else {
         const mins = Math.ceil(timeLeft / 60000);
-        send(player, `  - ${material.name} (available in ${mins} minutes)`, 'info');
+        message += `  - ${material.name} (available in ${mins} minutes)\n`;
       }
     }
   }
@@ -1781,22 +2022,23 @@ export function look(player: Player): void {
   const npcs = location.npcs || [];
   const players = getPlayersInLocation(location.id).filter(p => p.id !== player.id);
   if (npcs.length > 0 || players.length > 0) {
-    send(player, '\nPeople:', 'info');
     const names = [...npcs.map(n => n.name), ...players.map(p => p.name)];
-    send(player, `  - ${names.join(', ')}`, 'info');
+    message += `\nPeople:\n  - ${names.join(', ')}\n`;
   }
   
   // Enemies
   if (location.enemies && location.enemies.length > 0) {
-    send(player, '\nEnemies:', 'info');
-    send(player, `  - ${location.enemies.map(e => e.name).join(', ')}`, 'error');
+    const enemyNames = location.enemies.map(e => e.name).join(', ');
+    message += `\nEnemies:\n  - ${enemyNames}\n`;
   }
   
   // Items on ground
   if (location.items && location.items.length > 0) {
-    send(player, '\nItems:', 'info');
-    send(player, `  - ${location.items.map(i => i.name).join(', ')}`, 'info');
+    const itemNames = location.items.map(i => i.name).join(', ');
+    message += `\nItems:\n  - ${itemNames}\n`;
   }
+  
+  send(player, message, 'info');
 }
 ```
 
@@ -2143,18 +2385,20 @@ export function examineRecipe(player: Player, recipeId: string): void {
   }
   
   const recipe = gameState.recipes.get(recipeId);
-  send(player, `Recipe: ${recipe.name}`);
-  send(player, `Required Level: ${recipe.requiredLevel}`);
-  send(player, "Materials:");
+  let message = `Recipe: ${recipe.name}\n`;
+  message += `Required Level: ${recipe.requiredLevel}\n`;
+  message += "Materials:\n";
   
   for (const [materialId, amount] of Object.entries(recipe.materials)) {
     const material = gameState.materials.get(materialId);
     const has = player.materials[materialId] || 0;
-    send(player, `  - ${material.name} x${amount} (you have: ${has})`);
+    message += `  - ${material.name} x${amount} (you have: ${has})\n`;
   }
   
   const resultItem = gameState.items.get(recipe.result);
-  send(player, `Result: ${resultItem.name}`);
+  message += `Result: ${resultItem.name}\n`;
+  
+  send(player, message, 'info');
 }
 
 // Craft item

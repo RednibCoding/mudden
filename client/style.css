@@ -206,36 +206,28 @@ body {
 .message.info { 
     color: #aaa;          /* Gray - general information */
 }
-
 .message.success { 
     color: #0f0;          /* Green - positive actions */
 }
-
 .message.error { 
     color: #f00;          /* Red - failed actions */
 }
-
 .message.combat { 
     color: #ff0;          /* Yellow - combat messages */
 }
-
 .message.say { 
     color: #0ff;          /* Cyan - public chat */
 }
-
 .message.whisper { 
     color: #f0f;          /* Magenta - private messages */
 }
-
 .message.npc { 
     color: #fff;          /* White - NPC dialogue */
     font-weight: bold;
 }
-
 .message.system { 
     color: #888;          /* Dark gray - server announcements */
 }
-
 .message.loot { 
     color: #fa0;          /* Gold - rewards/drops */
 }
