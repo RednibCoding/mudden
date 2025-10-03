@@ -1404,6 +1404,7 @@ export function talk(player: Player, npcName: string): void {
       player.health = player.maxHealth;
       player.mana = player.maxMana;
       send(player, `You are healed for ${totalCost} gold!`, 'success');
+      broadcast(player.location, `${npc.name} heals ${player.username}.`, 'system', player.id);
     }
   }
 }
