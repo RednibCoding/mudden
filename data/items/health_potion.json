@@ -1,0 +1,10 @@
+{
+  "id": "health_potion",
+  "name": "Health Potion",
+  "description": "A small red vial that restores 50 health.",
+  "type": "consumable",
+  "subType": "potion",
+  "healAmount": 50,
+  "useSituation": "anytime",
+  "value": 25
+}

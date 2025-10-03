@@ -1,0 +1,10 @@
+{
+  "id": "teleport_scroll",
+  "name": "Teleport Scroll",
+  "description": "A magical scroll that teleports you to town square.",
+  "type": "consumable",
+  "subType": "scroll",
+  "teleportTo": "town_square",
+  "useSituation": "peaceful",
+  "value": 100
+}

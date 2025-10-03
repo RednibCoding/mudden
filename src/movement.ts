@@ -3,6 +3,7 @@
 import { Player } from './types';
 import { gameState } from './game';
 import { send, broadcast } from './messaging';
+import { isInCombat } from './combat';
 
 // Valid movement directions
 const DIRECTIONS = ['north', 'south', 'east', 'west', 'up', 'down'];
@@ -16,6 +17,12 @@ const DIRECTION_SHORTCUTS: { [key: string]: string } = {
 };
 
 export function move(player: Player, direction: string): void {
+  // Check if player is in combat
+  if (isInCombat(player)) {
+    send(player, "You can't move while in combat! Use 'flee' to escape.", 'error');
+    return;
+  }
+  
   // Normalize direction (handle shortcuts)
   const normalizedDir = DIRECTION_SHORTCUTS[direction.toLowerCase()] || direction.toLowerCase();
   

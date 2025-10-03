@@ -7,5 +7,6 @@
     "south": "gates",
     "east": "market",
     "west": "tavern"
-  }
+  },
+  "items": ["health_potion", "mana_potion"]
 }

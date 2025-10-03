@@ -6,18 +6,5 @@
     "north": "gates",
     "south": "deep_forest"
   },
-  "enemies": [
-    {
-      "id": "goblin",
-      "name": "Goblin Scout",
-      "description": "A small, green-skinned goblin wielding a crude dagger.",
-      "health": 50,
-      "maxHealth": 50,
-      "damage": 8,
-      "defense": 2,
-      "gold": 15,
-      "xp": 20,
-      "fighters": []
-    }
-  ]
+  "enemies": ["goblin"]
 }

@@ -1,0 +1,9 @@
+{
+  "id": "leather_armor",
+  "name": "Leather Armor",
+  "description": "Supple leather armor offering basic protection.",
+  "type": "equipment",
+  "slot": "armor",
+  "defense": 5,
+  "value": 80
+}

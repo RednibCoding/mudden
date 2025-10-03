@@ -21,6 +21,9 @@ export async function loadGameData(): Promise<GameData> {
     config: await loadConfig(path.join(dataDir, 'config.json'))
   };
   
+  // Enrich locations with enemy and item data
+  enrichLocations(gameData);
+  
   console.log('Game data loaded:');
   console.log(`  - ${gameData.locations.size} locations`);
   console.log(`  - ${gameData.items.size} items`);
@@ -32,6 +35,62 @@ export async function loadGameData(): Promise<GameData> {
   console.log(`  - ${gameData.materials.size} materials`);
   
   return gameData;
+}
+
+// Enrich location data with full enemy and item objects from IDs
+function enrichLocations(gameData: GameData): void {
+  for (const location of gameData.locations.values()) {
+    // Enrich enemies: convert ID strings to full Enemy objects
+    if (location.enemies && Array.isArray(location.enemies)) {
+      const enrichedEnemies: Enemy[] = [];
+      
+      for (const enemyId of location.enemies as any[]) {
+        // If it's already an object, skip it (old format)
+        if (typeof enemyId === 'object') {
+          enrichedEnemies.push(enemyId);
+          continue;
+        }
+        
+        // If it's a string ID, enrich it
+        const enemyTemplate = gameData.enemies.get(enemyId as string);
+        if (enemyTemplate) {
+          // Create a copy of the enemy with instance-specific data
+          enrichedEnemies.push({
+            ...enemyTemplate,
+            health: enemyTemplate.maxHealth,
+            fighters: []
+          });
+        } else {
+          console.warn(`Enemy ID "${enemyId}" not found in location "${location.id}"`);
+        }
+      }
+      
+      location.enemies = enrichedEnemies;
+    }
+    
+    // Enrich items: convert ID strings to full Item objects
+    if (location.items && Array.isArray(location.items)) {
+      const enrichedItems: Item[] = [];
+      
+      for (const itemId of location.items as any[]) {
+        // If it's already an object, skip it (old format)
+        if (typeof itemId === 'object') {
+          enrichedItems.push(itemId);
+          continue;
+        }
+        
+        // If it's a string ID, enrich it
+        const itemTemplate = gameData.items.get(itemId as string);
+        if (itemTemplate) {
+          enrichedItems.push({ ...itemTemplate });
+        } else {
+          console.warn(`Item ID "${itemId}" not found in location "${location.id}"`);
+        }
+      }
+      
+      location.items = enrichedItems;
+    }
+  }
 }
 
 async function loadFolder<T extends { id: string }>(folderPath: string): Promise<Map<string, T>> {

@@ -2350,9 +2350,130 @@ console.log(`  - ${gameData.recipes.size} recipes`);
 console.log(`  - ${gameData.materials.size} materials`);
 ```
 
+### **ID-Based References with Runtime Enrichment**
+
+**CRITICAL PATTERN:** Location JSON files store only IDs for enemies and items, which get enriched to full objects during data loading. This keeps data files clean and maintainable.
+
+**Location JSON (as stored on disk):**
+```json
+{
+  "id": "deep_forest",
+  "name": "Deep Forest",
+  "description": "The forest grows darker here...",
+  "exits": {
+    "north": "forest_path"
+  },
+  "enemies": ["wolf", "spider"],
+  "items": ["health_potion"]
+}
+```
+
+**After Loading (enriched in memory):**
+```typescript
+{
+  id: "deep_forest",
+  name: "Deep Forest",
+  description: "The forest grows darker here...",
+  exits: { north: "forest_path" },
+  enemies: [
+    {
+      id: "wolf",
+      name: "Gray Wolf",
+      health: 60,
+      maxHealth: 60,
+      damage: 12,
+      // ... full enemy object from enemies/wolf.json
+      fighters: []  // Instance-specific runtime data
+    },
+    {
+      id: "spider",
+      name: "Giant Spider",
+      // ... full enemy object from enemies/spider.json
+      fighters: []
+    }
+  ],
+  items: [
+    {
+      id: "health_potion",
+      name: "Health Potion",
+      // ... full item object from items/health_potion.json
+    }
+  ]
+}
+```
+
+**Enrichment Function (~60 lines added to data.ts):**
+```typescript
+function enrichLocations(gameData: GameData): void {
+  for (const location of gameData.locations.values()) {
+    // Enrich enemies: convert ID strings to full Enemy objects
+    if (location.enemies && Array.isArray(location.enemies)) {
+      const enrichedEnemies: Enemy[] = [];
+      
+      for (const enemyId of location.enemies as any[]) {
+        // If it's a string ID, enrich it
+        if (typeof enemyId === 'string') {
+          const enemyTemplate = gameData.enemies.get(enemyId);
+          if (enemyTemplate) {
+            // Create instance with runtime data
+            enrichedEnemies.push({
+              ...enemyTemplate,
+              health: enemyTemplate.maxHealth,
+              fighters: []
+            });
+          }
+        }
+      }
+      
+      location.enemies = enrichedEnemies;
+    }
+    
+    // Same pattern for items
+    if (location.items && Array.isArray(location.items)) {
+      const enrichedItems: Item[] = [];
+      
+      for (const itemId of location.items as any[]) {
+        if (typeof itemId === 'string') {
+          const itemTemplate = gameData.items.get(itemId);
+          if (itemTemplate) {
+            enrichedItems.push({ ...itemTemplate });
+          }
+        }
+      }
+      
+      location.items = enrichedItems;
+    }
+  }
+}
+
+// Called in loadGameData():
+export async function loadGameData(): Promise<GameData> {
+  const gameData: GameData = {
+    // ... load all data
+  };
+  
+  enrichLocations(gameData);  // Convert IDs to objects
+  
+  return gameData;
+}
+```
+
+**Benefits:**
+- ✅ **DRY**: Enemy stats defined once in enemies/wolf.json
+- ✅ **Maintainable**: Change wolf stats in one place, affects all locations
+- ✅ **Clean diffs**: Location files show just IDs, not full enemy data
+- ✅ **Scalable**: Add 100 wolves to 100 locations with just their IDs
+- ✅ **Type-safe**: TypeScript sees Location.enemies as Enemy[] at runtime
+
+**Same pattern applies to:**
+- NPCs in locations (npc IDs → full NPC objects)
+- Items in shops (item IDs → full Item objects)
+- Materials in recipes (material IDs → full Material objects)
+- Quest rewards (item IDs → full Item objects)
+
 ---
 
-## � Infrastructure & Messaging
+## 📨 Infrastructure & Messaging
 
 ### **Core Communication System**
 

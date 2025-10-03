@@ -1,0 +1,9 @@
+{
+  "id": "wooden_shield",
+  "name": "Wooden Shield",
+  "description": "A sturdy wooden shield.",
+  "type": "equipment",
+  "slot": "shield",
+  "defense": 3,
+  "value": 50
+}

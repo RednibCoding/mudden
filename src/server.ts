@@ -9,6 +9,7 @@ import { send, sendToAll } from './messaging';
 import { move, look } from './movement';
 import { attack, flee, isInCombat } from './combat';
 import { say } from './messaging';
+import { inventory, equipment, equip, unequip, drop, get, use } from './items';
 import { Player } from './types';
 
 const PORT = 3000;
@@ -227,6 +228,62 @@ function handleCommand(player: Player, input: string): void {
       cmdStats(player);
       break;
       
+    // Items & Equipment
+    case 'inventory':
+    case 'inv':
+    case 'i':
+      inventory(player);
+      break;
+      
+    case 'equipment':
+    case 'eq':
+      equipment(player);
+      break;
+      
+    case 'equip':
+    case 'wear':
+    case 'wield':
+      if (args.length === 0) {
+        send(player, 'Equip what?', 'error');
+      } else {
+        equip(player, args.join(' '));
+      }
+      break;
+      
+    case 'unequip':
+    case 'remove':
+      if (args.length === 0) {
+        send(player, 'Unequip what?', 'error');
+      } else {
+        unequip(player, args.join(' '));
+      }
+      break;
+      
+    case 'drop':
+      if (args.length === 0) {
+        send(player, 'Drop what?', 'error');
+      } else {
+        drop(player, args.join(' '));
+      }
+      break;
+      
+    case 'get':
+    case 'take':
+      if (args.length === 0) {
+        send(player, 'Get what?', 'error');
+      } else {
+        get(player, args.join(' '));
+      }
+      break;
+      
+    case 'use':
+      if (args.length === 0) {
+        send(player, 'Use what?', 'error');
+      } else {
+        use(player, args.join(' '));
+      }
+      break;
+      
     // Social
     case 'say':
       if (args.length === 0) {
@@ -283,6 +340,15 @@ function cmdHelp(player: Player): void {
   send(player, 'Combat:', 'info');
   send(player, '  attack <target>    - Attack an enemy (shortcuts: kill, k)', 'info');
   send(player, '  flee (fl)          - Attempt to escape combat', 'info');
+  send(player, '', 'info');
+  send(player, 'Items & Equipment:', 'info');
+  send(player, '  inventory (inv, i) - View your inventory', 'info');
+  send(player, '  equipment (eq)     - View equipped items', 'info');
+  send(player, '  equip <item>       - Equip an item (shortcuts: wear, wield)', 'info');
+  send(player, '  unequip <item>     - Unequip an item (shortcuts: remove)', 'info');
+  send(player, '  drop <item>        - Drop an item on the ground', 'info');
+  send(player, '  get <item>         - Pick up an item (shortcuts: take)', 'info');
+  send(player, '  use <item>         - Use a consumable item', 'info');
   send(player, '', 'info');
   send(player, 'Information:', 'info');
   send(player, '  look (l)           - Look at your surroundings', 'info');
