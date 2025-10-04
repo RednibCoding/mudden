@@ -4,6 +4,7 @@ import { Player, Quest, QuestProgress } from './types';
 import { gameState } from './game';
 import { send } from './messaging';
 import { savePlayer } from './player';
+import { getLocation, getConfig } from './utils';
 
 /**
  * Check if player can accept a quest
@@ -224,7 +225,7 @@ export function showQuests(player: Player): void {
  * Check for level up after gaining XP
  */
 function checkLevelUp(player: Player): void {
-  const config = gameState.gameData.config;
+  const config = getConfig();
   const xpNeeded = Math.floor(
     config.progression.baseXpPerLevel * 
     Math.pow(config.progression.xpMultiplier, player.level - 1)
@@ -248,7 +249,7 @@ function checkLevelUp(player: Player): void {
     send(player, `Stats increased! Health: ${player.maxHealth}, Mana: ${player.maxMana}, Damage: ${player.damage}, Defense: ${player.defense}`, 'success');
     
     // Broadcast to location
-    const location = gameState.gameData.locations.get(player.location);
+    const location = getLocation(player);
     if (location) {
       for (const p of gameState.players.values()) {
         if (p.location === player.location && p.id !== player.id && p.socket) {

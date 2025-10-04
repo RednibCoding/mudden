@@ -17,6 +17,7 @@ import { showQuests } from './quests';
 import { harvest, showRecipes, examineRecipe, craft } from './crafting';
 import { handleFriendCommand } from './social';
 import { Player } from './types';
+import { calculateStats } from './utils';
 
 const PORT = 3000;
 
@@ -555,59 +556,33 @@ Type any message to say it to the room!
 }
 
 function cmdStats(player: Player): void {
-  // Calculate total stats with equipment bonuses from ALL equipment types
-  const equipmentDamage = 
-    (player.equipped.weapon?.damage || 0) +
-    (player.equipped.armor?.damage || 0) +
-    (player.equipped.shield?.damage || 0) +
-    (player.equipped.accessory?.damage || 0);
-  const totalDamage = player.damage + equipmentDamage;
-  
-  const equipmentDefense = 
-    (player.equipped.weapon?.defense || 0) +
-    (player.equipped.armor?.defense || 0) +
-    (player.equipped.shield?.defense || 0) +
-    (player.equipped.accessory?.defense || 0);
-  const totalDefense = player.defense + equipmentDefense;
-  
-  const equipmentHealth = 
-    (player.equipped.weapon?.health || 0) +
-    (player.equipped.armor?.health || 0) +
-    (player.equipped.shield?.health || 0) +
-    (player.equipped.accessory?.health || 0);
-  const totalMaxHealth = player.maxHealth + equipmentHealth;
-  
-  const equipmentMana = 
-    (player.equipped.weapon?.mana || 0) +
-    (player.equipped.armor?.mana || 0) +
-    (player.equipped.shield?.mana || 0) +
-    (player.equipped.accessory?.mana || 0);
-  const totalMaxMana = player.maxMana + equipmentMana;
+  // Calculate total stats with equipment bonuses
+  const stats = calculateStats(player);
   
   let message = `\n=== Character Stats ===\nName:     ${player.displayName}\nLevel:    ${player.level}\nXP:       ${player.xp}\nGold:     ${player.gold}\nDeaths:   ${player.deaths}\nCombats:  ${player.combats}\n\n`;
   
   // Show current/max with equipment bonuses
-  if (equipmentHealth > 0) {
-    message += `Health:   ${player.health}/${totalMaxHealth} (${player.maxHealth} + ${equipmentHealth})\n`;
+  if (stats.equipmentHealth > 0) {
+    message += `Health:   ${player.health}/${stats.maxHealth} (${player.maxHealth} + ${stats.equipmentHealth})\n`;
   } else {
     message += `Health:   ${player.health}/${player.maxHealth}\n`;
   }
   
-  if (equipmentMana > 0) {
-    message += `Mana:     ${player.mana}/${totalMaxMana} (${player.maxMana} + ${equipmentMana})\n`;
+  if (stats.equipmentMana > 0) {
+    message += `Mana:     ${player.mana}/${stats.maxMana} (${player.maxMana} + ${stats.equipmentMana})\n`;
   } else {
     message += `Mana:     ${player.mana}/${player.maxMana}\n`;
   }
   
   // Show total with equipment bonuses
-  if (equipmentDamage > 0) {
-    message += `Damage:   ${totalDamage} (${player.damage} + ${equipmentDamage})\n`;
+  if (stats.equipmentDamage > 0) {
+    message += `Damage:   ${stats.damage} (${player.damage} + ${stats.equipmentDamage})\n`;
   } else {
     message += `Damage:   ${player.damage}\n`;
   }
   
-  if (equipmentDefense > 0) {
-    message += `Defense:  ${totalDefense} (${player.defense} + ${equipmentDefense})\n`;
+  if (stats.equipmentDefense > 0) {
+    message += `Defense:  ${stats.defense} (${player.defense} + ${stats.equipmentDefense})\n`;
   } else {
     message += `Defense:  ${player.defense}\n`;
   }

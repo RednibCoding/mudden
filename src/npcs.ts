@@ -6,6 +6,7 @@ import { send, broadcast } from './messaging';
 import { savePlayer } from './player';
 import { canAcceptQuest, canCompleteQuest, acceptQuest, completeQuest, updateQuestProgress } from './quests';
 import { look } from './movement';
+import { getLocation, getConfig, findNpc } from './utils';
 
 // Talk to NPC command
 export function talk(player: Player, npcName: string): void {
@@ -14,7 +15,7 @@ export function talk(player: Player, npcName: string): void {
     return;
   }
   
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   
   if (!location) {
     send(player, 'You are nowhere!', 'error');
@@ -22,7 +23,7 @@ export function talk(player: Player, npcName: string): void {
   }
   
   // Find NPC in location
-  const npc = findNPC(location.npcs || [], npcName);
+  const npc = findNpc(location, npcName);
   
   if (!npc) {
     send(player, `You don't see "${npcName}" here.`, 'error');
@@ -115,7 +116,7 @@ export function talk(player: Player, npcName: string): void {
 
 // Say to Portal Master NPC (for portals)
 export function sayToNPC(player: Player, message: string): void {
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   
   if (!location || !location.npcs) {
     return; // No NPCs here, just regular say
@@ -171,32 +172,11 @@ export function sayToNPC(player: Player, message: string): void {
   look(player);
 }
 
-// Helper: Find NPC by name (fuzzy matching)
-function findNPC(npcs: NPC[], name: string): NPC | null {
-  const nameLower = name.toLowerCase();
-  
-  // Exact match
-  let match = npcs.find(n => n.name.toLowerCase() === nameLower);
-  if (match) return match;
-  
-  // Partial match (starts with)
-  match = npcs.find(n => n.name.toLowerCase().startsWith(nameLower));
-  if (match) return match;
-  
-  // Contains match
-  match = npcs.find(n => n.name.toLowerCase().includes(nameLower));
-  if (match) return match;
-  
-  // ID match
-  match = npcs.find(n => n.id === nameLower);
-  if (match) return match;
-  
-  return null;
-}
+
 
 // Handle healer NPC
 function handleHealer(player: Player, npc: NPC): void {
-  const config = gameState.gameData.config;
+  const config = getConfig();
   
   // Calculate equipment bonuses for max health/mana
   const equipmentHealth = 

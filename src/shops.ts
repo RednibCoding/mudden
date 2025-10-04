@@ -2,12 +2,14 @@
 import type { Player, Item, Shop } from './types';
 import { send } from './messaging';
 import { gameState } from './game';
+import { savePlayer } from './player';
+import { getLocation, getConfig, findInInventory, hasInventorySpace } from './utils';
 
 /**
  * List shop inventory with prices
  */
 export function list(player: Player): void {
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   if (!location) return;
 
   const shop = location.shop;
@@ -22,7 +24,7 @@ export function list(player: Player): void {
     return send(player, message, 'info');
   }
 
-  const config = gameState.gameData.config;
+  const config = getConfig();
   for (const itemId of shop.items) {
     const item = gameState.gameData.items.get(itemId);
     if (!item) continue;
@@ -38,7 +40,7 @@ export function list(player: Player): void {
  * Buy an item from shop (accepts item name, does fuzzy matching)
  */
 export function buy(player: Player, itemName: string): void {
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   if (!location) return;
 
   const shop = location.shop;
@@ -57,7 +59,7 @@ export function buy(player: Player, itemName: string): void {
     return send(player, "That item doesn't exist.", 'error');
   }
 
-  const config = gameState.gameData.config;
+  const config = getConfig();
   const price = Math.floor(item.value * config.economy.shopBuyMultiplier);
 
   if (player.gold < price) {
@@ -101,7 +103,7 @@ function findItemInShop(shop: Shop, name: string): string | null {
  * Sell an item to shop (any shop buys anything)
  */
 export function sell(player: Player, itemName: string): void {
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   if (!location) return;
 
   const shop = location.shop;
@@ -110,12 +112,12 @@ export function sell(player: Player, itemName: string): void {
   }
 
   // Find item in inventory (fuzzy match)
-  const item = findItemInInventory(player.inventory, itemName);
+  const item = findInInventory(player, itemName);
   if (!item) {
     return send(player, "You don't have that item.", 'error');
   }
 
-  const config = gameState.gameData.config;
+  const config = getConfig();
   const price = Math.floor(item.value * config.economy.shopSellMultiplier);
 
   player.gold += price;
@@ -123,22 +125,4 @@ export function sell(player: Player, itemName: string): void {
   player.inventory.splice(index, 1);
   
   send(player, `You sell ${item.name} for ${price}g.`, 'success');
-}
-
-/**
- * Find item in inventory (exact match only for shop safety)
- * Priority: exact name match → exact ID match
- */
-function findItemInInventory(inventory: Item[], name: string): Item | null {
-  const lower = name.toLowerCase();
-  
-  // Exact name match (case-insensitive)
-  let found = inventory.find(item => item.name.toLowerCase() === lower);
-  if (found) return found;
-  
-  // Exact ID match
-  found = inventory.find(item => item.id === lower);
-  if (found) return found;
-  
-  return null;
 }

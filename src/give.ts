@@ -4,6 +4,7 @@ import { Player, Item } from './types';
 import { gameState } from './game';
 import { send } from './messaging';
 import { savePlayer } from './player';
+import { getConfig, findInInventory, hasInventorySpace } from './utils';
 
 /**
  * Give an item or gold to another player
@@ -79,7 +80,7 @@ function giveItem(player: Player, targetName: string, args: string[]): void {
   const itemName = args.slice(1).join(' ');
   
   // Find item in inventory (exact match only for safety)
-  const item = findItemInInventory(player.inventory, itemName);
+  const item = findInInventory(player, itemName);
   
   if (!item) {
     send(player, `You don't have "${itemName}".`, 'error');
@@ -100,7 +101,7 @@ function giveItem(player: Player, targetName: string, args: string[]): void {
   }
   
   // Check if target has inventory space
-  const maxSlots = gameState.gameData.config.gameplay.maxInventorySlots;
+  const maxSlots = getConfig().gameplay.maxInventorySlots;
   if (target.inventory.length >= maxSlots) {
     send(player, `${target.displayName}'s inventory is full!`, 'error');
     return;
@@ -135,23 +136,6 @@ function findPlayerInLocation(locationId: string, name: string): Player | null {
   
   // Starts with
   found = playersHere.find(p => p.username.toLowerCase().startsWith(nameLower));
-  if (found) return found;
-  
-  return null;
-}
-
-/**
- * Find item in inventory (exact match only for safety)
- */
-function findItemInInventory(inventory: Item[], name: string): Item | null {
-  const lower = name.toLowerCase();
-  
-  // Exact name match (case-insensitive)
-  let found = inventory.find(item => item.name.toLowerCase() === lower);
-  if (found) return found;
-  
-  // Exact ID match
-  found = inventory.find(item => item.id === lower);
   if (found) return found;
   
   return null;

@@ -1489,7 +1489,7 @@ talk blacksmith
 **Code (~60 lines):**
 ```typescript
 export function talk(player: Player, npcName: string): void {
-  const npc = findNPC(location, npcName);
+  const npc = findNpc(location, npcName);
   
   // Quest turn-in?
   if (npc.quest && canCompleteQuest(player, npc.quest)) {

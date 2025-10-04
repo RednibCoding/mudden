@@ -4,12 +4,13 @@ import { Player, Recipe, Item, Material } from './types';
 import { gameState } from './game';
 import { send } from './messaging';
 import { savePlayer } from './player';
+import { getLocation, getConfig, hasInventorySpace } from './utils';
 
 /**
  * Harvest materials from resource nodes in current location
  */
 export function harvest(player: Player, materialId?: string): void {
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   if (!location) return;
 
   if (!location.resources || location.resources.length === 0) {
@@ -257,7 +258,7 @@ export function craft(player: Player, recipeId: string): void {
 
   // Check inventory space (only for item results)
   if (recipe.resultType === 'item') {
-    const maxSlots = gameState.gameData.config.gameplay.maxInventorySlots;
+    const maxSlots = getConfig().gameplay.maxInventorySlots;
     if (player.inventory.length >= maxSlots) {
       send(player, "Your inventory is full!", 'error');
       return;

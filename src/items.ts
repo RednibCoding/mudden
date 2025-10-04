@@ -7,10 +7,11 @@ import { savePlayer } from './player';
 import { isInCombat, handleEnemyDeath } from './combat';
 import { learnRecipe } from './crafting';
 import { look } from './movement';
+import { getLocation, getConfig, findInInventory, findInLocation, hasInventorySpace, removeFromInventory } from './utils';
 
 // Inventory command
 export function inventory(player: Player): void {
-  const maxSlots = gameState.gameData.config.gameplay.maxInventorySlots;
+  const maxSlots = getConfig().gameplay.maxInventorySlots;
   const itemCount = player.inventory.length;
   
   let message = `\n=== Inventory (${itemCount}/${maxSlots}) ===\nGold: ${player.gold}`;
@@ -89,7 +90,7 @@ export function equip(player: Player, itemName: string): void {
   }
   
   // Find item in inventory
-  const item = findItemInInventory(player, itemName);
+  const item = findInInventory(player, itemName);
   
   if (!item) {
     send(player, `You don't have "${itemName}".`, 'error');
@@ -169,7 +170,7 @@ export function unequip(player: Player, slotName: string): void {
   }
   
   // Check if inventory is full
-  const maxSlots = gameState.gameData.config.gameplay.maxInventorySlots;
+  const maxSlots = getConfig().gameplay.maxInventorySlots;
   if (player.inventory.length >= maxSlots) {
     send(player, 'Your inventory is full!', 'error');
     return;
@@ -214,7 +215,7 @@ export function drop(player: Player, itemName: string): void {
     return;
   }
   
-  const item = findItemInInventory(player, itemName);
+  const item = findInInventory(player, itemName);
   
   if (!item) {
     send(player, `You don't have "${itemName}".`, 'error');
@@ -228,7 +229,7 @@ export function drop(player: Player, itemName: string): void {
   }
   
   // Add to location
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   
   if (!location) {
     send(player, 'You are nowhere!', 'error');
@@ -252,7 +253,7 @@ export function get(player: Player, itemName: string): void {
     return;
   }
   
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   
   if (!location) {
     send(player, 'You are nowhere!', 'error');
@@ -278,7 +279,7 @@ export function get(player: Player, itemName: string): void {
   }
   
   // Check if inventory is full
-  const maxSlots = gameState.gameData.config.gameplay.maxInventorySlots;
+  const maxSlots = getConfig().gameplay.maxInventorySlots;
   if (player.inventory.length >= maxSlots) {
     send(player, 'Your inventory is full!', 'error');
     return;
@@ -305,7 +306,7 @@ export function use(player: Player, itemName: string): void {
     return;
   }
   
-  const item = findItemInInventory(player, itemName);
+  const item = findInInventory(player, itemName);
   
   if (!item) {
     send(player, `You don't have "${itemName}".`, 'error');
@@ -316,7 +317,7 @@ export function use(player: Player, itemName: string): void {
   if (item.type === 'recipe') {
     const learned = learnRecipe(player, item);
     if (learned) {
-      removeItemFromInventory(player, item);
+      removeFromInventory(player, item);
       savePlayer(player);
     }
     return;
@@ -358,7 +359,7 @@ function useConsumable(player: Player, item: Item): void {
     const healed = Math.min(item.health, totalMaxHealth - player.health);
     player.health += healed;
     send(player, `You drink ${item.name}. Healed ${healed} HP!`, 'success');
-    removeItemFromInventory(player, item);
+    removeFromInventory(player, item);
     savePlayer(player);
     return;
   }
@@ -376,7 +377,7 @@ function useConsumable(player: Player, item: Item): void {
     const restored = Math.min(item.mana, totalMaxMana - player.mana);
     player.mana += restored;
     send(player, `You drink ${item.name}. Restored ${restored} mana!`, 'success');
-    removeItemFromInventory(player, item);
+    removeFromInventory(player, item);
     savePlayer(player);
     return;
   }
@@ -388,7 +389,7 @@ function useConsumable(player: Player, item: Item): void {
       return;
     }
     
-    const location = gameState.gameData.locations.get(player.location);
+    const location = getLocation(player);
     
     if (!location) {
       send(player, 'You are nowhere!', 'error');
@@ -413,7 +414,7 @@ function useConsumable(player: Player, item: Item): void {
     send(player, `You use ${item.name}! ${enemy.name} takes ${item.damage} damage! (-${item.manaCost} mana)`, 'combat');
     broadcast(player.location, `${player.username} uses ${item.name}!`, 'combat', player.id);
     
-    removeItemFromInventory(player, item);
+    removeFromInventory(player, item);
     
     // Check if enemy died
     if (enemy.health <= 0) {
@@ -439,7 +440,7 @@ function useConsumable(player: Player, item: Item): void {
     broadcast(oldLocation, `${player.displayName} vanishes in a flash of light!`, 'system', player.id);
     broadcast(item.destination, `${player.displayName} appears in a flash of light!`, 'system', player.id);
     
-    removeItemFromInventory(player, item);
+    removeFromInventory(player, item);
     savePlayer(player);
     
     look(player);
@@ -449,43 +450,12 @@ function useConsumable(player: Player, item: Item): void {
   send(player, "You can't use that.", 'error');
 }
 
-// Helper: Find item in inventory (fuzzy match)
-function findItemInInventory(player: Player, itemName: string): Item | null {
-  const itemLower = itemName.toLowerCase();
-  
-  // Exact match
-  let item = player.inventory.find(i => i.name.toLowerCase() === itemLower);
-  if (item) return item;
-  
-  // Starts with
-  item = player.inventory.find(i => i.name.toLowerCase().startsWith(itemLower));
-  if (item) return item;
-  
-  // Contains
-  item = player.inventory.find(i => i.name.toLowerCase().includes(itemLower));
-  if (item) return item;
-  
-  // ID match
-  item = player.inventory.find(i => i.id === itemLower);
-  if (item) return item;
-  
-  return null;
-}
-
 // Helper: Check if item is equipped
 function isItemEquipped(player: Player, item: Item): boolean {
   return player.equipped.weapon === item ||
          player.equipped.armor === item ||
          player.equipped.shield === item ||
          player.equipped.accessory === item;
-}
-
-// Helper: Remove item from inventory
-function removeItemFromInventory(player: Player, item: Item): void {
-  const index = player.inventory.indexOf(item);
-  if (index > -1) {
-    player.inventory.splice(index, 1);
-  }
 }
 
 // Examine command - view detailed item information
@@ -499,7 +469,7 @@ export function examine(player: Player, itemName: string): void {
   let source = '';
   
   // Search in inventory
-  item = findItemInInventory(player, itemName);
+  item = findInInventory(player, itemName);
   if (item) {
     source = 'Inventory';
   }
@@ -519,7 +489,7 @@ export function examine(player: Player, itemName: string): void {
   
   // Search on ground
   if (!item) {
-    const location = gameState.gameData.locations.get(player.location);
+    const location = getLocation(player);
     if (location?.items) {
       const itemLower = itemName.toLowerCase();
       const groundItem = location.items.find(i => 
@@ -535,7 +505,7 @@ export function examine(player: Player, itemName: string): void {
   
   // Search in shop
   if (!item) {
-    const location = gameState.gameData.locations.get(player.location);
+    const location = getLocation(player);
     if (location?.shop) {
       const itemLower = itemName.toLowerCase();
       // Check each item ID in shop
@@ -574,7 +544,7 @@ export function examine(player: Player, itemName: string): void {
   
   // Show shop prices when examining in shop
   if (source === 'Shop') {
-    const config = gameState.gameData.config;
+    const config = getConfig();
     const buyPrice = Math.floor(item.value * config.economy.shopBuyMultiplier);
     message += `Price: ${buyPrice} gold\n`;
   } else {

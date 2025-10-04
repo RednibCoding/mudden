@@ -4,6 +4,7 @@ import { Player } from './types';
 import { gameState } from './game';
 import { send, broadcast } from './messaging';
 import { isInCombat } from './combat';
+import { getLocation, getConfig } from './utils';
 
 // Valid movement directions
 const DIRECTIONS = ['north', 'south', 'east', 'west', 'up', 'down'];
@@ -32,7 +33,7 @@ export function move(player: Player, direction: string): void {
     return;
   }
   
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   
   if (!location) {
     send(player, 'You are nowhere!', 'error');
@@ -71,7 +72,7 @@ export function move(player: Player, direction: string): void {
 }
 
 export function look(player: Player): void {
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   
   if (!location) {
     send(player, 'You are nowhere!', 'error');

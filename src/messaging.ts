@@ -3,6 +3,7 @@
 import { Player, MessageType, GameMessage } from './types';
 import { gameState, getPlayersInLocation } from './game';
 import { sayToNPC } from './npcs';
+import { getLocation } from './utils';
 
 export function send(player: Player, text: string, type: MessageType = 'info'): void {
   if (!player.socket) {
@@ -75,7 +76,7 @@ export function sendToAll(text: string, type: MessageType = 'system'): void {
 }
 
 export function say(player: Player, message: string): void {
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   
   if (!location) {
     send(player, 'You are nowhere!', 'error');

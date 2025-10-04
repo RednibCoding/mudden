@@ -6,6 +6,7 @@ import { send, broadcast } from './messaging';
 import { savePlayer } from './player';
 import { updateQuestProgress } from './quests';
 import { look } from './movement';
+import { calculateStats, getLocation } from './utils';
 
 /**
  * Apply damage variance to make combat less predictable
@@ -22,7 +23,7 @@ function applyDamageVariance(baseDamage: number): number {
 
 // Check if player is in combat
 export function isInCombat(player: Player): boolean {
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   
   if (!location || !location.enemies) {
     return false;
@@ -40,7 +41,7 @@ export function isInCombat(player: Player): boolean {
 
 // Attack command
 export function attack(player: Player, targetName: string): void {
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   
   if (!location) {
     send(player, 'You are nowhere!', 'error');
@@ -71,16 +72,11 @@ export function attack(player: Player, targetName: string): void {
     broadcast(player.location, `${player.displayName} attacks ${enemy.name}!`, 'combat');
   }
   
-  // Calculate player damage (base + ALL equipment)
-  const equipmentDamage = 
-    (player.equipped.weapon?.damage || 0) +
-    (player.equipped.armor?.damage || 0) +
-    (player.equipped.shield?.damage || 0) +
-    (player.equipped.accessory?.damage || 0);
-  const totalDamage = player.damage + equipmentDamage;
+  // Calculate player damage
+  const stats = calculateStats(player);
   
   // Calculate damage dealt (after enemy defense, with variance)
-  const baseDamage = Math.max(1, totalDamage - enemy.defense);
+  const baseDamage = Math.max(1, stats.damage - enemy.defense);
   const damageDealt = applyDamageVariance(baseDamage);
   enemy.health -= damageDealt;
   
@@ -99,16 +95,11 @@ export function attack(player: Player, targetName: string): void {
 
 // Enemy attacks player
 function enemyAttack(player: Player, enemy: Enemy): void {
-  // Calculate player defense (base + ALL equipment)
-  const equipmentDefense = 
-    (player.equipped.weapon?.defense || 0) +
-    (player.equipped.armor?.defense || 0) +
-    (player.equipped.shield?.defense || 0) +
-    (player.equipped.accessory?.defense || 0);
-  const totalDefense = player.defense + equipmentDefense;
+  // Calculate player defense
+  const stats = calculateStats(player);
   
   // Calculate damage taken (after player defense, with variance)
-  const baseDamage = Math.max(1, enemy.damage - totalDefense);
+  const baseDamage = Math.max(1, enemy.damage - stats.defense);
   const damageTaken = applyDamageVariance(baseDamage);
   player.health -= damageTaken;
   
@@ -296,7 +287,7 @@ function getXpNeeded(level: number, config: any): number {
 
 // Flee command (combat only)
 export function flee(player: Player): void {
-  const location = gameState.gameData.locations.get(player.location);
+  const location = getLocation(player);
   
   if (!location) {
     send(player, 'You are nowhere!', 'error');
