@@ -340,6 +340,7 @@ Recipe items teach players how to craft. Players use them once with the `use` co
 | `gold` | ✅ Yes | number | Gold dropped when killed |
 | `xp` | ✅ Yes | number | Experience points awarded |
 | `materialDrops` | ❌ No | object | Materials that can drop (see below) |
+| `itemDrops` | ❌ No | object | Items that can drop (see below) |
 | `fighters` | ✅ Yes | array | **Always empty array `[]`** (managed at runtime) |
 
 ### Material Drops
@@ -355,6 +356,20 @@ Recipe items teach players how to craft. Players use them once with the `use` co
 
 - `chance`: Drop probability (0.0-1.0, where 0.5 = 50%)
 - `amount`: String format `"min-max"`
+
+### Item Drops
+
+```json
+"itemDrops": {
+  "item_id": {
+    "chance": 0.1
+  }
+}
+```
+
+- `chance`: Drop probability (0.0-1.0, where 0.1 = 10%)
+- Each fighter rolls independently for item drops
+- If inventory is full, item drops to the ground
 
 **Enemy Respawning:** Enemies automatically respawn after being killed. Respawn time is set in `config.json` → `gameplay.enemyRespawnTime` (in milliseconds).
 

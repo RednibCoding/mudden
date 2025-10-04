@@ -6,7 +6,7 @@ import { send, broadcast } from './messaging';
 import { savePlayer } from './player';
 import { updateQuestProgress } from './quests';
 import { look } from './movement';
-import { calculateStats, getLocation } from './utils';
+import { calculateStats, getLocation, getConfig } from './utils';
 
 /**
  * Apply damage variance to make combat less predictable
@@ -159,6 +159,33 @@ export function handleEnemyDeath(player: Player, enemy: Enemy, locationId: strin
           if (material) {
             fighter.materials[materialId] = (fighter.materials[materialId] || 0) + amount;
             send(fighter, `You obtain ${amount}x ${material.name}!`, 'loot');
+          }
+        }
+      }
+    }
+    
+    // Item drops (each fighter rolls independently)
+    if (enemy.itemDrops) {
+      const config = getConfig();
+      for (const [itemId, drop] of Object.entries(enemy.itemDrops)) {
+        if (Math.random() <= drop.chance) {
+          const item = gameState.gameData.items.get(itemId);
+          
+          if (item) {
+            // If inventory full, drop to ground
+            if (fighter.inventory.length >= config.gameplay.maxInventorySlots) {
+              const fighterLocation = getLocation(fighter);
+              if (fighterLocation) {
+                if (!fighterLocation.items) {
+                  fighterLocation.items = [];
+                }
+                fighterLocation.items.push({ ...item });
+                send(fighter, `You find ${item.name}, but your inventory is full! It drops to the ground.`, 'loot');
+              }
+            } else {
+              fighter.inventory.push({ ...item });
+              send(fighter, `You find ${item.name}!`, 'loot');
+            }
           }
         }
       }

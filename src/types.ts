@@ -109,6 +109,11 @@ export interface Enemy {
       amount: string;      // "min-max" range (e.g., "1-2")
     };
   };
+  itemDrops?: {
+    [itemId: string]: {
+      chance: number;      // 0.0-1.0 drop probability
+    };
+  };
   fighters: string[];      // Usernames of players fighting this enemy
 }
 
