@@ -1,0 +1,10 @@
+{
+  "id": "leather_armor_recipe",
+  "name": "Leather Armor Recipe",
+  "result": "leather_armor",
+  "resultType": "item",
+  "materials": {
+    "wolf_pelt": 5
+  },
+  "requiredLevel": 3
+}

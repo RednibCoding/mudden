@@ -6,5 +6,6 @@
     "west": "town_square"
   },
   "shop": "general_store",
-  "npcs": ["tanner"]
+  "npcs": ["tanner"],
+  "items": ["recipe_leather_armor", "recipe_tan_leather"]
 }

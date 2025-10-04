@@ -2423,22 +2423,41 @@ function getXpNeeded(level: number): number {
   "name": "Recipe: Iron Sword",
   "type": "recipe",
   "description": "A crafting recipe for an Iron Sword",
-  "teachesRecipe": "iron_sword"
+  "teachesRecipe": "iron_sword_recipe"
 }
 ```
 
-**Recipe Data:**
+**Recipe Data (Two Types: Items OR Materials):**
+
+**1. Item Recipes (create equipment/consumables):**
 ```json
-// data/recipes/iron_sword.json
+// data/recipes/iron_sword_recipe.json
 {
-  "id": "iron_sword",
+  "id": "iron_sword_recipe",
   "name": "Iron Sword Recipe",
   "result": "iron_sword",           // Item ID from items/ folder
-  "materials": {                      // Material IDs from materials/ folder
+  "resultType": "item",              // Creates an item
+  "materials": {                     // Material IDs from materials/ folder
     "iron_ore": 3,
-    "coal": 1
+    "wolf_pelt": 1
   },
   "requiredLevel": 5
+}
+```
+
+**2. Material Recipes (process raw materials into refined ones):**
+```json
+// data/recipes/smelt_iron_bar.json
+{
+  "id": "smelt_iron_bar",
+  "name": "Smelt Iron Bar",
+  "result": "iron_bar",              // Material ID from materials/ folder
+  "resultType": "material",          // Creates a material
+  "resultAmount": 1,                 // How many materials produced
+  "materials": {
+    "iron_ore": 2                    // 2 ore → 1 refined bar
+  },
+  "requiredLevel": 1
 }
 ```
 
@@ -2447,50 +2466,99 @@ function getXpNeeded(level: number): number {
 interface Recipe {
   id: string;
   name: string;
-  result: string;                    // Item ID to create
-  materials: { [materialId: string]: number };  // Material requirements
-  requiredLevel: number;  // The level required to learn this recipe
+  result: string;                              // Item ID OR material ID
+  resultType: 'item' | 'material';             // What type to create
+  resultAmount?: number;                       // For materials (default: 1)
+  materials: { [materialId: string]: number }; // Material requirements
+  requiredLevel: number;
 }
 ```
 
 **How It Works:**
 
-1. **Find recipe** (drop from enemies/chests/NPCs)
+1. **Find recipe** (drop from enemies/locations/NPCs)
 2. **Learn recipe** (`use recipe: iron sword`)
 3. **View recipes** (`recipes` command)
-4. **Examine recipe** (`examine iron_sword` - see requirements)
-5. **Craft item** (`craft iron sword` - if materials available)
+4. **Examine recipe** (`examine iron_sword_recipe` - see requirements)
+5. **Craft item/material** (`craft iron_sword_recipe` - if materials available)
 
-**Command Flow:**
+**Command Flow (Item Crafting):**
 ```
 > use recipe: iron sword
-You learn how to craft: Iron Sword!
+You learn how to craft: Iron Sword Recipe!
 
 > recipes
 Known Recipes:
-  - Iron Sword (Level 5)
-  - Health Potion (Level 1)
+  - Iron Sword Recipe (Level 5)
+  - Smelt Iron Bar (Level 1)
   
-> examine iron_sword
-Recipe: Iron Sword
+> examine iron_sword_recipe
+=== Iron Sword Recipe ===
 Required Level: 5
-Materials:
-  - Iron Ore x3
-  - Coal x1
-Result: Iron Sword (+15 damage)
 
-> craft iron sword
-You craft an Iron Sword!
-Materials consumed: 3x Iron Ore, 1x Coal
+Materials Required:
+  ✓ Iron Ore: 3/3
+  ✓ Wolf Pelt: 1/1
+
+Result: Iron Sword
+  A sturdy iron blade.
+  Damage: +15
+
+> craft iron_sword_recipe
+You craft Iron Sword!
+Materials consumed: 3x Iron Ore, 1x Wolf Pelt
 ```
+
+**Command Flow (Material Processing):**
+```
+> use recipe: smelt iron
+You learn how to craft: Smelt Iron Bar!
+
+> examine smelt_iron_bar
+=== Smelt Iron Bar ===
+Required Level: 1
+
+Materials Required:
+  ✓ Iron Ore: 2/2
+
+Result: 1x Iron Bar
+  A refined iron bar, ready to be forged into equipment.
+  Rarity: common
+
+> craft smelt_iron_bar
+You craft 1x Iron Bar!
+Materials consumed: 2x Iron Ore
+
+> materials
+=== Crafting Materials ===
+  1x Iron Bar [common]
+  5x Wolf Pelt [common]
+```
+
+**Key Differences:**
+- **Item recipes**: Result goes to inventory (requires space)
+- **Material recipes**: Result goes to materials storage (unlimited, no inventory needed)
+- **Processing chains**: Raw materials → Refined materials → Crafted items
 
 **Material Storage:**
 - Materials stored in `player.materials` (separate from inventory!)
-- Harvested from resource nodes OR dropped from enemies
+- Harvested from resource nodes OR dropped from enemies OR crafted from other materials
 - Unlimited storage (don't take inventory space)
-- Example: `{ iron_ore: 5, coal: 2, copper_ore: 8 }`
+- Example: `{ iron_ore: 5, iron_bar: 2, leather: 8 }`
 
-**Code (~100 lines total):**
+**Multi-Stage Crafting Examples:**
+
+```
+Stage 1: Raw materials → Refined materials
+  2x Iron Ore → 1x Iron Bar (smelting)
+  3x Wolf Pelt → 2x Leather (tanning)
+
+Stage 2: Refined materials → Equipment
+  3x Iron Bar + 1x Leather → Iron Sword
+  5x Leather → Leather Armor
+```
+
+**Code (~293 lines total - src/crafting.ts):**
 
 ```typescript
 // Learn recipe from item
@@ -2569,39 +2637,44 @@ export function craft(player: Player, recipeId: string): void {
       return send(player, `You need ${amount}x ${material.name}.`);
     }
   }
+```typescript
+// Craft item or material
+export function craft(player: Player, recipeId: string): void {
+  const recipe = gameState.recipes.get(recipeId);
   
-  // Check inventory space
-  if (player.inventory.length >= config.gameplay.maxInventorySlots) {
-    return send(player, "Your inventory is full!");
-  }
+  // Validate recipe known, level, materials
+  // ...
   
   // Consume materials
   for (const [materialId, amount] of Object.entries(recipe.materials)) {
     player.materials[materialId] -= amount;
   }
   
-  // Create item
-  const item = gameState.items.get(recipe.result);
-  player.inventory.push({ ...item });
-  
-  send(player, `You craft ${item.name}!`);
-  const materialsUsed = Object.entries(recipe.materials)
-    .map(([matId, amt]) => {
-      const mat = gameState.materials.get(matId);
-      return `${amt}x ${mat.name}`;
-    })
-    .join(", ");
-  send(player, `Materials consumed: ${materialsUsed}`);
+  if (recipe.resultType === 'material') {
+    // Create material (goes to materials storage)
+    const amount = recipe.resultAmount || 1;
+    player.materials[recipe.result] += amount;
+    
+    const mat = gameState.materials.get(recipe.result);
+    send(player, `You craft ${amount}x ${mat.name}!`);
+  } else {
+    // Create item (goes to inventory)
+    const item = gameState.items.get(recipe.result);
+    player.inventory.push({ ...item });
+    send(player, `You craft ${item.name}!`);
+  }
 }
 ```
 
 **Benefits:**
 - ✅ Traditional MUD pattern (find recipes as loot)
 - ✅ Recipes become valuable tradeable items
-- ✅ Encourages exploration (find recipes)
-- ✅ Clear separation: materials array (not questItems)
-- ✅ Simple examine/craft/recipes/materials commands
-- ✅ ~100 lines total (4 functions)
+- ✅ Multi-stage crafting (raw → refined → equipment)
+- ✅ Material processing doesn't require inventory space
+- ✅ Encourages exploration (find recipes in locations)
+- ✅ Clear separation: materials storage (unlimited, separate from inventory)
+- ✅ Simple commands: recipes, examine, craft, materials, harvest
+- ✅ ~293 lines total (src/crafting.ts)
 
 ---
 
@@ -3439,32 +3512,34 @@ Total: ~1,520 lines
 30. Quest-NPC auto-linking (data loader enrichment)
 31. Data validation (fail-fast on invalid references)
 
-### Phase 6: Crafting & Materials (~250 lines)
+### Phase 6: Crafting & Materials (~293 lines)
 32. Materials system (separate data type with rarity)
 33. Material harvesting (per-player nodes with cooldowns)
 34. Material drops from enemies (chance-based, on death)
 35. Materials storage (separate from inventory, unlimited)
 36. Recipe items (find & learn)
-37. Recipe learning system
-38. Crafting system (consume materials, create items)
+37. Recipe learning system (use command)
+38. Crafting system - Items (consume materials, create items)
+39. Crafting system - Materials (process raw into refined materials)
+40. Multi-stage crafting (raw → refined → equipment)
 
 ### Phase 7: Social & Polish (~300 lines)
-39. Say/whisper/reply commands
-40. Friend system
-41. Who command
-42. Command shortcuts (n/s/e/w/i/eq/w/r/f)
-43. Help system
-44. Error handling & validation
+41. Say/whisper/reply commands
+42. Friend system
+43. Who command
+44. Command shortcuts (n/s/e/w/i/eq/w/r/f)
+45. Help system
+46. Error handling & validation
 
 ### Phase 8: Configuration & Admin (~100 lines)
-45. Config.json loader
-46. Starting player setup
-47. XP progression calculator
-48. Admin commands (optional)
+47. Config.json loader
+48. Starting player setup
+49. XP progression calculator
+50. Admin commands (optional)
 
 ---
 
 *This is a living document - pure traditional MUD design with zero legacy bloat.*
 
 **Last Updated:** October 4, 2025  
-**Status:** Phase 5 Complete - Quest System Fully Implemented
+**Status:** Phase 6 Complete - Crafting & Materials System Fully Implemented (Multi-Stage Crafting!)

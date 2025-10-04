@@ -1,0 +1,8 @@
+{
+  "id": "recipe_tan_leather",
+  "name": "Recipe: Tan Leather",
+  "description": "Instructions for processing wolf pelts into quality leather.",
+  "type": "recipe",
+  "value": 25,
+  "teachesRecipe": "tan_leather"
+}

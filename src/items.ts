@@ -310,6 +310,17 @@ export function use(player: Player, itemName: string): void {
     return;
   }
   
+  // Handle recipe items
+  if (item.type === 'recipe') {
+    const { learnRecipe } = require('./crafting');
+    const learned = learnRecipe(player, item);
+    if (learned) {
+      removeItemFromInventory(player, item);
+      savePlayer(player);
+    }
+    return;
+  }
+  
   if (item.type !== 'consumable') {
     send(player, `You can't use ${item.name}.`, 'error');
     return;

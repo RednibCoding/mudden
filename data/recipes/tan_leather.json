@@ -1,0 +1,11 @@
+{
+  "id": "tan_leather",
+  "name": "Tan Leather",
+  "result": "leather",
+  "resultType": "material",
+  "resultAmount": 2,
+  "materials": {
+    "wolf_pelt": 3
+  },
+  "requiredLevel": 1
+}

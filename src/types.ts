@@ -194,7 +194,9 @@ export interface ResourceNode {
 export interface Recipe {
   id: string;
   name: string;
-  result: string;                              // Item ID to create
+  result: string;                              // Item ID OR material ID to create
+  resultType: 'item' | 'material';             // What type of result
+  resultAmount?: number;                       // Amount of material created (default: 1)
   materials: { [materialId: string]: number }; // Material requirements
   requiredLevel: number;
 }

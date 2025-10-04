@@ -1,0 +1,11 @@
+{
+  "id": "smelt_iron_bar",
+  "name": "Smelt Iron Bar",
+  "result": "iron_bar",
+  "resultType": "material",
+  "resultAmount": 1,
+  "materials": {
+    "iron_ore": 2
+  },
+  "requiredLevel": 1
+}

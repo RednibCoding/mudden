@@ -1,0 +1,8 @@
+{
+  "id": "recipe_iron_sword",
+  "name": "Recipe: Iron Sword",
+  "description": "Instructions for forging an iron sword.",
+  "type": "recipe",
+  "value": 100,
+  "teachesRecipe": "iron_sword_recipe"
+}

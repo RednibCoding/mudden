@@ -14,6 +14,7 @@ import { talk } from './npcs';
 import { list, buy, sell } from './shops';
 import { give } from './give';
 import { showQuests } from './quests';
+import { harvest, showRecipes, examineRecipe, craft } from './crafting';
 import { Player } from './types';
 
 const PORT = 3000;
@@ -321,7 +322,15 @@ function handleCommand(player: Player, input: string): void {
       if (args.length === 0) {
         send(player, 'Examine what?', 'error');
       } else {
-        examine(player, args.join(' '));
+        const target = args.join(' ');
+        // Try as recipe first (if player knows it)
+        const recipeId = args.join('_').toLowerCase();
+        if (player.knownRecipes.includes(recipeId)) {
+          examineRecipe(player, recipeId);
+        } else {
+          // Fall back to item examination
+          examine(player, target);
+        }
       }
       break;
       
@@ -380,6 +389,23 @@ function handleCommand(player: Player, input: string): void {
     case 'quest':
     case 'q':
       showQuests(player);
+      break;
+      
+    // Crafting
+    case 'harvest':
+      harvest(player, args[0]);
+      break;
+      
+    case 'recipes':
+      showRecipes(player);
+      break;
+      
+    case 'craft':
+      if (args.length === 0) {
+        send(player, 'Craft what? Usage: craft <recipe>', 'error');
+      } else {
+        craft(player, args.join('_').toLowerCase());
+      }
       break;
       
     // Help
@@ -459,6 +485,12 @@ Items & Equipment:
 Quests:
   quests (q)         - View active and completed quests
   talk <npc>         - Talk to NPCs to accept/complete quests
+
+Crafting:
+  harvest <material> - Harvest materials from resource nodes
+  recipes            - View known recipes
+  examine <recipe>   - View recipe details and requirements
+  craft <recipe>     - Craft an item from a recipe
 
 Shop:
   list               - View shop inventory

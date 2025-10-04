@@ -1,0 +1,11 @@
+{
+  "id": "iron_sword_recipe",
+  "name": "Iron Sword Recipe",
+  "result": "iron_sword",
+  "resultType": "item",
+  "materials": {
+    "iron_ore": 3,
+    "wolf_pelt": 1
+  },
+  "requiredLevel": 5
+}

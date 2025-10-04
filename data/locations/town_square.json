@@ -6,7 +6,8 @@
     "north": "temple",
     "south": "gates",
     "east": "market",
-    "west": "tavern"
+    "west": "tavern",
+    "down": "iron_mine"
   },
   "npcs": ["blacksmith", "town_guard"],
   "shop": "weapon_shop",
