@@ -21,7 +21,11 @@ function applyDamageVariance(baseDamage: number): number {
   return Math.max(1, randomDamage);
 }
 
-// Check if player is in combat
+/**
+ * Check if a player is currently engaged in combat
+ * @param player - The player to check
+ * @returns true if player is in any enemy's fighters list, false otherwise
+ */
 export function isInCombat(player: Player): boolean {
   const location = getLocation(player);
   
@@ -39,7 +43,13 @@ export function isInCombat(player: Player): boolean {
   return false;
 }
 
-// Attack command
+/**
+ * Attack command - Player initiates combat with an enemy
+ * Uses fuzzy name matching to find the enemy in current location.
+ * Adds player to enemy's fighters list and triggers combat exchange.
+ * @param player - The attacking player
+ * @param targetName - The enemy name or ID to attack
+ */
 export function attack(player: Player, targetName: string): void {
   const location = getLocation(player);
   
@@ -285,7 +295,12 @@ function getXpNeeded(level: number, config: any): number {
   return Math.floor(base * Math.pow(mult, level - 1));
 }
 
-// Flee command (combat only)
+/**
+ * Flee command - Attempt to escape from combat
+ * Removes player from all enemy fighters lists and moves to random valid exit.
+ * Success chance is configurable in game config.
+ * @param player - The player attempting to flee
+ */
 export function flee(player: Player): void {
   const location = getLocation(player);
   

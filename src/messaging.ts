@@ -5,6 +5,12 @@ import { gameState, getPlayersInLocation } from './game';
 import { sayToNPC } from './npcs';
 import { getLocation } from './utils';
 
+/**
+ * Send a typed message to a specific player
+ * @param player - The player to send the message to
+ * @param text - The message content
+ * @param type - The message type (determines client-side styling)
+ */
 export function send(player: Player, text: string, type: MessageType = 'info'): void {
   if (!player.socket) {
     console.warn(`Cannot send message to ${player.username}: no socket`);
@@ -20,6 +26,13 @@ export function send(player: Player, text: string, type: MessageType = 'info'): 
   player.socket.emit('message', message);
 }
 
+/**
+ * Broadcast a typed message to all players in a location
+ * @param locationId - The location ID to broadcast to
+ * @param text - The message content
+ * @param type - The message type (determines client-side styling)
+ * @param excludeId - Optional player ID to exclude from broadcast
+ */
 export function broadcast(
   locationId: string, 
   text: string, 

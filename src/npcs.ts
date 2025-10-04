@@ -86,12 +86,6 @@ export function talk(player: Player, npcName: string): void {
       }
       return;
     }
-    
-    // Quest already completed
-    if (player.completed.includes(npc.quest)) {
-      send(player, `${npc.name}: "Thank you again for your help!"`, 'npc');
-      return;
-    }
   }
   
   // Regular dialogue (only if no quest interaction)

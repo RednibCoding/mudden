@@ -8,6 +8,10 @@ import { getLocation, getConfig } from './utils';
 
 /**
  * Check if player can accept a quest
+ * Validates level requirements, prerequisites, and quest state
+ * @param player - The player attempting to accept the quest
+ * @param questId - The quest ID to check
+ * @returns true if quest can be accepted, false otherwise
  */
 export function canAcceptQuest(player: Player, questId: string): boolean {
   const quest = gameState.gameData.quests.get(questId);
@@ -33,7 +37,9 @@ export function canAcceptQuest(player: Player, questId: string): boolean {
 }
 
 /**
- * Accept a new quest
+ * Accept a new quest and add it to player's active quests
+ * @param player - The player accepting the quest
+ * @param questId - The quest ID to accept
  */
 export function acceptQuest(player: Player, questId: string): void {
   const quest = gameState.gameData.quests.get(questId);
