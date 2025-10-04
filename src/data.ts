@@ -200,6 +200,11 @@ async function loadConfig(configPath: string): Promise<Config> {
 
 function getDefaultConfig(): Config {
   return {
+    server: {
+      port: 3000,
+      host: '0.0.0.0',
+      corsOrigin: '*'
+    },
     gameMeta: {
       name: 'Mudden MUD',
       version: '1.0.0',

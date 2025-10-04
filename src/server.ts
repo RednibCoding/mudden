@@ -18,23 +18,29 @@ import { harvest, showRecipes, examineRecipe, craft } from './crafting';
 import { handleFriendCommand } from './social';
 import { Player } from './types';
 import { calculateStats, generateMap } from './utils';
+import * as packageJson from '../package.json';
 
-const PORT = 3000;
+const MUDDEN_VERSION = packageJson.version;
 
 async function startServer() {
   // Load game data
   gameState.gameData = await loadGameData();
   
+  // Get server config
+  const serverConfig = gameState.gameData.config.server;
+  const PORT = serverConfig.port;
+  const HOST = serverConfig.host;
+  
   // Create HTTP server
   const httpServer = createServer();
   const io = new Server(httpServer, {
     cors: {
-      origin: '*',
+      origin: serverConfig.corsOrigin,
       methods: ['GET', 'POST']
     }
   });
   
-  console.log('\n🎮 Mudden MUD Server starting...\n');
+  console.log(`\n🎮 Mudden Engine v${MUDDEN_VERSION} starting...\n`);
   
   // Socket.IO connection handling
   io.on('connection', (socket) => {
@@ -75,7 +81,7 @@ async function startServer() {
       
       // Welcome message with game meta info
       const meta = gameState.gameData.config.gameMeta;
-      const welcomeMsg = `\n${'='.repeat(50)}\n   ${meta.name} v${meta.version}\n${'='.repeat(50)}\n\n${meta.description}\n\n${meta.welcomeMessage}\n\n${meta.credits}\n${'='.repeat(50)}\n`;
+      const welcomeMsg = `\n${'='.repeat(50)}\n   ${meta.name} v${meta.version}\n   Powered by Mudden Engine v${MUDDEN_VERSION}\n${'='.repeat(50)}\n\n${meta.description}\n\n${meta.welcomeMessage}\n\n${meta.credits}\n${'='.repeat(50)}\n`;
       send(player, welcomeMsg, 'system');
       
       // Announce to others
@@ -118,7 +124,7 @@ async function startServer() {
       
       // Welcome message with game meta info
       const meta = gameState.gameData.config.gameMeta;
-      const welcomeMsg = `\n${'='.repeat(50)}\n   ${meta.name} v${meta.version}\n   ✨ Character Created! ✨\n${'='.repeat(50)}\n\n${meta.description}\n\n${meta.welcomeMessage}\n\n${meta.credits}\n${'='.repeat(50)}\n`;
+      const welcomeMsg = `\n${'='.repeat(50)}\n   ${meta.name} v${meta.version}\n   Powered by Mudden Engine v${MUDDEN_VERSION}\n   ✨ Character Created! ✨\n${'='.repeat(50)}\n\n${meta.description}\n\n${meta.welcomeMessage}\n\n${meta.credits}\n${'='.repeat(50)}\n`;
       send(player, welcomeMsg, 'system');
       
       // Announce to others
@@ -158,8 +164,8 @@ async function startServer() {
   });
   
   // Start server
-  httpServer.listen(PORT, () => {
-    console.log(`✓ Server running on port ${PORT}`);
+  httpServer.listen(PORT, HOST, () => {
+    console.log(`✓ Server running on ${HOST}:${PORT}`);
     console.log(`✓ Ready for connections!\n`);
   });
   

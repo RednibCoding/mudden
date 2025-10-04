@@ -210,6 +210,11 @@ export interface Recipe {
 // ==================== Configuration ====================
 
 export interface Config {
+  server: {
+    port: number;
+    host: string;
+    corsOrigin: string;
+  };
   gameMeta: {
     name: string;
     version: string;
