@@ -30,7 +30,31 @@ export function harvest(player: Player, materialId?: string): void {
   }
 
   // Use first resource if only one and no material specified
-  const targetMaterialId = materialId || location.resources[0].materialId;
+  let targetMaterialId = materialId || location.resources[0].materialId;
+
+  // Try to match material name to ID (server-side name matching)
+  if (materialId) {
+    const normalizedInput = materialId.toLowerCase().replace(/\s+/g, '_');
+    
+    // Try direct ID match first
+    let node = location.resources.find(r => r.materialId === normalizedInput);
+    
+    // Try name matching if ID match failed
+    if (!node) {
+      node = location.resources.find(r => {
+        const material = gameState.gameData.materials.get(r.materialId);
+        if (!material) return false;
+        return material.name.toLowerCase() === materialId.toLowerCase() ||
+               material.name.toLowerCase().includes(materialId.toLowerCase());
+      });
+      
+      if (node) {
+        targetMaterialId = node.materialId;
+      }
+    } else {
+      targetMaterialId = normalizedInput;
+    }
+  }
 
   // Find the resource node
   const node = location.resources.find(r => r.materialId === targetMaterialId);

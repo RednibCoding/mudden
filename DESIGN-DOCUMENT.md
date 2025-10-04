@@ -3465,7 +3465,196 @@ Total: ~1,520 lines
 
 ---
 
+## � Phase 7: Social System & Polish
+
+### **Friend System (social.ts ~100 lines)**
+
+**Friend Management:**
+- Add friends (must be online)
+- Remove friends
+- List friends with online/offline status
+
+**Friend Functions:**
+```typescript
+export function addFriend(player: Player, username: string): void {
+  // Can't befriend yourself
+  if (username.toLowerCase() === player.username.toLowerCase()) {
+    return send(player, "You can't befriend yourself!");
+  }
+  
+  // Check if already friends
+  if (player.friends.includes(username)) {
+    return send(player, `${username} is already your friend.`);
+  }
+  
+  // Check if player exists (must be online)
+  const target = gameState.players.get(username);
+  if (!target) {
+    return send(player, 'Player not found. They must be online to add as friend.');
+  }
+  
+  // Add friend
+  player.friends.push(username);
+  send(player, `You are now friends with ${username}.`, 'success');
+  send(target, `${player.username} has added you as a friend.`, 'info');
+}
+
+export function removeFriend(player: Player, username: string): void {
+  const index = player.friends.indexOf(username);
+  if (index === -1) {
+    return send(player, `${username} is not your friend.`);
+  }
+  
+  player.friends.splice(index, 1);
+  send(player, `${username} has been removed from your friends list.`, 'success');
+}
+
+export function listFriends(player: Player): void {
+  if (player.friends.length === 0) {
+    return send(player, 'You have no friends yet. Use "friend add <name>" to add friends.');
+  }
+  
+  let message = '\n=== Friends ===\n';
+  
+  player.friends.forEach(username => {
+    const friend = gameState.players.get(username);
+    const status = friend?.socket ? '[Online]' : '[Offline]';
+    message += `  ${username} ${status}\n`;
+  });
+  
+  message += `\nTotal: ${player.friends.length} friend(s)\n`;
+  send(player, message);
+}
+
+export function handleFriendCommand(player: Player, args: string[]): void {
+  if (args.length === 0) {
+    listFriends(player);
+    return;
+  }
+  
+  const subcommand = args[0].toLowerCase();
+  const username = args[1];
+  
+  switch (subcommand) {
+    case 'add':
+      if (!username) return send(player, 'Add who? Usage: friend add <name>');
+      addFriend(player, username);
+      break;
+      
+    case 'remove':
+    case 'delete':
+      if (!username) return send(player, 'Remove who? Usage: friend remove <name>');
+      removeFriend(player, username);
+      break;
+      
+    case 'list':
+      listFriends(player);
+      break;
+      
+    default:
+      send(player, 'Usage: friend [list|add <name>|remove <name>]');
+  }
+}
+```
+
+### **Enhanced Social Commands**
+
+**Already Implemented in messaging.ts:**
+- `whisper(from, to, message)` - Private messages
+- `reply(player, message)` - Reply to last whisper
+- `say(player, message)` - Room broadcast
+
+**New Command Handlers in server.ts:**
+```typescript
+case 'whisper':
+case 'tell':
+case 'w':
+  if (args.length < 2) {
+    send(player, 'Whisper what? Usage: whisper <player> <message>');
+  } else {
+    whisper(player, args[0], args.slice(1).join(' '));
+  }
+  break;
+
+case 'reply':
+case 'r':
+  if (args.length === 0) {
+    send(player, 'Reply what?');
+  } else {
+    reply(player, args.join(' '));
+  }
+  break;
+
+case 'friend':
+case 'friends':
+case 'f':
+  handleFriendCommand(player, args);
+  break;
+```
+
+### **Command Shortcuts Summary**
+
+**Movement:**
+- `n` → north
+- `s` → south
+- `e` → east
+- `w` → west
+- `u` → up
+- `d` → down
+
+**Items:**
+- `i` → inventory
+- `eq` → equipment
+- `m` → materials
+- `x` → examine
+
+**Combat:**
+- `k` → attack
+- `fl` → flee
+
+**Social:**
+- `w` → whisper
+- `r` → reply
+- `f` → friend
+
+**Other:**
+- `q` → quests
+- `l` → look
+
+### **Help System**
+
+Comprehensive help command showing all available commands organized by category:
+- Movement
+- Combat
+- Items & Equipment
+- Quests
+- Crafting
+- Shop
+- NPCs
+- Information
+- Social
+
+### **Error Handling & Validation**
+
+**Already implemented throughout:**
+- Input validation (empty commands, missing args)
+- Entity existence checks (items, enemies, NPCs)
+- State validation (combat state, quest progress)
+- Permission checks (level requirements, quest prerequisites)
+- Resource validation (inventory space, gold, materials)
+
+---
+
 ## 📝 Implementation Order
+
+**It does NOT need to:**
+- ❌ Compete with modern MMOs
+- ❌ Have every feature
+- ❌ Be "complete" by modern standards
+
+---
+
+## �📝 Implementation Order
 
 ### Phase 1: Core Infrastructure (~500 lines)
 1. Server setup + Socket.IO
@@ -3519,13 +3708,13 @@ Total: ~1,520 lines
 39. Crafting system - Materials (process raw into refined materials)
 40. Multi-stage crafting (raw → refined → equipment)
 
-### Phase 7: Social & Polish (~300 lines)
-41. Say/whisper/reply commands
-42. Friend system
-43. Who command
-44. Command shortcuts (n/s/e/w/i/eq/w/r/f)
-45. Help system
-46. Error handling & validation
+### Phase 7: Social & Polish (~100 lines) ✅ COMPLETE
+41. Say/whisper/reply commands ✅
+42. Friend system ✅
+43. Who command ✅
+44. Command shortcuts (n/s/e/w/i/eq/w/r/f) ✅
+45. Help system ✅
+46. Error handling & validation ✅
 
 ### Phase 8: Configuration & Admin (~100 lines)
 47. Config.json loader
@@ -3538,4 +3727,4 @@ Total: ~1,520 lines
 *This is a living document - pure traditional MUD design with zero legacy bloat.*
 
 **Last Updated:** October 4, 2025  
-**Status:** Phase 6 Complete - Crafting & Materials System Fully Implemented (Multi-Stage Crafting!)
+**Status:** Phase 7 Complete - Social System & Polish Fully Implemented! Friend system, whisper/reply commands, all shortcuts active!

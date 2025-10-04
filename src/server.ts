@@ -5,7 +5,7 @@ import { createServer } from 'http';
 import { loadGameData } from './data';
 import { gameState, addPlayer, removePlayer } from './game';
 import { createPlayer, authenticatePlayer, playerExists, savePlayer } from './player';
-import { send, sendToAll } from './messaging';
+import { send, sendToAll, whisper, reply } from './messaging';
 import { move, look } from './movement';
 import { attack, flee, isInCombat } from './combat';
 import { say } from './messaging';
@@ -15,6 +15,7 @@ import { list, buy, sell } from './shops';
 import { give } from './give';
 import { showQuests } from './quests';
 import { harvest, showRecipes, examineRecipe, craft } from './crafting';
+import { handleFriendCommand } from './social';
 import { Player } from './types';
 
 const PORT = 3000;
@@ -343,6 +344,27 @@ function handleCommand(player: Player, input: string): void {
       }
       break;
       
+    case 'whisper':
+    case 'tell':
+    case 'w':
+      if (args.length < 2) {
+        send(player, 'Whisper what? Usage: whisper <player> <message>', 'error');
+      } else {
+        const targetName = args[0];
+        const message = args.slice(1).join(' ');
+        whisper(player, targetName, message);
+      }
+      break;
+      
+    case 'reply':
+    case 'r':
+      if (args.length === 0) {
+        send(player, 'Reply what?', 'error');
+      } else {
+        reply(player, args.join(' '));
+      }
+      break;
+      
     case 'talk':
       if (args.length === 0) {
         send(player, 'Talk to who?', 'error');
@@ -357,6 +379,12 @@ function handleCommand(player: Player, input: string): void {
       } else {
         give(player, args);
       }
+      break;
+      
+    case 'friend':
+    case 'friends':
+    case 'f':
+      handleFriendCommand(player, args);
       break;
       
     case 'who':
@@ -393,7 +421,11 @@ function handleCommand(player: Player, input: string): void {
       
     // Crafting
     case 'harvest':
-      harvest(player, args[0]);
+      if (args.length === 0) {
+        harvest(player);
+      } else {
+        harvest(player, args.join(' '));
+      }
       break;
       
     case 'recipes':
@@ -507,6 +539,9 @@ Information:
 
 Social:
   say <message>      - Talk to everyone in the room
+  whisper <player> <message> - Send a private message (shortcuts: tell, w)
+  reply <message>    - Reply to last whisper (shortcut: r)
+  friend [list|add <name>|remove <name>] - Manage friends (shortcut: f)
   give <player> <item>       - Give an item to another player
   give <player> <amount> gold - Give gold to another player
   who                - List online players
