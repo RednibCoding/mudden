@@ -4,7 +4,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import { loadGameData } from './data';
 import { gameState, addPlayer, removePlayer } from './game';
-import { createPlayer, authenticatePlayer, playerExists, savePlayer, cleanupInactivePlayers } from './player';
+import { createPlayer, authenticatePlayer, playerExists, savePlayer, cleanupInactivePlayers, resetPlayer, deletePlayer } from './player';
 import { send, sendToAll, whisper, reply } from './messaging';
 import { move, look } from './movement';
 import { attack, flee, isInCombat } from './combat';
@@ -259,8 +259,12 @@ async function startServer() {
       if (player) {
         console.log(`✗ ${player.username} disconnected`);
         
-        // Save player
-        savePlayer(player);
+        // IMPORTANT: Always save from gameState.players, not the closure variable
+        // This ensures we save the latest player data (e.g., after a reset)
+        const currentPlayer = gameState.players.get(player.username);
+        if (currentPlayer) {
+          savePlayer(currentPlayer);
+        }
         
         // Announce to others
         sendToAll(`${player.displayName} has left the realm.`, 'system');
@@ -570,6 +574,31 @@ function handleCommand(player: Player, input: string): void {
       cmdHelp(player);
       break;
       
+    // Logout
+    case 'quit':
+    case 'logout':
+      cmdQuit(player);
+      break;
+      
+    // Account Management
+    case 'reset-account':
+      if (args.length !== 2) {
+        send(player, 'Usage: reset-account <accountname> <password>', 'error');
+        send(player, 'WARNING: This will permanently reset your account to level 1!', 'error');
+      } else {
+        cmdResetAccount(player, args[0], args[1]);
+      }
+      break;
+      
+    case 'delete-account':
+      if (args.length !== 2) {
+        send(player, 'Usage: delete-account <accountname> <password>', 'error');
+        send(player, 'WARNING: This will permanently delete your account!', 'error');
+      } else {
+        cmdDeleteAccount(player, args[0], args[1]);
+      }
+      break;
+      
     default:
       send(player, 'Unknown command. Type "help" for a list of commands.', 'error');
       break;
@@ -677,8 +706,13 @@ Social:
   give <player> <amount> gold - Give gold to another player
   who                - List online players
 
+Account:
+  reset-account <accountname> <password> - Reset your character to level 1
+  delete-account <accountname> <password> - Permanently delete your account
+
 Info:
   help               - Show this help
+  quit (logout)      - Save and disconnect from the game
 
 Type any message to say it to the room!
 `;
@@ -718,6 +752,80 @@ function cmdStats(player: Player): void {
   }
   
   send(player, message, 'info');
+}
+
+function cmdQuit(player: Player): void {
+  send(player, 'Saving your progress and logging out...', 'system');
+  
+  // Save the player
+  savePlayer(player);
+  
+  // Announce to others
+  sendToAll(`${player.displayName} has left the realm.`, 'system');
+  
+  // Disconnect after a brief moment
+  setTimeout(() => {
+    if (player && player.socket) {
+      player.socket.disconnect();
+    }
+  }, 1000);
+}
+
+async function cmdResetAccount(player: Player, accountName: string, password: string): Promise<void> {
+  // Verify they're resetting their own account (case-insensitive)
+  if (player.username.toLowerCase() !== accountName.toLowerCase()) {
+    send(player, 'You can only reset your own account.', 'error');
+    return;
+  }
+  
+  send(player, 'Resetting your account... Please wait.', 'system');
+  
+  const result = await resetPlayer(accountName, password);
+  
+  if (result.success) {
+    send(player, result.message, 'success');
+    send(player, 'Your character has been reset to level 1. Disconnecting...', 'system');
+    
+    // Disconnect after showing message
+    setTimeout(() => {
+      if (player && player.socket) {
+        player.socket.disconnect();
+      }
+    }, 2000);
+  } else {
+    send(player, result.message, 'error');
+  }
+}
+
+async function cmdDeleteAccount(player: Player, accountName: string, password: string): Promise<void> {
+  // Verify they're deleting their own account (case-insensitive)
+  if (player.username.toLowerCase() !== accountName.toLowerCase()) {
+    send(player, 'You can only delete your own account.', 'error');
+    return;
+  }
+  
+  send(player, 'Deleting your account permanently... Please wait.', 'system');
+  
+  // Announce to others before deleting
+  sendToAll(`${player.displayName} has left the realm forever.`, 'system');
+  
+  const result = await deletePlayer(accountName, password);
+  
+  if (result.success) {
+    send(player, result.message, 'success');
+    send(player, 'Goodbye! Your account has been permanently deleted.', 'system');
+    
+    // Remove from game state and disconnect
+    removePlayer(player.username);
+    
+    setTimeout(() => {
+      if (player && player.socket) {
+        player.socket.disconnect();
+      }
+    }, 2000);
+  } else {
+    send(player, result.message, 'error');
+  }
 }
 
 // Start the server

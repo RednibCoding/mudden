@@ -136,8 +136,14 @@ export async function loadPlayer(username: string): Promise<Player | null> {
   }
 }
 
-export async function savePlayer(player: Player): Promise<void> {
+export async function savePlayer(player: Player, forceNew: boolean = false): Promise<void> {
   const filePath = path.join(PERSIST_DIR, `${player.username}.json`);
+  
+  // If forceNew, replace the in-memory player with this fresh one
+  if (forceNew && gameState.players.has(player.username)) {
+    console.log(`[SAVE] Replacing in-memory player ${player.username} with fresh data`);
+    gameState.players.set(player.username, player);
+  }
   
   // Remove socket before saving (runtime only)
   const { socket, ...playerData } = player;
@@ -162,6 +168,9 @@ export async function savePlayer(player: Player): Promise<void> {
   
   try {
     fs.writeFileSync(filePath, JSON.stringify(saveData, null, 2));
+    if (forceNew) {
+      console.log(`[SAVE] Fresh player saved - activeQuests:`, Object.keys(saveData.activeQuests || {}));
+    }
   } catch (error) {
     console.error(`Error saving player ${player.username}:`, error);
   }
@@ -225,4 +234,84 @@ export async function cleanupInactivePlayers(config: any): Promise<number> {
   }
   
   return deletedCount;
+}
+
+export async function resetPlayer(username: string, currentPassword: string): Promise<{ success: boolean; message: string }> {
+  // Case-insensitive exact match
+  const files = fs.readdirSync(PERSIST_DIR).filter(f => f.endsWith('.json'));
+  const actualFile = files.find(f => f.toLowerCase() === `${username.toLowerCase()}.json`);
+  
+  if (!actualFile) {
+    return { success: false, message: 'Account not found.' };
+  }
+  
+  const actualUsername = actualFile.replace('.json', '');
+  const filePath = path.join(PERSIST_DIR, actualFile);
+  
+  try {
+    // Load and verify password
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    const isValid = await bcrypt.compare(currentPassword, data.passwordHash);
+    
+    if (!isValid) {
+      return { success: false, message: 'Invalid password.' };
+    }
+    
+    console.log(`[RESET] Resetting player ${actualUsername}`);
+    console.log(`[RESET] Old active quests:`, Object.keys(data.activeQuests || {}));
+    
+    // Store the password hash to preserve it
+    const originalPasswordHash = data.passwordHash;
+    
+    // Create completely fresh player (this creates all new stats, quests, materials, etc.)
+    console.log(`[RESET] Creating fresh player...`);
+    const freshPlayer = await createPlayer(actualUsername, currentPassword);
+    
+    console.log(`[RESET] Fresh player active quests:`, Object.keys(freshPlayer.activeQuests));
+    
+    // Override the new password hash with the original one
+    freshPlayer.passwordHash = originalPasswordHash;
+    
+    // Save with forceNew=true to replace in-memory player and save to disk
+    console.log(`[RESET] Saving with forceNew=true...`);
+    await savePlayer(freshPlayer, true);
+    
+    console.log(`[RESET] Reset complete!`);
+    
+    return { success: true, message: 'Account reset successfully. Please log in again.' };
+  } catch (error) {
+    console.error(`Error resetting player ${actualUsername}:`, error);
+    return { success: false, message: 'Error resetting account.' };
+  }
+}
+
+export async function deletePlayer(username: string, currentPassword: string): Promise<{ success: boolean; message: string }> {
+  // Case-insensitive exact match
+  const files = fs.readdirSync(PERSIST_DIR).filter(f => f.endsWith('.json'));
+  const actualFile = files.find(f => f.toLowerCase() === `${username.toLowerCase()}.json`);
+  
+  if (!actualFile) {
+    return { success: false, message: 'Account not found.' };
+  }
+  
+  const actualUsername = actualFile.replace('.json', '');
+  const filePath = path.join(PERSIST_DIR, actualFile);
+  
+  try {
+    // Load and verify password
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    const isValid = await bcrypt.compare(currentPassword, data.passwordHash);
+    
+    if (!isValid) {
+      return { success: false, message: 'Invalid password.' };
+    }
+    
+    // Delete the file
+    fs.unlinkSync(filePath);
+    
+    return { success: true, message: 'Account deleted permanently.' };
+  } catch (error) {
+    console.error(`Error deleting player ${actualUsername}:`, error);
+    return { success: false, message: 'Error deleting account.' };
+  }
 }
