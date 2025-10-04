@@ -55,6 +55,7 @@ export async function createPlayer(username: string, password: string): Promise<
     username,
     displayName: username.charAt(0).toUpperCase() + username.slice(1),
     passwordHash,
+    isGm: false,
     location: config.newPlayer.startingLocation,
     level: config.newPlayer.startingLevel,
     xp: 0,
@@ -127,6 +128,12 @@ export async function loadPlayer(username: string): Promise<Player | null> {
           data.equipped[slot] = item ? { ...item } : null;
         }
       }
+    }
+    
+    // Set GM display name prefix if player is a gamemaster
+    if (data.isGm === true) {
+      const baseName = data.displayName.replace(/^<GM> /, ''); // Remove existing prefix if any
+      data.displayName = `<GM> ${baseName}`;
     }
     
     return data as Player;

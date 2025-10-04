@@ -3884,14 +3884,104 @@ socket.on('disconnect', () => {
 });
 ```
 
-#### 49. Admin Commands (Future)
+#### 49. Gamemaster (Admin) Commands
 
-**Not implemented yet** - Reserved for future admin tooling:
-- Player inspection
-- Forced disconnects
-- Item/gold granting
-- Location teleportation
-- Server announcements
+**Purpose:** Moderation and administrative control
+
+**Security Model:**
+- No elevation commands exist in-game
+- `isGm: true` must be set manually in player JSON file
+- Ensures maximum security (cannot be hacked/exploited)
+- GMs are prefixed with `<GM>` in all displays
+
+**Commands:**
+
+1. **ban <playername> <hours>** - Ban a player temporarily
+   ```
+   ban PlayerName 24
+   ban PlayerName 0.5  (30 minutes)
+   ```
+   - Hours can be decimal (0.5 = half hour)
+   - Sets `bannedUntil` timestamp on player
+   - Kicks player immediately
+   - Cannot ban other GMs
+   - Player cannot login until ban expires
+
+2. **kick <playername>** - Disconnect a player
+   ```
+   kick PlayerName
+   ```
+   - Forces immediate disconnect
+   - Does not ban (can reconnect)
+   - Cannot kick other GMs
+   - Cannot kick offline players
+
+3. **teleport <playername> <locationid>** - Teleport any player
+   ```
+   teleport PlayerName goldshire_inn
+   teleport self northshire_abbey
+   ```
+   - Works on any player (including self)
+   - Validates location exists
+   - Notifies target player
+   - Triggers automatic `look` for target
+
+**GM Display Name:**
+- When `isGm: true`, display name is automatically prefixed with `<GM>`
+- Applied on player load (in `loadPlayer()`)
+- Shows in all contexts: chat, who list, combat, etc.
+- Example: `<GM> Rednib says: "Welcome to the realm!"`
+
+**Implementation:**
+```typescript
+// Player interface
+interface Player {
+  isGm: boolean;              // Set manually in JSON
+  bannedUntil?: number;       // Timestamp (undefined = not banned)
+  // ...
+}
+
+// On login - check ban
+if (player.bannedUntil && player.bannedUntil > Date.now()) {
+  // Show time remaining, reject login
+}
+
+// On login - clear expired ban
+if (player.bannedUntil && player.bannedUntil <= Date.now()) {
+  player.bannedUntil = undefined;
+  await savePlayer(player);
+}
+
+// On player load - set GM prefix
+if (data.isGm === true) {
+  const baseName = data.displayName.replace(/^<GM> /, '');
+  data.displayName = `<GM> ${baseName}`;
+}
+```
+
+**GM Protection:**
+- GMs cannot ban other GMs
+- GMs cannot kick other GMs
+- GMs can teleport themselves
+- Only regular players can be moderated
+
+**Manual GM Setup:**
+```json
+// In persist/players/username.json
+{
+  "id": "...",
+  "username": "admin",
+  "displayName": "Admin",
+  "passwordHash": "...",
+  "isGm": true,    // <-- Add this line manually
+  "location": "...",
+  // ...
+}
+```
+
+**Help Command:**
+- Regular players: Standard commands only
+- GMs: Additional section showing ban/kick/teleport
 
 ---
 
@@ -3906,4 +3996,5 @@ All security features documented in:
 *This is a living document - pure traditional MUD design with zero legacy bloat.*
 
 **Last Updated:** October 4, 2025  
-**Status:** Phase 8 Complete - Rate Limiting & Account Management Implemented! Command spam prevention, account reset/delete, and quit command all working!
+**Status:** Phase 8 Complete - Rate Limiting, Account Management & GM Commands Implemented! Full admin tooling with ban system, kick, and teleport commands!
+

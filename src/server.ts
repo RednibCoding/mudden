@@ -129,6 +129,24 @@ async function startServer() {
         return;
       }
       
+      // Check if player is banned
+      if (player.bannedUntil && player.bannedUntil > Date.now()) {
+        const timeLeft = Math.ceil((player.bannedUntil - Date.now()) / 1000 / 60); // minutes
+        const hours = Math.floor(timeLeft / 60);
+        const minutes = timeLeft % 60;
+        const timeStr = hours > 0 
+          ? `${hours} hour${hours > 1 ? 's' : ''} and ${minutes} minute${minutes !== 1 ? 's' : ''}`
+          : `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+        callback({ success: false, message: `Your account is banned. Time remaining: ${timeStr}` });
+        return;
+      }
+      
+      // Clear expired ban
+      if (player.bannedUntil && player.bannedUntil <= Date.now()) {
+        player.bannedUntil = undefined;
+        await savePlayer(player);
+      }
+      
       // Clear failed attempts on successful login
       if (rateLimitConfig.enabled) {
         ipLoginAttempts.delete(clientIP);
@@ -625,6 +643,37 @@ function handleCommand(player: Player, input: string): void {
       }
       break;
       
+    // GM Commands
+    case 'ban':
+      if (!player.isGm) {
+        send(player, 'Unknown command. Type "help" for a list of commands.', 'error');
+      } else if (args.length !== 2) {
+        send(player, 'Usage: ban <playername> <hours>', 'error');
+      } else {
+        cmdBan(player, args[0], parseFloat(args[1]));
+      }
+      break;
+      
+    case 'kick':
+      if (!player.isGm) {
+        send(player, 'Unknown command. Type "help" for a list of commands.', 'error');
+      } else if (args.length !== 1) {
+        send(player, 'Usage: kick <playername>', 'error');
+      } else {
+        cmdKick(player, args[0]);
+      }
+      break;
+      
+    case 'teleport':
+      if (!player.isGm) {
+        send(player, 'Unknown command. Type "help" for a list of commands.', 'error');
+      } else if (args.length !== 2) {
+        send(player, 'Usage: teleport <playername> <locationid>', 'error');
+      } else {
+        cmdTeleport(player, args[0], args[1]);
+      }
+      break;
+      
     default:
       send(player, 'Unknown command. Type "help" for a list of commands.', 'error');
       break;
@@ -677,7 +726,7 @@ function cmdMaterials(player: Player): void {
 }
 
 function cmdHelp(player: Player): void {
-  const message = `
+  let message = `
 === Mudden MUD Commands ===
 
 Movement:
@@ -739,9 +788,19 @@ Account:
 Info:
   help               - Show this help
   quit (logout)      - Save and disconnect from the game
-
-Type any message to say it to the room!
 `;
+
+  // Add GM commands if player is a gamemaster
+  if (player.isGm) {
+    message += `
+=== Gamemaster Commands ===
+  ban <playername> <hours>        - Ban a player (hours can be decimal, e.g., 0.5)
+  kick <playername>               - Kick a player from the game
+  teleport <playername> <location> - Teleport a player to a location
+`;
+  }
+
+  message += '\nType any message to say it to the room!\n';
   send(player, message, 'info');
 }
 
@@ -852,6 +911,143 @@ async function cmdDeleteAccount(player: Player, accountName: string, password: s
   } else {
     send(player, result.message, 'error');
   }
+}
+
+// GM Commands
+
+function cmdBan(gm: Player, targetName: string, hours: number): void {
+  if (!gm.isGm) {
+    send(gm, 'You do not have permission to use this command.', 'error');
+    return;
+  }
+  
+  // Validate hours
+  if (isNaN(hours) || hours <= 0) {
+    send(gm, 'Invalid hours. Must be a positive number (e.g., 0.5 for half an hour).', 'error');
+    return;
+  }
+  
+  // Find target player (case-insensitive, exact match)
+  const target = Array.from(gameState.players.values()).find(
+    p => p.username.toLowerCase() === targetName.toLowerCase()
+  );
+  
+  if (!target) {
+    send(gm, `Player "${targetName}" not found.`, 'error');
+    return;
+  }
+  
+  // Cannot ban other GMs
+  if (target.isGm) {
+    send(gm, 'You cannot ban another gamemaster.', 'error');
+    return;
+  }
+  
+  // Set ban expiration
+  const banDurationMs = hours * 60 * 60 * 1000;
+  target.bannedUntil = Date.now() + banDurationMs;
+  
+  // Save player with ban
+  savePlayer(target);
+  
+  const hoursStr = hours === 1 ? '1 hour' : `${hours} hours`;
+  send(gm, `${target.displayName} has been banned for ${hoursStr}.`, 'success');
+  
+  // Notify target and kick them
+  if (target.socket) {
+    send(target, `You have been banned by a gamemaster for ${hoursStr}.`, 'error');
+    send(target, 'You will be disconnected now.', 'system');
+    
+    setTimeout(() => {
+      if (target.socket) {
+        target.socket.disconnect();
+      }
+    }, 2000);
+  }
+  
+  console.log(`⚔ GM ${gm.username} banned ${target.username} for ${hours} hours`);
+}
+
+function cmdKick(gm: Player, targetName: string): void {
+  if (!gm.isGm) {
+    send(gm, 'You do not have permission to use this command.', 'error');
+    return;
+  }
+  
+  // Find target player (case-insensitive, exact match)
+  const target = Array.from(gameState.players.values()).find(
+    p => p.username.toLowerCase() === targetName.toLowerCase()
+  );
+  
+  if (!target) {
+    send(gm, `Player "${targetName}" not found.`, 'error');
+    return;
+  }
+  
+  // Cannot kick other GMs
+  if (target.isGm) {
+    send(gm, 'You cannot kick another gamemaster.', 'error');
+    return;
+  }
+  
+  // Cannot kick offline players
+  if (!target.socket) {
+    send(gm, `${target.displayName} is not currently online.`, 'error');
+    return;
+  }
+  
+  send(gm, `${target.displayName} has been kicked from the game.`, 'success');
+  
+  // Notify target and disconnect
+  send(target, 'You have been kicked by a gamemaster.', 'error');
+  send(target, 'You will be disconnected now.', 'system');
+  
+  setTimeout(() => {
+    if (target.socket) {
+      target.socket.disconnect();
+    }
+  }, 1000);
+  
+  console.log(`⚔ GM ${gm.username} kicked ${target.username}`);
+}
+
+function cmdTeleport(gm: Player, targetName: string, locationId: string): void {
+  if (!gm.isGm) {
+    send(gm, 'You do not have permission to use this command.', 'error');
+    return;
+  }
+  
+  // Find target player (case-insensitive, exact match)
+  const target = Array.from(gameState.players.values()).find(
+    p => p.username.toLowerCase() === targetName.toLowerCase()
+  );
+  
+  if (!target) {
+    send(gm, `Player "${targetName}" not found.`, 'error');
+    return;
+  }
+  
+  // Verify location exists
+  const location = gameState.gameData.locations.get(locationId);
+  if (!location) {
+    send(gm, `Location "${locationId}" does not exist.`, 'error');
+    return;
+  }
+  
+  // Teleport
+  const oldLocation = target.location;
+  target.location = locationId;
+  savePlayer(target);
+  
+  send(gm, `${target.displayName} has been teleported to ${location.name}.`, 'success');
+  
+  // Notify target
+  if (target.socket) {
+    send(target, `A gamemaster has teleported you to ${location.name}.`, 'system');
+    handleCommand(target, 'look');
+  }
+  
+  console.log(`⚔ GM ${gm.username} teleported ${target.username} from ${oldLocation} to ${locationId}`);
 }
 
 // Start the server

@@ -28,6 +28,8 @@ export interface Player {
   username: string;                            // Lowercase for login/lookups
   displayName: string;                         // Capitalized for display
   passwordHash: string;
+  isGm: boolean;                               // Gamemaster flag (set manually in file)
+  bannedUntil?: number;                        // Timestamp when ban expires (undefined = not banned)
   location: string;
   level: number;
   xp: number;
