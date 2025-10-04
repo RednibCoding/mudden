@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mudden Client</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="container">
+        <div id="header">
+            <h1 id="title-text">Mudden Terminal</h1>
+            <p id="subtitle-text">powered by Mudden Engine</p>
+        </div>
+        
+        <div id="login-screen">
+            <div class="login-form">
+                <h2 id="login-title">Connect to Mudden</h2>
+                <div>
+                    <input type="text" id="username" placeholder="Username" autocomplete="username">
+                </div>
+                <div>
+                    <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+                </div>
+                <div class="button-group">
+                    <button id="login-btn">Login</button>
+                    <button id="register-btn">Register</button>
+                </div>
+                <div id="login-error" class="login-error"></div>
+            </div>
+        </div>
+        
+        <div id="game-screen" style="display: none;">
+            <div id="output"></div>
+            <div id="input-area">
+                <span class="prompt">&gt; </span>
+                <input type="text" id="command-input" autocomplete="off">
+            </div>
+        </div>
+    </div>
+    
+    <script src="client.js"></script>
+</body>
+</html>
