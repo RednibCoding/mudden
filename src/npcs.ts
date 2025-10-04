@@ -50,7 +50,12 @@ export function talk(player: Player, npcName: string): void {
   if (npc.quest) {
     // Can complete quest?
     if (canCompleteQuest(player, npc.quest)) {
-      send(player, `${npc.name}: "${npc.dialogue}"`, 'npc');
+      const quest = gameState.gameData.quests.get(npc.quest);
+      if (quest) {
+        send(player, `${npc.name}: "${quest.completionDialogue}"`, 'npc');
+      } else {
+        send(player, `${npc.name}: "${npc.dialogue}"`, 'npc');
+      }
       completeQuest(player, npc.quest);
       return;
     }

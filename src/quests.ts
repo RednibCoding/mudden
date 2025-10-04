@@ -152,18 +152,18 @@ export function updateQuestProgress(player: Player, type: 'kill' | 'collect' | '
         
         // Check if complete
         if (progress.progress >= quest.count) {
-          send(player, `Quest objective complete! Return to ${gameState.gameData.npcs.get(quest.npc)?.name || 'the quest giver'}.`, 'success');
+          send(player, `Quest objective complete! Return to ${gameState.gameData.npcs.get(quest.npc!)?.name || 'the quest giver'}.`, 'success');
         }
       } else if (type === 'visit') {
         // Visit quests complete immediately - just show completion message once
-        send(player, `Quest objective complete! Return to ${gameState.gameData.npcs.get(quest.npc)?.name || 'the quest giver'}.`, 'success');
+        send(player, `Quest objective complete! Return to ${gameState.gameData.npcs.get(quest.npc!)?.name || 'the quest giver'}.`, 'success');
       } else {
         // Kill quests
         send(player, `Quest progress: ${progress.progress}/${quest.count} ${target}`, 'info');
         
         // Check if complete
         if (progress.progress >= quest.count) {
-          send(player, `Quest objective complete! Return to ${gameState.gameData.npcs.get(quest.npc)?.name || 'the quest giver'}.`, 'success');
+          send(player, `Quest objective complete! Return to ${gameState.gameData.npcs.get(quest.npc!)?.name || 'the quest giver'}.`, 'success');
         }
       }
       
@@ -203,7 +203,7 @@ export function showQuests(player: Player): void {
       }
       
       if (canCompleteQuest(player, questId)) {
-        const npc = gameState.gameData.npcs.get(quest.npc);
+        const npc = gameState.gameData.npcs.get(quest.npc!);
         message += `  ✓ Ready to turn in! Talk to ${npc?.name || quest.npc}\n`;
       }
     }

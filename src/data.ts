@@ -24,6 +24,9 @@ export async function loadGameData(): Promise<GameData> {
   // Enrich locations with enemy and item data
   enrichLocations(gameData);
   
+  // Enrich quests with NPC references
+  enrichQuests(gameData);
+  
   console.log('Game data loaded:');
   console.log(`  - ${gameData.locations.size} locations`);
   console.log(`  - ${gameData.items.size} items`);
@@ -56,7 +59,7 @@ function enrichLocations(gameData: GameData): void {
         if (npcTemplate) {
           enrichedNPCs.push({ ...npcTemplate });
         } else {
-          console.warn(`NPC ID "${npcId}" not found in location "${location.id}"`);
+          throw new Error(`NPC ID "${npcId}" not found in location "${location.id}"`);
         }
       }
       
@@ -69,8 +72,7 @@ function enrichLocations(gameData: GameData): void {
       if (shopTemplate) {
         location.shop = { ...shopTemplate };
       } else {
-        console.warn(`Shop ID "${location.shop}" not found in location "${location.id}"`);
-        location.shop = undefined;
+        throw new Error(`Shop ID "${location.shop}" not found in location "${location.id}"`);
       }
     }
     
@@ -95,7 +97,7 @@ function enrichLocations(gameData: GameData): void {
             fighters: []
           });
         } else {
-          console.warn(`Enemy ID "${enemyId}" not found in location "${location.id}"`);
+          throw new Error(`Enemy ID "${enemyId}" not found in location "${location.id}"`);
         }
       }
       
@@ -118,11 +120,38 @@ function enrichLocations(gameData: GameData): void {
         if (itemTemplate) {
           enrichedItems.push({ ...itemTemplate });
         } else {
-          console.warn(`Item ID "${itemId}" not found in location "${location.id}"`);
+          throw new Error(`Item ID "${itemId}" not found in location "${location.id}"`);
         }
       }
       
       location.items = enrichedItems;
+    }
+  }
+}
+
+// Enrich quest data with NPC references
+function enrichQuests(gameData: GameData): void {
+  // For each quest, find which NPC gives it
+  for (const quest of gameData.quests.values()) {
+    let questGiverCount = 0;
+    let questGiverId: string | undefined;
+    
+    // Count how many NPCs reference this quest
+    for (const npc of gameData.npcs.values()) {
+      if (npc.quest === quest.id) {
+        questGiverCount++;
+        questGiverId = npc.id;
+      }
+    }
+    
+    // Validate: at most one quest giver
+    if (questGiverCount === 0) {
+      console.warn(`Quest "${quest.id}" has no NPC quest giver (quest not yet assigned).`);
+    } else if (questGiverCount > 1) {
+      throw new Error(`Quest "${quest.id}" has multiple quest givers! Each quest must have exactly one NPC.`);
+    } else {
+      // Populate the npc field
+      quest.npc = questGiverId;
     }
   }
 }

@@ -151,14 +151,15 @@ export interface Quest {
   target: string;          // Enemy ID (kill/collect) or NPC ID (visit)
   count: number;           // How many to kill/collect
   itemDrop?: string;       // Quest item ID (for collect quests)
-  npc: string;             // NPC ID who gives this quest
   dialogue: string;        // Quest description
+  completionDialogue: string; // What NPC says when quest is completed
   reward: {
     gold: number;
     xp: number;
     item?: string;         // Optional item reward
   };
   requiresQuest?: string;  // Optional prerequisite quest ID
+  npc?: string;            // NPC ID (populated by data loader from NPC.quest)
 }
 
 // ==================== Shops ====================

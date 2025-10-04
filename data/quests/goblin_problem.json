@@ -4,8 +4,8 @@
   "type": "kill",
   "target": "goblin",
   "count": 5,
-  "npc": "town_guard",
   "dialogue": "Those goblins have been terrorizing travelers! Kill 5 of them and I'll reward you.",
+  "completionDialogue": "Excellent work! The roads are safer now thanks to you.",
   "reward": {
     "gold": 100,
     "xp": 75
