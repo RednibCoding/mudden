@@ -89,7 +89,7 @@ export function say(player: Player, message: string): void {
   // If sayToNPC handled it (portal master found and valid keyword), it will teleport
   // Otherwise, continue with regular say
   const portalMaster = location.npcs?.find(npc => npc.portals);
-  if (portalMaster && portalMaster.portals![message.toLowerCase()]) {
+  if (portalMaster && portalMaster.portals && portalMaster.portals[message.toLowerCase()]) {
     return; // Portal master handled it, don't broadcast
   }
   

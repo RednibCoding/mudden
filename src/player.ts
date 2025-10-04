@@ -111,19 +111,21 @@ export async function loadPlayer(username: string): Promise<Player | null> {
     // Enrich inventory: convert item IDs to full Item objects
     if (data.inventory && Array.isArray(data.inventory)) {
       const enrichedInventory: Item[] = [];
-      for (const itemId of data.inventory as any[]) {
+      for (const itemIdOrObj of data.inventory) {
         // If it's already an object, use it as-is (backward compatibility)
-        if (typeof itemId === 'object') {
-          enrichedInventory.push(itemId);
+        if (typeof itemIdOrObj === 'object' && itemIdOrObj !== null) {
+          enrichedInventory.push(itemIdOrObj as Item);
           continue;
         }
         
         // If it's a string ID, enrich it
-        const item = gameState.gameData.items.get(itemId as string);
-        if (item) {
-          enrichedInventory.push({ ...item });
-        } else {
-          console.warn(`Item ID "${itemId}" not found for player ${username}`);
+        if (typeof itemIdOrObj === 'string') {
+          const item = gameState.gameData.items.get(itemIdOrObj);
+          if (item) {
+            enrichedInventory.push({ ...item });
+          } else {
+            console.warn(`Item ID "${itemIdOrObj}" not found for player ${username}`);
+          }
         }
       }
       data.inventory = enrichedInventory;

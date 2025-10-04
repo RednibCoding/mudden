@@ -1,6 +1,6 @@
 // Game state management
 
-import { Player, GameData } from './types';
+import { Player, GameData, Config } from './types';
 
 export interface GameState {
   players: Map<string, Player>;  // username -> Player
@@ -19,7 +19,7 @@ export const gameState: GameState = {
     shops: new Map(),
     recipes: new Map(),
     materials: new Map(),
-    config: {} as any, // Will be loaded from data/config.json
+    config: null as unknown as Config, // Will be loaded from data/config.json
   }
 };
 

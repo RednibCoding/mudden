@@ -158,18 +158,21 @@ export function updateQuestProgress(player: Player, type: 'kill' | 'collect' | '
         
         // Check if complete
         if (progress.progress >= quest.count) {
-          send(player, `Quest objective complete! Return to ${gameState.gameData.npcs.get(quest.npc!)?.name || 'the quest giver'}.`, 'success');
+          const questGiverName = quest.npc ? gameState.gameData.npcs.get(quest.npc)?.name || 'the quest giver' : 'the quest giver';
+          send(player, `Quest objective complete! Return to ${questGiverName}.`, 'success');
         }
       } else if (type === 'visit') {
         // Visit quests complete immediately - just show completion message once
-        send(player, `Quest objective complete! Return to ${gameState.gameData.npcs.get(quest.npc!)?.name || 'the quest giver'}.`, 'success');
+        const questGiverName = quest.npc ? gameState.gameData.npcs.get(quest.npc)?.name || 'the quest giver' : 'the quest giver';
+        send(player, `Quest objective complete! Return to ${questGiverName}.`, 'success');
       } else {
         // Kill quests
         send(player, `Quest progress: ${progress.progress}/${quest.count} ${target}`, 'info');
         
         // Check if complete
         if (progress.progress >= quest.count) {
-          send(player, `Quest objective complete! Return to ${gameState.gameData.npcs.get(quest.npc!)?.name || 'the quest giver'}.`, 'success');
+          const questGiverName = quest.npc ? gameState.gameData.npcs.get(quest.npc)?.name || 'the quest giver' : 'the quest giver';
+          send(player, `Quest objective complete! Return to ${questGiverName}.`, 'success');
         }
       }
       
@@ -209,8 +212,8 @@ export function showQuests(player: Player): void {
       }
       
       if (canCompleteQuest(player, questId)) {
-        const npc = gameState.gameData.npcs.get(quest.npc!);
-        message += `  ✓ Ready to turn in! Talk to ${npc?.name || quest.npc}\n`;
+        const questGiverName = quest.npc ? gameState.gameData.npcs.get(quest.npc)?.name || quest.npc : 'quest giver';
+        message += `  ✓ Ready to turn in! Talk to ${questGiverName}\n`;
       }
     }
   }

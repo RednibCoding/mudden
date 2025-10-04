@@ -47,19 +47,21 @@ function enrichLocations(gameData: GameData): void {
     if (location.npcs && Array.isArray(location.npcs)) {
       const enrichedNPCs: NPC[] = [];
       
-      for (const npcId of location.npcs as any[]) {
+      for (const npcIdOrObj of location.npcs) {
         // If it's already an object, skip it (old format)
-        if (typeof npcId === 'object') {
-          enrichedNPCs.push(npcId);
+        if (typeof npcIdOrObj === 'object' && npcIdOrObj !== null) {
+          enrichedNPCs.push(npcIdOrObj as NPC);
           continue;
         }
         
         // If it's a string ID, enrich it
-        const npcTemplate = gameData.npcs.get(npcId as string);
-        if (npcTemplate) {
-          enrichedNPCs.push({ ...npcTemplate });
-        } else {
-          throw new Error(`NPC ID "${npcId}" not found in location "${location.id}"`);
+        if (typeof npcIdOrObj === 'string') {
+          const npcTemplate = gameData.npcs.get(npcIdOrObj);
+          if (npcTemplate) {
+            enrichedNPCs.push({ ...npcTemplate });
+          } else {
+            throw new Error(`NPC ID "${npcIdOrObj}" not found in location "${location.id}"`);
+          }
         }
       }
       
@@ -80,24 +82,26 @@ function enrichLocations(gameData: GameData): void {
     if (location.enemies && Array.isArray(location.enemies)) {
       const enrichedEnemies: Enemy[] = [];
       
-      for (const enemyId of location.enemies as any[]) {
+      for (const enemyIdOrObj of location.enemies) {
         // If it's already an object, skip it (old format)
-        if (typeof enemyId === 'object') {
-          enrichedEnemies.push(enemyId);
+        if (typeof enemyIdOrObj === 'object' && enemyIdOrObj !== null) {
+          enrichedEnemies.push(enemyIdOrObj as Enemy);
           continue;
         }
         
         // If it's a string ID, enrich it
-        const enemyTemplate = gameData.enemies.get(enemyId as string);
-        if (enemyTemplate) {
-          // Create a copy of the enemy with instance-specific data
-          enrichedEnemies.push({
-            ...enemyTemplate,
-            health: enemyTemplate.maxHealth,
-            fighters: []
-          });
-        } else {
-          throw new Error(`Enemy ID "${enemyId}" not found in location "${location.id}"`);
+        if (typeof enemyIdOrObj === 'string') {
+          const enemyTemplate = gameData.enemies.get(enemyIdOrObj);
+          if (enemyTemplate) {
+            // Create a copy of the enemy with instance-specific data
+            enrichedEnemies.push({
+              ...enemyTemplate,
+              health: enemyTemplate.maxHealth,
+              fighters: []
+            });
+          } else {
+            throw new Error(`Enemy ID "${enemyIdOrObj}" not found in location "${location.id}"`);
+          }
         }
       }
       
@@ -108,19 +112,21 @@ function enrichLocations(gameData: GameData): void {
     if (location.items && Array.isArray(location.items)) {
       const enrichedItems: Item[] = [];
       
-      for (const itemId of location.items as any[]) {
+      for (const itemIdOrObj of location.items) {
         // If it's already an object, skip it (old format)
-        if (typeof itemId === 'object') {
-          enrichedItems.push(itemId);
+        if (typeof itemIdOrObj === 'object' && itemIdOrObj !== null) {
+          enrichedItems.push(itemIdOrObj as Item);
           continue;
         }
         
         // If it's a string ID, enrich it
-        const itemTemplate = gameData.items.get(itemId as string);
-        if (itemTemplate) {
-          enrichedItems.push({ ...itemTemplate });
-        } else {
-          throw new Error(`Item ID "${itemId}" not found in location "${location.id}"`);
+        if (typeof itemIdOrObj === 'string') {
+          const itemTemplate = gameData.items.get(itemIdOrObj);
+          if (itemTemplate) {
+            enrichedItems.push({ ...itemTemplate });
+          } else {
+            throw new Error(`Item ID "${itemIdOrObj}" not found in location "${location.id}"`);
+          }
         }
       }
       

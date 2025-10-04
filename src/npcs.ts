@@ -131,7 +131,9 @@ export function sayToNPC(player: Player, message: string): void {
   
   // Check if message matches a portal keyword
   const keyword = message.toLowerCase();
-  const portal = portalMaster.portals![keyword];
+  if (!portalMaster.portals) return;
+  
+  const portal = portalMaster.portals[keyword];
   
   if (!portal) {
     send(player, `${portalMaster.name}: "I don't know that destination."`, 'npc');
