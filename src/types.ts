@@ -223,6 +223,8 @@ export interface Config {
       accountCreationCooldown: number;
       loginAttemptWindow: number;
       maxLoginAttempts: number;
+      commandsPerSecond: number;
+      commandBurstLimit: number;
     };
   };
   gameMeta: {

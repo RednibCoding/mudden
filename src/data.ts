@@ -211,7 +211,9 @@ function getDefaultConfig(): Config {
         maxAccountsPerIP: 3,
         accountCreationCooldown: 300,
         loginAttemptWindow: 300,
-        maxLoginAttempts: 5
+        maxLoginAttempts: 5,
+        commandsPerSecond: 5,
+        commandBurstLimit: 10
       }
     },
     gameMeta: {

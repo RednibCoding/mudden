@@ -3733,12 +3733,177 @@ Comprehensive help command showing all available commands organized by category:
 45. Help system ✅
 46. Error handling & validation ✅
 
-### Phase 8: Admin (~100 lines)
-47. Admin commands (optional)
+### Phase 8: Security & Account Management (~300 lines)
+
+#### 47. Rate Limiting System
+
+**Purpose:** Prevent spam and abuse without user friction (no email verification)
+
+**Three-Layer Protection:**
+
+1. **Account Creation Limits (IP-based)**
+   - Max accounts per IP address (default: 3)
+   - Cooldown between registrations (default: 5 minutes)
+   - Permanent limit (until server restart)
+
+2. **Login Attempt Protection (IP-based)**
+   - Failed login tracking (default: 5 attempts)
+   - Sliding time window (default: 5 minutes)
+   - Temporary IP blocking on exceeded attempts
+   - Auto-unblock after time window expires
+
+3. **Command Spam Prevention (per-player)**
+   - Burst limit (default: 10 commands/second)
+   - Sliding 1-second window
+   - Per-player tracking (not IP-based)
+   - Cleanup on disconnect
+
+**Configuration:**
+```json
+{
+  "server": {
+    "rateLimit": {
+      "enabled": true,
+      "maxAccountsPerIP": 3,
+      "accountCreationCooldown": 300,
+      "loginAttemptWindow": 300,
+      "maxLoginAttempts": 5,
+      "commandsPerSecond": 5,
+      "commandBurstLimit": 10
+    }
+  }
+}
+```
+
+**Error Messages:**
+- Account creation: `"Please wait X seconds before creating another account."`
+- Max accounts: `"Maximum number of accounts (3) reached for this connection."`
+- Login blocked: `"Too many failed login attempts. Try again in X seconds."`
+- Command spam: `"You are sending commands too quickly. Please slow down."`
+
+**Implementation:**
+```typescript
+// In-memory tracking
+const ipRegistrations = new Map<string, { count: number; timestamps: number[] }>();
+const ipLoginAttempts = new Map<string, { failedAttempts: number[]; blockedUntil?: number }>();
+const commandTimestamps = new Map<string, number[]>(); // Per username
+
+// IP detection (handles proxies)
+const clientIP = socket.handshake.headers['x-forwarded-for']?.split(',')[0].trim() 
+  || socket.handshake.address;
+```
+
+#### 48. Account Management Commands
+
+**Purpose:** Self-service account management without admin intervention
+
+**Commands:**
+
+1. **reset-account** - Fresh start (keeps username/password)
+   ```
+   reset-account <accountname> <password>
+   ```
+   - Verifies password with bcrypt
+   - Creates completely fresh player object
+   - Preserves original password hash
+   - Resets: level, XP, gold, inventory, quests, materials, recipes, stats
+   - Forces logout and requires re-login
+   - Case-insensitive username matching (exact, no fuzzy)
+
+2. **delete-account** - Permanent deletion
+   ```
+   delete-account <accountname> <password>
+   ```
+   - Verifies password with bcrypt
+   - Permanently deletes account file
+   - Cannot be undone
+   - Announces to others: "PlayerName has left the realm forever."
+   - Forces immediate disconnect
+   - Case-insensitive username matching (exact, no fuzzy)
+
+3. **quit / logout** - Clean disconnect
+   ```
+   quit
+   logout
+   ```
+   - Saves player data immediately
+   - Announces to others: "PlayerName has left the realm."
+   - Disconnects after 1 second delay
+
+**Security Features:**
+- ✅ Password verification required
+- ✅ Can only modify own account
+- ✅ No fuzzy matching (prevents typos)
+- ✅ Case-insensitive for convenience
+- ✅ Clear warning messages in usage
+
+**Implementation Details:**
+
+**Reset Flow:**
+```typescript
+// 1. Load old account and verify password
+const data = JSON.parse(fs.readFileSync(filePath));
+const isValid = await bcrypt.compare(password, data.passwordHash);
+
+// 2. Create fresh player
+const freshPlayer = await createPlayer(username, password);
+
+// 3. Preserve original password hash
+freshPlayer.passwordHash = data.passwordHash;
+
+// 4. Save with forceNew flag
+await savePlayer(freshPlayer, true);  // Replaces in-memory player
+
+// 5. Disconnect (fresh data now on disk and in memory)
+```
+
+**Delete Flow:**
+```typescript
+// 1. Verify password
+const isValid = await bcrypt.compare(password, data.passwordHash);
+
+// 2. Remove from game state
+removePlayer(username);
+
+// 3. Delete file
+fs.unlinkSync(filePath);
+
+// 4. Disconnect
+```
+
+**Critical Design Pattern:**
+The disconnect handler saves from `gameState.players` (not closure variable) to ensure fresh data is saved after reset:
+
+```typescript
+socket.on('disconnect', () => {
+  // IMPORTANT: Save from gameState, not closure variable
+  const currentPlayer = gameState.players.get(player.username);
+  if (currentPlayer) {
+    savePlayer(currentPlayer);  // Saves fresh player after reset
+  }
+});
+```
+
+#### 49. Admin Commands (Future)
+
+**Not implemented yet** - Reserved for future admin tooling:
+- Player inspection
+- Forced disconnects
+- Item/gold granting
+- Location teleportation
+- Server announcements
+
+---
+
+## Documentation Reference
+
+All security features documented in:
+- `RATE-LIMITING.md` - Complete rate limiting guide
+- `ACCOUNT-MANAGEMENT.md` - Account command documentation
 
 ---
 
 *This is a living document - pure traditional MUD design with zero legacy bloat.*
 
 **Last Updated:** October 4, 2025  
-**Status:** Phase 7 Complete - Social System & Polish Fully Implemented! Friend system, whisper/reply commands, all shortcuts active!
+**Status:** Phase 8 Complete - Rate Limiting & Account Management Implemented! Command spam prevention, account reset/delete, and quit command all working!

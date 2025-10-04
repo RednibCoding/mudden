@@ -54,6 +54,7 @@ async function startServer() {
   // Rate limiting tracking (in-memory)
   const ipRegistrations = new Map<string, { count: number; timestamps: number[] }>();
   const ipLoginAttempts = new Map<string, { failedAttempts: number[]; blockedUntil?: number }>();
+  const commandTimestamps = new Map<string, number[]>(); // Track command timestamps per username
   
   // Socket.IO connection handling
   io.on('connection', (socket) => {
@@ -251,6 +252,28 @@ async function startServer() {
         return;
       }
       
+      // Check command rate limiting if enabled
+      const rateLimitConfig = gameState.gameData.config.server.rateLimit;
+      if (rateLimitConfig.enabled) {
+        const now = Date.now();
+        const username = player.username;
+        const timestamps = commandTimestamps.get(username) || [];
+        
+        // Remove timestamps older than 1 second
+        const recentTimestamps = timestamps.filter(t => now - t < 1000);
+        
+        // Check if player exceeded burst limit
+        if (recentTimestamps.length >= rateLimitConfig.commandBurstLimit) {
+          send(player, 'You are sending commands too quickly. Please slow down.', 'error');
+          console.log(`⚠ ${username} hit command rate limit (${recentTimestamps.length} commands/sec)`);
+          return;
+        }
+        
+        // Add current timestamp
+        recentTimestamps.push(now);
+        commandTimestamps.set(username, recentTimestamps);
+      }
+      
       handleCommand(player, input);
     });
     
@@ -265,6 +288,9 @@ async function startServer() {
         if (currentPlayer) {
           savePlayer(currentPlayer);
         }
+        
+        // Clean up command rate limiting
+        commandTimestamps.delete(player.username);
         
         // Announce to others
         sendToAll(`${player.displayName} has left the realm.`, 'system');
