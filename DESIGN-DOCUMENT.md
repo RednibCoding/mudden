@@ -3429,15 +3429,15 @@ Total: ~1,520 lines
 22. Portal masters (fast travel)
 23. Direct give command
 
-### Phase 5: Quests & Progression (~256 lines) ✅ COMPLETE
-24. Quest system (kill/collect/visit) ✅
-25. Quest items (separate from inventory) ✅
-26. Quest dialogue system (dialogue + completionDialogue + questDialogue) ✅
-27. Quest chains (requiresQuest + levelRequirement) ✅
-28. Quest completion rewards (gold + XP + level up) ✅
-29. Materials command (view collected crafting materials) ✅
-30. Quest-NPC auto-linking (data loader enrichment) ✅
-31. Data validation (fail-fast on invalid references) ✅
+### Phase 5: Quests & Progression (~256 lines)
+24. Quest system (kill/collect/visit)
+25. Quest items (separate from inventory)
+26. Quest dialogue system (dialogue + completionDialogue + questDialogue)
+27. Quest chains (requiresQuest + levelRequirement)
+28. Quest completion rewards (gold + XP + level up)
+29. Materials command (view collected crafting materials)
+30. Quest-NPC auto-linking (data loader enrichment)
+31. Data validation (fail-fast on invalid references)
 
 ### Phase 6: Crafting & Materials (~250 lines)
 32. Materials system (separate data type with rarity)
@@ -3461,8 +3461,6 @@ Total: ~1,520 lines
 46. Starting player setup
 47. XP progression calculator
 48. Admin commands (optional)
-
-**Total: ~2,506 lines** (with Phase 5 complete at 256 lines)
 
 ---
 
