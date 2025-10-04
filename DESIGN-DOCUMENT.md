@@ -2470,7 +2470,7 @@ interface Recipe {
   resultType: 'item' | 'material';             // What type to create
   resultAmount?: number;                       // For materials (default: 1)
   materials: { [materialId: string]: number }; // Material requirements
-  requiredLevel: number;
+  requiredLevel: number;                       // Level required to LEARN recipe
 }
 ```
 
@@ -2625,10 +2625,6 @@ export function craft(player: Player, recipeId: string): void {
   }
   
   const recipe = gameState.recipes.get(recipeId);
-  
-  if (player.level < recipe.requiredLevel) {
-    return send(player, "Your level is too low to craft this.");
-  }
   
   // Check materials
   for (const [materialId, amount] of Object.entries(recipe.materials)) {

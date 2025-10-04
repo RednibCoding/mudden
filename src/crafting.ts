@@ -104,6 +104,12 @@ export function learnRecipe(player: Player, item: Item): boolean {
     return false;
   }
 
+  // Check level requirement
+  if (player.level < recipe.requiredLevel) {
+    send(player, `You need to be level ${recipe.requiredLevel} to learn this recipe.`, 'error');
+    return false;
+  }
+
   // Learn it
   player.knownRecipes.push(recipeId);
   send(player, `You learn how to craft: ${recipe.name}!`, 'success');
@@ -206,12 +212,6 @@ export function craft(player: Player, recipeId: string): void {
   // Check if player knows this recipe
   if (!player.knownRecipes.includes(recipeId)) {
     send(player, "You don't know this recipe.", 'error');
-    return;
-  }
-
-  // Check level requirement
-  if (player.level < recipe.requiredLevel) {
-    send(player, `You need to be level ${recipe.requiredLevel} to craft this.`, 'error');
     return;
   }
 
