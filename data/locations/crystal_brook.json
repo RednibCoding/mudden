@@ -1,0 +1,11 @@
+{
+  "id": "crystal_brook",
+  "name": "Crystal Brook",
+  "description": "A clear stream runs through this peaceful glade. The water is cool and refreshing. However, murlocs have recently moved into the area, making it dangerous.",
+  "exits": {
+    "north": "abbey_gardens",
+    "south": "murloc_hideout"
+  },
+  "enemies": ["murloc_scout"],
+  "npcs": ["grimbooze_thunderbrew"]
+}

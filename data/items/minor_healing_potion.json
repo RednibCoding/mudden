@@ -1,0 +1,10 @@
+{
+  "id": "minor_healing_potion",
+  "name": "Minor Healing Potion",
+  "description": "A small vial of red liquid that restores 50 health.",
+  "type": "consumable",
+  "subType": "potion",
+  "health": 50,
+  "usableIn": "any",
+  "value": 10
+}

@@ -1,0 +1,14 @@
+{
+  "id": "murloc_threat",
+  "name": "The Murloc Threat",
+  "type": "kill",
+  "target": "murloc_scout",
+  "count": 8,
+  "requiredLevel": 4,
+  "dialogue": "Those murlocs are spreading from Crystal Brook. If we don't stop them now, they'll overrun the entire area. Kill 8 Murloc Scouts to thin their numbers.",
+  "completionDialogue": "Well done! The murloc population has been reduced significantly. The brook should be safe for our people now.",
+  "reward": {
+    "gold": 55,
+    "xp": 135
+  }
+}

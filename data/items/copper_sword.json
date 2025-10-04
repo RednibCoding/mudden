@@ -1,0 +1,9 @@
+{
+  "id": "copper_sword",
+  "name": "Copper Sword",
+  "description": "A well-crafted copper blade. Light but effective.",
+  "type": "equipment",
+  "slot": "weapon",
+  "damage": 6,
+  "value": 50
+}

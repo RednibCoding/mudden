@@ -1,0 +1,11 @@
+{
+  "id": "studded_leather_armor",
+  "name": "Studded Leather Armor",
+  "result": "studded_leather_armor",
+  "resultType": "item",
+  "materials": {
+    "thick_leather": 3,
+    "copper_bar": 2
+  },
+  "requiredLevel": 7
+}

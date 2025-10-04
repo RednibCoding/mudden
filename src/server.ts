@@ -73,8 +73,10 @@ async function startServer() {
       
       callback({ success: true, message: 'Login successful!' });
       
-      // Welcome message
-      send(player, '\n=================================\n   Welcome to Mudden MUD!\n=================================\n', 'system');
+      // Welcome message with game meta info
+      const meta = gameState.gameData.config.gameMeta;
+      const welcomeMsg = `\n${'='.repeat(50)}\n   ${meta.name} v${meta.version}\n${'='.repeat(50)}\n\n${meta.description}\n\n${meta.welcomeMessage}\n\n${meta.credits}\n${'='.repeat(50)}\n`;
+      send(player, welcomeMsg, 'system');
       
       // Announce to others
       sendToAll(`${username} has entered the realm.`, 'system');
@@ -114,8 +116,10 @@ async function startServer() {
       
       callback({ success: true, message: 'Registration successful!' });
       
-      // Welcome message
-      send(player, '\n=================================\n   Welcome to Mudden MUD!\n      Character Created!\n=================================\n', 'system');
+      // Welcome message with game meta info
+      const meta = gameState.gameData.config.gameMeta;
+      const welcomeMsg = `\n${'='.repeat(50)}\n   ${meta.name} v${meta.version}\n   ✨ Character Created! ✨\n${'='.repeat(50)}\n\n${meta.description}\n\n${meta.welcomeMessage}\n\n${meta.credits}\n${'='.repeat(50)}\n`;
+      send(player, welcomeMsg, 'system');
       
       // Announce to others
       sendToAll(`${username} has entered the realm for the first time!`, 'system');

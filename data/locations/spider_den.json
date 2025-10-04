@@ -1,0 +1,9 @@
+{
+  "id": "spider_den",
+  "name": "Spider Den",
+  "description": "A dark hollow completely covered in thick spider webs. Egg sacs hang from the ceiling, and the chittering of spiders echoes off the walls. This is clearly their nest.",
+  "exits": {
+    "north": "elwynn_forest_east"
+  },
+  "enemies": ["forest_spider"]
+}

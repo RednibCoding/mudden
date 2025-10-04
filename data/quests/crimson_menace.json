@@ -1,0 +1,16 @@
+{
+  "id": "crimson_menace",
+  "name": "The Crimson Menace",
+  "type": "collect",
+  "target": "crimson_thug",
+  "count": 10,
+  "materialDrop": "red_bandana",
+  "requiredLevel": 6,
+  "dialogue": "The Crimson Brotherhood has been attacking travelers on the road and terrorizing honest folk. I want you to bring me 10 Red Bandanas from their thugs. Hit them where it hurts - their pride.",
+  "completionDialogue": "Excellent work! With their numbers thinned, the roads will be safer. You've done Goldshire a great service. Here's your payment.",
+  "reward": {
+    "gold": 120,
+    "xp": 250,
+    "item": "copper_sword"
+  }
+}

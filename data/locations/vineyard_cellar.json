@@ -1,0 +1,9 @@
+{
+  "id": "vineyard_cellar",
+  "name": "Vineyard Cellar",
+  "description": "A cool wine cellar beneath the vineyard. Barrels of wine line the walls. The vintner has taken refuge here from the wolves outside.",
+  "exits": {
+    "west": "vineyards"
+  },
+  "npcs": ["vintner_bernard"]
+}

@@ -1,0 +1,9 @@
+{
+  "id": "linen_bandage_recipe",
+  "name": "Linen Bandage",
+  "result": "linen_bandage_item",
+  "resultType": "item",
+  "materials": {
+    "linen_cloth": 1
+  }
+}

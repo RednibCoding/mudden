@@ -1,0 +1,5 @@
+{
+  "id": "abbey_quartermaster",
+  "name": "Abbey Quartermaster",
+  "items": ["worn_shortsword", "recruit_tunic", "minor_healing_potion", "minor_mana_potion", "refreshing_spring_water"]
+}

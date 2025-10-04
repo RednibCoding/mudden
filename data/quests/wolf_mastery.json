@@ -1,0 +1,14 @@
+{
+  "id": "wolf_mastery",
+  "name": "Wolf Mastery",
+  "type": "kill",
+  "target": "timber_wolf",
+  "count": 15,
+  "requiredLevel": 6,
+  "dialogue": "You've proven yourself against young wolves, but can you handle the mature timber wolves? Kill 15 Timber Wolves to prove your hunting prowess.",
+  "completionDialogue": "Impressive! You're becoming quite the hunter. With skills like yours, you'll go far in this world.",
+  "reward": {
+    "gold": 100,
+    "xp": 230
+  }
+}

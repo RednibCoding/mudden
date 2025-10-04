@@ -1,0 +1,15 @@
+{
+  "id": "lost_necklace",
+  "name": "Lost Necklace",
+  "type": "collect",
+  "target": "murloc_scout",
+  "count": 1,
+  "materialDrop": "murloc_eye",
+  "requiredLevel": 5,
+  "dialogue": "My wife's necklace was stolen by those wretched murlocs! I saw one of them wearing something shiny. Please, retrieve it for me. The murlocs near their hideout might have it.",
+  "completionDialogue": "You found it! Wait... this is just a murloc eye. Those creatures are disgusting! Well, at least you tried. Here, take this for your trouble.",
+  "reward": {
+    "gold": 40,
+    "xp": 95
+  }
+}

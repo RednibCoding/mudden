@@ -1,0 +1,10 @@
+{
+  "id": "linen_robe",
+  "name": "Linen Robe",
+  "description": "A simple robe woven from linen cloth. Light and comfortable.",
+  "type": "equipment",
+  "slot": "armor",
+  "defense": 4,
+  "mana": 15,
+  "value": 80
+}

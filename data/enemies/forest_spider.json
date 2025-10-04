@@ -1,0 +1,18 @@
+{
+  "id": "forest_spider",
+  "name": "Forest Spider",
+  "description": "A large spider with hairy legs and multiple glowing eyes. It clicks its mandibles.",
+  "health": 75,
+  "maxHealth": 75,
+  "damage": 11,
+  "defense": 3,
+  "gold": 8,
+  "xp": 45,
+  "materialDrops": {
+    "spider_silk": {
+      "chance": 0.5,
+      "amount": "1-2"
+    }
+  },
+  "fighters": []
+}

@@ -1,0 +1,6 @@
+{
+  "id": "milly_osworth",
+  "name": "Milly Osworth",
+  "dialogue": "The wolves keep my workers from tending the grapes. We need someone brave enough to thin the pack.",
+  "quests": ["protect_the_vineyard"]
+}

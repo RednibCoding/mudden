@@ -1,0 +1,11 @@
+{
+  "id": "chainmail_armor_recipe",
+  "name": "Forge Chainmail Armor",
+  "result": "chainmail_armor",
+  "resultType": "item",
+  "materials": {
+    "copper_bar": 10,
+    "leather_scrap": 4
+  },
+  "requiredLevel": 6
+}

@@ -1,0 +1,12 @@
+{
+  "id": "elwynn_road",
+  "name": "Elwynn Road",
+  "description": "The main road leading south from Northshire to Goldshire. Travelers and merchants pass by regularly, though bandits have been spotted in the area. The forest lies to the east and west.",
+  "exits": {
+    "north": "northshire_valley",
+    "south": "goldshire",
+    "east": "elwynn_forest_east",
+    "west": "elwynn_forest_west"
+  },
+  "enemies": ["timber_wolf"]
+}

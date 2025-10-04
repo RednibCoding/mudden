@@ -1,0 +1,6 @@
+{
+  "id": "vintner_bernard",
+  "name": "Vintner Bernard",
+  "dialogue": "My vineyard has been overrun by wolves! I've taken refuge down here, but I can't make wine hiding in the cellar. Someone needs to deal with those beasts.",
+  "quests": ["pack_of_wolves"]
+}

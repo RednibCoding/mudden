@@ -1,0 +1,12 @@
+{
+  "id": "reinforced_copper_sword",
+  "name": "Reinforced Copper Sword",
+  "result": "reinforced_copper_sword",
+  "resultType": "item",
+  "materials": {
+    "copper_bar": 4,
+    "leather_scrap": 2,
+    "rough_stone": 1
+  },
+  "requiredLevel": 6
+}

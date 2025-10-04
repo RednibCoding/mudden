@@ -1,0 +1,5 @@
+{
+  "id": "goldshire_smithy",
+  "name": "Goldshire Smithy",
+  "items": ["copper_sword", "copper_mace", "leather_armor", "chainmail_armor", "wooden_shield", "copper_chain_belt"]
+}

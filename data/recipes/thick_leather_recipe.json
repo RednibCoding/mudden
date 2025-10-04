@@ -1,0 +1,11 @@
+{
+  "id": "thick_leather_recipe",
+  "name": "Thick Leather",
+  "result": "thick_leather",
+  "resultType": "material",
+  "materials": {
+    "wolf_pelt": 2,
+    "leather_scrap": 4
+  },
+  "requiredLevel": 5
+}

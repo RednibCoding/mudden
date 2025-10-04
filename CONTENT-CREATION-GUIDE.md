@@ -388,13 +388,13 @@ Recipe items teach players how to craft. Players use them once with the `use` co
 }
 ```
 
-### NPC with Quest
+### NPC with Single Quest
 ```json
 {
   "id": "town_guard",
   "name": "Captain Aldric",
   "dialogue": "Stay alert, citizen. Dangerous creatures roam these lands.",
-  "quest": "goblin_problem"
+  "quests": ["goblin_problem"]
 }
 ```
 
@@ -402,6 +402,33 @@ When a player talks to this NPC:
 - If they haven't started the quest → Shows quest dialogue and offers to accept
 - If quest is active → Shows progress
 - If quest is complete → Allows turn-in for rewards
+
+### NPC with Multiple Quests
+```json
+{
+  "id": "marshal",
+  "name": "Marshal Thornwood",
+  "dialogue": "I have many tasks for capable adventurers.",
+  "quests": ["easy_quest", "medium_quest", "hard_quest"]
+}
+```
+
+**Quest Order Matters!** The NPC will offer quests in the order listed:
+- Talks to NPC → NPC offers first quest that player meets requirements for
+- Quest 1 not done? → Offers quest 1
+- Quest 1 done, quest 2 not done? → Offers quest 2
+- Quest 1 & 2 done, quest 3 not done? → Offers quest 3
+- All done? → Shows regular dialogue
+
+**Requirements Checked:**
+- Player level (if quest has `requiredLevel`)
+- Prerequisite quests (if quest has `prerequisiteQuest`)
+- Already completed (won't offer completed quests again)
+
+**Use this for:**
+- Progressive quest chains (each harder than the last)
+- Multiple quests in same area (different enemy types)
+- Branching quests from one NPC
 
 ### NPC with Quest Dialogue
 ```json
@@ -465,7 +492,7 @@ Players use: `say town` (or any portal keyword) to teleport.
 | `name` | ✅ Yes | string | Display name |
 | `dialogue` | ✅ Yes | string | Default conversation text |
 | `questDialogue` | ❌ No | string | Special text for visit quests |
-| `quest` | ❌ No | string | Quest ID this NPC offers |
+| `quests` | ❌ No | array | Quest IDs this NPC offers (order matters!) |
 | `healer` | ❌ No | boolean | Set to `true` for healing NPCs |
 | `portals` | ❌ No | object | Portal destinations (see above) |
 

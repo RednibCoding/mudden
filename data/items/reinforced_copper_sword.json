@@ -1,0 +1,9 @@
+{
+  "id": "reinforced_copper_sword",
+  "name": "Reinforced Copper Sword",
+  "description": "A well-crafted copper sword reinforced with stone. Better than basic copper.",
+  "type": "equipment",
+  "slot": "weapon",
+  "damage": 12,
+  "value": 180
+}

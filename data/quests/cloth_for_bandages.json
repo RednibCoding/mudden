@@ -1,0 +1,15 @@
+{
+  "id": "cloth_for_bandages",
+  "name": "Cloth for Bandages",
+  "type": "collect",
+  "target": "kobold_worker",
+  "count": 6,
+  "materialDrop": "linen_cloth",
+  "dialogue": "We need linen cloth to make bandages for the injured. The kobolds seem to carry scraps of cloth. Bring me 6 pieces of Linen Cloth so I can tend to the wounded.",
+  "completionDialogue": "Bless you! These bandages will save lives. The Light rewards those who help others.",
+  "reward": {
+    "gold": 30,
+    "xp": 85,
+    "item": "minor_healing_potion"
+  }
+}

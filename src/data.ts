@@ -144,7 +144,7 @@ function enrichQuests(gameData: GameData): void {
     
     // Count how many NPCs reference this quest
     for (const npc of gameData.npcs.values()) {
-      if (npc.quest === quest.id) {
+      if (npc.quests && npc.quests.includes(quest.id)) {
         questGiverCount++;
         questGiverId = npc.id;
       }
@@ -200,6 +200,13 @@ async function loadConfig(configPath: string): Promise<Config> {
 
 function getDefaultConfig(): Config {
   return {
+    gameMeta: {
+      name: 'Mudden MUD',
+      version: '1.0.0',
+      description: 'A traditional text-based MUD adventure.',
+      credits: 'Powered by the Mudden MUD Engine',
+      welcomeMessage: 'Welcome, brave adventurer! Your journey begins here.'
+    },
     newPlayer: {
       startingLocation: 'town_square',
       startingLevel: 1,

@@ -1,0 +1,11 @@
+{
+  "id": "vineyards",
+  "name": "Stonefield Vineyards",
+  "description": "Rolling hills covered in grape vines. The vineyard has been abandoned due to wolf attacks, and many vines are overgrown. A few workers hide in the building to the east.",
+  "exits": {
+    "west": "northshire_valley",
+    "east": "vineyard_cellar"
+  },
+  "enemies": ["young_wolf", "timber_wolf"],
+  "npcs": ["milly_osworth"]
+}

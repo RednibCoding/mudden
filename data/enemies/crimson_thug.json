@@ -1,0 +1,30 @@
+{
+  "id": "crimson_thug",
+  "name": "Crimson Brotherhood Thug",
+  "description": "A rough-looking bandit wearing a distinctive red bandana. He sneers at you.",
+  "health": 80,
+  "maxHealth": 80,
+  "damage": 10,
+  "defense": 4,
+  "gold": 10,
+  "xp": 50,
+  "materialDrops": {
+    "red_bandana": {
+      "chance": 0.6,
+      "amount": "1-1"
+    },
+    "linen_cloth": {
+      "chance": 0.5,
+      "amount": "2-3"
+    }
+  },
+  "itemDrops": {
+    "copper_sword": {
+      "chance": 0.08
+    },
+    "minor_healing_potion": {
+      "chance": 0.15
+    }
+  },
+  "fighters": []
+}

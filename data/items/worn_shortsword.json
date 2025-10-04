@@ -1,0 +1,9 @@
+{
+  "id": "worn_shortsword",
+  "name": "Worn Shortsword",
+  "description": "A basic shortsword showing signs of wear. Better than nothing.",
+  "type": "equipment",
+  "slot": "weapon",
+  "damage": 3,
+  "value": 15
+}

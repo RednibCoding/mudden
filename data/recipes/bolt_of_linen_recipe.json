@@ -1,0 +1,9 @@
+{
+  "id": "bolt_of_linen_recipe",
+  "name": "Bolt of Linen",
+  "result": "bolt_of_linen",
+  "resultType": "material",
+  "materials": {
+    "linen_cloth": 2
+  }
+}

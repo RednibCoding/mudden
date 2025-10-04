@@ -1,0 +1,31 @@
+{
+  "id": "kobold_worker",
+  "name": "Kobold Worker",
+  "description": "A small, rat-like kobold clutching a pickaxe and a candle. It hisses at you.",
+  "health": 35,
+  "maxHealth": 35,
+  "damage": 4,
+  "defense": 1,
+  "gold": 3,
+  "xp": 15,
+  "materialDrops": {
+    "kobold_candle": {
+      "chance": 0.7,
+      "amount": "1-1"
+    },
+    "linen_cloth": {
+      "chance": 0.4,
+      "amount": "1-2"
+    },
+    "rough_stone": {
+      "chance": 0.3,
+      "amount": "1-1"
+    }
+  },
+  "itemDrops": {
+    "minor_healing_potion": {
+      "chance": 0.05
+    }
+  },
+  "fighters": []
+}

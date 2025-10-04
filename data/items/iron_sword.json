@@ -1,9 +1,0 @@
-{
-  "id": "iron_sword",
-  "name": "Iron Sword",
-  "description": "A well-crafted iron blade.",
-  "type": "equipment",
-  "slot": "weapon",
-  "damage": 8,
-  "value": 100
-}

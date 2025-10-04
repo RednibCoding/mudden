@@ -1,0 +1,10 @@
+{
+  "id": "bread",
+  "name": "Freshly Baked Bread",
+  "description": "A warm loaf of bread that restores health.",
+  "type": "consumable",
+  "subType": "potion",
+  "healAmount": 35,
+  "useSituation": "anytime",
+  "value": 8
+}

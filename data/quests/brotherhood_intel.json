@@ -1,0 +1,15 @@
+{
+  "id": "brotherhood_intel",
+  "name": "Brotherhood Intelligence",
+  "type": "collect",
+  "target": "crimson_thug",
+  "count": 5,
+  "materialDrop": "red_bandana",
+  "requiredLevel": 7,
+  "dialogue": "I need to know more about the Crimson Brotherhood's operations. Their red bandanas might contain clues about their hideout locations. Bring me 5 Red Bandanas for analysis.",
+  "completionDialogue": "Interesting... these bandanas have unique stitching patterns. I can trace them back to their supply source. This intelligence is invaluable.",
+  "reward": {
+    "gold": 85,
+    "xp": 195
+  }
+}

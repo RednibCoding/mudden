@@ -1,0 +1,9 @@
+{
+  "id": "murloc_hideout",
+  "name": "Murloc Hideout",
+  "description": "A muddy clearing where murlocs have built crude huts from sticks and mud. The gurgling of murlocs fills the air. Fishing nets and rotting fish lie everywhere.",
+  "exits": {
+    "north": "crystal_brook"
+  },
+  "enemies": ["murloc_scout"]
+}

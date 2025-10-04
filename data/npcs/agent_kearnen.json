@@ -1,0 +1,6 @@
+{
+  "id": "agent_kearnen",
+  "name": "Agent Kearnen",
+  "dialogue": "The Crimson Brotherhood is more than just bandits. I'm gathering intelligence on their operations. Interested in helping?",
+  "quests": ["brotherhood_intel"]
+}

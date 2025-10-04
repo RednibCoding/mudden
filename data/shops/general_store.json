@@ -1,5 +1,0 @@
-{
-  "id": "general_store",
-  "name": "General Store",
-  "items": ["health_potion", "mana_potion"]
-}

@@ -1,0 +1,10 @@
+{
+  "id": "bread_recipe",
+  "name": "Freshly Baked Bread",
+  "result": "bread",
+  "resultType": "item",
+  "materials": {
+    "linen_cloth": 1,
+    "rough_stone": 1
+  }
+}

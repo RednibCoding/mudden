@@ -1,0 +1,6 @@
+{
+  "id": "traveling_merchant_npc",
+  "name": "Traveling Merchant",
+  "dialogue": "I travel the roads collecting rare goods. Perhaps you'll find something useful in my collection!",
+  "shop": "traveling_merchant"
+}

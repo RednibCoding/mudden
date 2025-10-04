@@ -1,0 +1,11 @@
+{
+  "id": "wooden_shield_recipe",
+  "name": "Wooden Shield",
+  "result": "wooden_shield",
+  "resultType": "item",
+  "materials": {
+    "light_leather": 1,
+    "linen_cloth": 2
+  },
+  "requiredLevel": 3
+}

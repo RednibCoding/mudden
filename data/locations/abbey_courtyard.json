@@ -1,0 +1,12 @@
+{
+  "id": "abbey_courtyard",
+  "name": "Abbey Courtyard",
+  "description": "The open courtyard where recruits train in combat. Training dummies line one wall, and you can hear the clash of practice weapons. Guards patrol the perimeter.",
+  "exits": {
+    "north": "northshire_abbey",
+    "south": "northshire_valley",
+    "west": "quartermaster_building",
+    "east": "abbey_kitchen"
+  },
+  "npcs": ["marshal_thornwood", "guard_thomas"]
+}

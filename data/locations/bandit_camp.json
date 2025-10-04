@@ -1,0 +1,9 @@
+{
+  "id": "bandit_camp",
+  "name": "Crimson Brotherhood Camp",
+  "description": "A rough camp of the notorious Crimson Brotherhood bandits. Red bandanas hang from tent poles like banners. The bandits eye you suspiciously, hands on their weapons.",
+  "exits": {
+    "east": "elwynn_forest_west"
+  },
+  "enemies": ["crimson_thug"]
+}

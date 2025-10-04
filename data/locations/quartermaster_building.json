@@ -1,0 +1,10 @@
+{
+  "id": "quartermaster_building",
+  "name": "Quartermaster's Building",
+  "description": "A sturdy building housing weapons and supplies for recruits. Weapon racks line the walls, and the smell of leather and oil fills the air.",
+  "exits": {
+    "east": "abbey_courtyard"
+  },
+  "npcs": ["quartermaster_lewis"],
+  "shop": "abbey_quartermaster"
+}

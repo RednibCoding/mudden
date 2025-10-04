@@ -1,0 +1,14 @@
+{
+  "id": "clearing_the_forest",
+  "name": "Clearing the Forest",
+  "type": "kill",
+  "target": "forest_spider",
+  "count": 10,
+  "requiredLevel": 7,
+  "dialogue": "The eastern forest has become overrun with giant spiders. They're making webs across the paths and attacking anyone who passes. Clear out 10 Forest Spiders to make the area safe again.",
+  "completionDialogue": "Excellent! The forest should be passable now. Those spiders breed fast, but this should keep them in check for a while.",
+  "reward": {
+    "gold": 110,
+    "xp": 240
+  }
+}

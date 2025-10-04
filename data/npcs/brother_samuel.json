@@ -1,0 +1,6 @@
+{
+  "id": "brother_samuel",
+  "name": "Brother Samuel",
+  "dialogue": "Welcome to Northshire Abbey, young one. This is where all great heroes begin their journey. May the Light guide your path.",
+  "quests": ["a_threat_within"]
+}

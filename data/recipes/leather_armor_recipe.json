@@ -1,10 +1,11 @@
 {
   "id": "leather_armor_recipe",
-  "name": "Leather Armor Recipe",
+  "name": "Craft Leather Armor",
   "result": "leather_armor",
   "resultType": "item",
   "materials": {
-    "wolf_pelt": 5
+    "leather_scrap": 8,
+    "linen_cloth": 4
   },
-  "requiredLevel": 3
+  "requiredLevel": 4
 }

@@ -1,0 +1,5 @@
+{
+  "id": "goldshire_general_store",
+  "name": "Goldshire General Store",
+  "items": ["minor_healing_potion", "minor_mana_potion", "refreshing_spring_water"]
+}

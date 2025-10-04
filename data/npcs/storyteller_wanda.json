@@ -1,0 +1,6 @@
+{
+  "id": "storyteller_wanda",
+  "name": "Storyteller Wanda",
+  "dialogue": "Ah, a new face! I collect stories and curiosities from travelers. Those spiders in the eastern forest have been quite bothersome lately.",
+  "quests": ["spider_silk_collection"]
+}

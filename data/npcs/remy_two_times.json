@@ -1,0 +1,6 @@
+{
+  "id": "remy_two_times",
+  "name": "Remy \"Two-Times\"",
+  "dialogue": "Looking to make some coin? I pay well for... specialized services. No questions asked.",
+  "quests": ["clearing_the_forest", "wolf_mastery"]
+}

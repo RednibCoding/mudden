@@ -1,0 +1,11 @@
+{
+  "id": "goldshire_alchemy",
+  "name": "Goldshire Alchemy Shop",
+  "description": "Glass vials and bubbling cauldrons fill this cramped shop. The air is thick with the smell of herbs and chemicals. Alchemist Howe works at his table, mixing potions.",
+  "exits": {
+    "north": "goldshire",
+    "south": "general_goods"
+  },
+  "npcs": ["alchemist_howe"],
+  "shop": "goldshire_alchemy"
+}

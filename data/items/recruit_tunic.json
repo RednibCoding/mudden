@@ -1,0 +1,9 @@
+{
+  "id": "recruit_tunic",
+  "name": "Recruit's Tunic",
+  "description": "Simple cloth tunic given to new recruits.",
+  "type": "equipment",
+  "slot": "armor",
+  "defense": 2,
+  "value": 10
+}

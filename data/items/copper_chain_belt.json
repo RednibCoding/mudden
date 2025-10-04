@@ -1,0 +1,10 @@
+{
+  "id": "copper_chain_belt",
+  "name": "Copper Chain Belt",
+  "description": "A belt made of linked copper chains. Adds a bit of protection.",
+  "type": "equipment",
+  "slot": "accessory",
+  "defense": 2,
+  "health": 10,
+  "value": 35
+}

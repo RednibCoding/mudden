@@ -1,6 +1,0 @@
-{
-  "id": "iron_ore",
-  "name": "Iron Ore",
-  "description": "A chunk of raw iron ore. Can be smelted and forged into weapons and armor.",
-  "rarity": "common"
-}

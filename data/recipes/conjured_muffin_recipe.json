@@ -1,0 +1,11 @@
+{
+  "id": "conjured_muffin_recipe",
+  "name": "Conjured Muffin",
+  "result": "conjured_muffin",
+  "resultType": "item",
+  "materials": {
+    "linen_cloth": 2,
+    "spider_silk": 1
+  },
+  "requiredLevel": 6
+}

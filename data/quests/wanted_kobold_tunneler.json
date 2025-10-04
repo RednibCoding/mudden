@@ -1,0 +1,15 @@
+{
+  "id": "wanted_kobold_tunneler",
+  "name": "WANTED: Kobold Tunneler Chief",
+  "type": "kill",
+  "target": "kobold_tunneler",
+  "count": 1,
+  "requiredLevel": 5,
+  "dialogue": "There's a bounty on the kobold tunneler chief operating in the mines. He's bigger and meaner than the rest. Take him down and claim your reward. You'll find him in the deepest part of the mines.",
+  "completionDialogue": "The chief is dead? Excellent work! That should disrupt their mining operation for quite some time. Here's the bounty, well earned.",
+  "reward": {
+    "gold": 60,
+    "xp": 150,
+    "item": "copper_chain_belt"
+  }
+}

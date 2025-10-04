@@ -1,0 +1,6 @@
+{
+  "id": "marshal_dughan",
+  "name": "Marshal Dughan",
+  "dialogue": "Goldshire is the heart of Elwynn Forest, and I'm charged with keeping it safe. The Crimson Brotherhood has been causing trouble lately. We need strong adventurers to deal with them.",
+  "quests": ["wolf_pelts", "crimson_menace"]
+}

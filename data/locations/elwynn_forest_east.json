@@ -1,0 +1,10 @@
+{
+  "id": "elwynn_forest_east",
+  "name": "Eastern Elwynn Forest",
+  "description": "Dense forest with towering oaks and elms. Sunlight filters through the canopy. Spiders have woven webs between the trees, and their clicking can be heard all around.",
+  "exits": {
+    "west": "elwynn_road",
+    "south": "spider_den"
+  },
+  "enemies": ["forest_spider"]
+}

@@ -1,0 +1,6 @@
+{
+  "id": "marshal_thornwood",
+  "name": "Marshal Thornwood",
+  "dialogue": "You have potential, recruit. But potential means nothing without training and experience. Prove yourself against the threats to our land.",
+  "quests": ["kobold_menace", "investigate_the_mines", "rest_and_relaxation", "deeper_into_the_mines"]
+}

@@ -138,7 +138,7 @@ export interface NPC {
   name: string;
   dialogue: string;        // Default dialogue
   questDialogue?: string;  // Dialogue when player has active visit quest targeting this NPC
-  quest?: string;          // Quest ID this NPC offers
+  quests?: string[];       // Quest IDs this NPC offers (order matters - first available quest is offered)
   healer?: boolean;        // Can heal players for gold
   portals?: {
     [keyword: string]: {
@@ -210,6 +210,13 @@ export interface Recipe {
 // ==================== Configuration ====================
 
 export interface Config {
+  gameMeta: {
+    name: string;
+    version: string;
+    description: string;
+    credits: string;
+    welcomeMessage: string;
+  };
   newPlayer: {
     startingLocation: string;
     startingLevel: number;

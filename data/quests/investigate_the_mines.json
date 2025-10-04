@@ -1,0 +1,14 @@
+{
+  "id": "investigate_the_mines",
+  "name": "Investigate the Mines",
+  "type": "visit",
+  "target": "guard_thomas",
+  "count": 1,
+  "dialogue": "We've heard strange noises coming from the kobold mines beneath their camps. I need you to investigate. Find Guard Thomas who patrols near the mine entrance and report what you find.",
+  "completionDialogue": "You made it to the mines! That's good scouting work. Now we know the kobolds are digging deep. Be careful down there.",
+  "reward": {
+    "gold": 20,
+    "xp": 60
+  },
+  "questDialogue": "The mines are definitely active. Those kobolds are up to something. You should report back to the Marshal."
+}

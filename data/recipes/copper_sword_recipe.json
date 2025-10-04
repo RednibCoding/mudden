@@ -1,0 +1,11 @@
+{
+  "id": "copper_sword_recipe",
+  "name": "Forge Copper Sword",
+  "result": "copper_sword",
+  "resultType": "item",
+  "materials": {
+    "copper_bar": 3,
+    "leather_scrap": 1
+  },
+  "requiredLevel": 3
+}

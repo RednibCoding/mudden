@@ -1,0 +1,10 @@
+{
+  "id": "linen_bandage_item",
+  "name": "Linen Bandage",
+  "description": "A simple bandage that restores a small amount of health over time.",
+  "type": "consumable",
+  "subType": "potion",
+  "healAmount": 25,
+  "useSituation": "anytime",
+  "value": 5
+}

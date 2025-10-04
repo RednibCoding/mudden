@@ -2,7 +2,79 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { Location, Item, Enemy, NPC, Quest, Shop } from '../src/types';
+
+// Raw JSON types (before enrichment - these have string IDs)
+interface RawLocation {
+  id: string;
+  name: string;
+  description: string;
+  exits: { [direction: string]: string };
+  npcs?: string[];
+  enemies?: string[];
+  items?: string[];
+  shop?: string;
+  resources?: Array<{
+    materialId: string;
+    amount: string;
+    cooldown: number;
+    chance: number;
+  }>;
+}
+
+interface RawItem {
+  id: string;
+  name: string;
+  type: string;
+  teachesRecipe?: string;
+  destination?: string;
+}
+
+interface RawEnemy {
+  id: string;
+  name: string;
+  materialDrops?: { [materialId: string]: any };
+  itemDrops?: { [itemId: string]: any };
+}
+
+interface RawNPC {
+  id: string;
+  name: string;
+  quests?: string[];
+  portals?: { [keyword: string]: { destination: string; cost: number } };
+}
+
+interface RawQuest {
+  id: string;
+  name: string;
+  type: string;
+  target: string;
+  materialDrop?: string;
+  requiresQuest?: string;
+  reward: {
+    gold: number;
+    xp: number;
+    item?: string;
+  };
+}
+
+interface RawShop {
+  id: string;
+  name: string;
+  items: string[];
+}
+
+interface RawRecipe {
+  id: string;
+  name: string;
+  result: string;
+  resultType: string;
+  materials: { [materialId: string]: number };
+}
+
+interface RawMaterial {
+  id: string;
+  name: string;
+}
 
 interface ValidationError {
   file: string;
@@ -12,24 +84,39 @@ interface ValidationError {
   expectedType: string;
 }
 
-// Load all game data
+// Load all JSON files from a folder
+function loadFolder<T>(folderPath: string): Map<string, T> {
+  const map = new Map<string, T>();
+  
+  if (!fs.existsSync(folderPath)) {
+    return map;
+  }
+  
+  const files = fs.readdirSync(folderPath).filter(f => f.endsWith('.json'));
+  
+  files.forEach(file => {
+    const filePath = path.join(folderPath, file);
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as T;
+    const id = file.replace('.json', '');
+    map.set(id, data);
+  });
+  
+  return map;
+}
+
+// Load all game data (raw JSON, not enriched)
 function loadGameData() {
   const dataDir = path.join(__dirname, '../data');
   
-  const locations = JSON.parse(fs.readFileSync(path.join(dataDir, 'locations.json'), 'utf-8')) as Location[];
-  const items = JSON.parse(fs.readFileSync(path.join(dataDir, 'items.json'), 'utf-8')) as Item[];
-  const enemies = JSON.parse(fs.readFileSync(path.join(dataDir, 'enemies.json'), 'utf-8')) as Enemy[];
-  const npcs = JSON.parse(fs.readFileSync(path.join(dataDir, 'npcs.json'), 'utf-8')) as NPC[];
-  const quests = JSON.parse(fs.readFileSync(path.join(dataDir, 'quests.json'), 'utf-8')) as Quest[];
-  const shops = JSON.parse(fs.readFileSync(path.join(dataDir, 'shops.json'), 'utf-8')) as Shop[];
-  
   return {
-    locations: new Map(locations.map(l => [l.id, l])),
-    items: new Map(items.map(i => [i.id, i])),
-    enemies: new Map(enemies.map(e => [e.id, e])),
-    npcs: new Map(npcs.map(n => [n.id, n])),
-    quests: new Map(quests.map(q => [q.id, q])),
-    shops: new Map(shops.map(s => [s.id, s]))
+    locations: loadFolder<RawLocation>(path.join(dataDir, 'locations')),
+    items: loadFolder<RawItem>(path.join(dataDir, 'items')),
+    enemies: loadFolder<RawEnemy>(path.join(dataDir, 'enemies')),
+    npcs: loadFolder<RawNPC>(path.join(dataDir, 'npcs')),
+    quests: loadFolder<RawQuest>(path.join(dataDir, 'quests')),
+    shops: loadFolder<RawShop>(path.join(dataDir, 'shops')),
+    materials: loadFolder<RawMaterial>(path.join(dataDir, 'materials')),
+    recipes: loadFolder<RawRecipe>(path.join(dataDir, 'recipes'))
   };
 }
 
@@ -47,59 +134,49 @@ function validateIds() {
   console.log(`  - ${data.npcs.size} NPC(s)`);
   console.log(`  - ${data.quests.size} quest(s)`);
   console.log(`  - ${data.shops.size} shop(s)`);
+  console.log(`  - ${data.materials.size} material(s)`);
+  console.log(`  - ${data.recipes.size} recipe(s)`);
   console.log('\nValidating ID references...\n');
   
   // Validate Locations
   console.log('Validating locations...');
   data.locations.forEach((location, locId) => {
     // Check exit targets
-    Object.entries(location.exits).forEach(([dir, targetId]) => {
-      if (!data.locations.has(targetId)) {
-        errors.push({
-          file: 'locations.json',
-          entity: `${location.name} (${locId})`,
-          field: `exits.${dir}`,
-          invalidId: targetId,
-          expectedType: 'location'
-        });
-      }
-    });
+    if (location.exits) {
+      Object.entries(location.exits).forEach(([dir, targetId]) => {
+        if (!data.locations.has(targetId)) {
+          errors.push({
+            file: `locations/${locId}.json`,
+            entity: `${location.name} (${locId})`,
+            field: `exits.${dir}`,
+            invalidId: targetId,
+            expectedType: 'location'
+          });
+        }
+      });
+    }
     
-    // Check enemies (stored as Enemy objects with id field)
+    // Check enemies
     if (location.enemies && location.enemies.length > 0) {
-      location.enemies.forEach(enemy => {
-        if (typeof enemy === 'string') {
-          // If it's stored as string ID
-          if (!data.enemies.has(enemy)) {
-            errors.push({
-              file: 'locations.json',
-              entity: `${location.name} (${locId})`,
-              field: 'enemies',
-              invalidId: enemy,
-              expectedType: 'enemy'
-            });
-          }
-        } else if (enemy && typeof enemy === 'object' && 'id' in enemy) {
-          // If it's stored as Enemy object
-          if (!data.enemies.has(enemy.id)) {
-            errors.push({
-              file: 'locations.json',
-              entity: `${location.name} (${locId})`,
-              field: 'enemies',
-              invalidId: enemy.id,
-              expectedType: 'enemy'
-            });
-          }
+      location.enemies.forEach(enemyId => {
+        if (!data.enemies.has(enemyId)) {
+          errors.push({
+            file: `locations/${locId}.json`,
+            entity: `${location.name} (${locId})`,
+            field: 'enemies',
+            invalidId: enemyId,
+            expectedType: 'enemy'
+          });
         }
       });
     }
     
     // Check NPCs
-    if (location.npcs) {
+    if (location.npcs && location.npcs.length > 0) {
       location.npcs.forEach(npcId => {
         if (!data.npcs.has(npcId)) {
           errors.push({
-            file: 'locations.json',
+            file: `locations/${locId}.json`,
             entity: `${location.name} (${locId})`,
             field: 'npcs',
             invalidId: npcId,
@@ -112,31 +189,100 @@ function validateIds() {
     // Check shop
     if (location.shop && !data.shops.has(location.shop)) {
       errors.push({
-        file: 'locations.json',
+        file: `locations/${locId}.json`,
         entity: `${location.name} (${locId})`,
         field: 'shop',
         invalidId: location.shop,
         expectedType: 'shop'
       });
     }
+    
+    // Check items on ground
+    if (location.items && location.items.length > 0) {
+      location.items.forEach(itemId => {
+        if (!data.items.has(itemId)) {
+          errors.push({
+            file: `locations/${locId}.json`,
+            entity: `${location.name} (${locId})`,
+            field: 'items',
+            invalidId: itemId,
+            expectedType: 'item'
+          });
+        }
+      });
+    }
+    
+    // Check resource materials
+    if (location.resources && location.resources.length > 0) {
+      location.resources.forEach((resource, idx) => {
+        if (!data.materials.has(resource.materialId)) {
+          errors.push({
+            file: `locations/${locId}.json`,
+            entity: `${location.name} (${locId})`,
+            field: `resources[${idx}].materialId`,
+            invalidId: resource.materialId,
+            expectedType: 'material'
+          });
+        }
+      });
+    }
   });
   
   // Validate Items
   console.log('Validating items...');
-  // Items only have basic fields, no ID references to validate
+  data.items.forEach((item, itemId) => {
+    // Check teachesRecipe for recipe items
+    if (item.type === 'recipe' && item.teachesRecipe) {
+      if (!data.recipes.has(item.teachesRecipe)) {
+        errors.push({
+          file: `items/${itemId}.json`,
+          entity: `${item.name} (${itemId})`,
+          field: 'teachesRecipe',
+          invalidId: item.teachesRecipe,
+          expectedType: 'recipe'
+        });
+      }
+    }
+    
+    // Check destination for teleport scrolls
+    if (item.destination && !data.locations.has(item.destination)) {
+      errors.push({
+        file: `items/${itemId}.json`,
+        entity: `${item.name} (${itemId})`,
+        field: 'destination',
+        invalidId: item.destination,
+        expectedType: 'location'
+      });
+    }
+  });
   
   // Validate Enemies
   console.log('Validating enemies...');
   data.enemies.forEach((enemy, enemyId) => {
-    // Check drop items
-    if (enemy.drops) {
-      enemy.drops.forEach(drop => {
-        if (!data.items.has(drop.itemId)) {
+    // Check material drops
+    if (enemy.materialDrops) {
+      Object.keys(enemy.materialDrops).forEach(materialId => {
+        if (!data.materials.has(materialId)) {
           errors.push({
-            file: 'enemies.json',
+            file: `enemies/${enemyId}.json`,
             entity: `${enemy.name} (${enemyId})`,
-            field: 'drops.itemId',
-            invalidId: drop.itemId,
+            field: 'materialDrops',
+            invalidId: materialId,
+            expectedType: 'material'
+          });
+        }
+      });
+    }
+    
+    // Check item drops
+    if (enemy.itemDrops) {
+      Object.keys(enemy.itemDrops).forEach(itemId => {
+        if (!data.items.has(itemId)) {
+          errors.push({
+            file: `enemies/${enemyId}.json`,
+            entity: `${enemy.name} (${enemyId})`,
+            field: 'itemDrops',
+            invalidId: itemId,
             expectedType: 'item'
           });
         }
@@ -147,14 +293,14 @@ function validateIds() {
   // Validate NPCs
   console.log('Validating NPCs...');
   data.npcs.forEach((npc, npcId) => {
-    // Check quests
+    // Check quests array
     if (npc.quests) {
-      npc.quests.forEach(questId => {
+      npc.quests.forEach((questId, idx) => {
         if (!data.quests.has(questId)) {
           errors.push({
-            file: 'npcs.json',
+            file: `npcs/${npcId}.json`,
             entity: `${npc.name} (${npcId})`,
-            field: 'quests',
+            field: `quests[${idx}]`,
             invalidId: questId,
             expectedType: 'quest'
           });
@@ -162,24 +308,33 @@ function validateIds() {
       });
     }
     
-    // NPCs don't have shop field (shops are in locations)
+    // Check portal destinations
+    if (npc.portals) {
+      Object.values(npc.portals).forEach((portal, idx) => {
+        if (!data.locations.has(portal.destination)) {
+          errors.push({
+            file: `npcs/${npcId}.json`,
+            entity: `${npc.name} (${npcId})`,
+            field: `portals.destination`,
+            invalidId: portal.destination,
+            expectedType: 'location'
+          });
+        }
+      });
+    }
   });
   
   // Validate Quests
   console.log('Validating quests...');
   data.quests.forEach((quest, questId) => {
-    // Check prerequisiteQuests
-    if (quest.prerequisiteQuests && quest.prerequisiteQuests.length > 0) {
-      quest.prerequisiteQuests.forEach(prereqId => {
-        if (!data.quests.has(prereqId)) {
-          errors.push({
-            file: 'quests.json',
-            entity: `${quest.name} (${questId})`,
-            field: 'prerequisiteQuests',
-            invalidId: prereqId,
-            expectedType: 'quest'
-          });
-        }
+    // Check prerequisite quest
+    if (quest.requiresQuest && !data.quests.has(quest.requiresQuest)) {
+      errors.push({
+        file: `quests/${questId}.json`,
+        entity: `${quest.name} (${questId})`,
+        field: 'requiresQuest',
+        invalidId: quest.requiresQuest,
+        expectedType: 'quest'
       });
     }
     
@@ -187,7 +342,7 @@ function validateIds() {
     if (quest.type === 'kill' && quest.target) {
       if (!data.enemies.has(quest.target)) {
         errors.push({
-          file: 'quests.json',
+          file: `quests/${questId}.json`,
           entity: `${quest.name} (${questId})`,
           field: 'target',
           invalidId: quest.target,
@@ -195,62 +350,51 @@ function validateIds() {
         });
       }
     } else if (quest.type === 'collect' && quest.target) {
-      if (!data.items.has(quest.target)) {
+      if (!data.enemies.has(quest.target)) {
         errors.push({
-          file: 'quests.json',
+          file: `quests/${questId}.json`,
           entity: `${quest.name} (${questId})`,
           field: 'target',
           invalidId: quest.target,
-          expectedType: 'item'
+          expectedType: 'enemy'
         });
       }
     } else if (quest.type === 'visit' && quest.target) {
-      if (!data.locations.has(quest.target)) {
+      if (!data.npcs.has(quest.target)) {
         errors.push({
-          file: 'quests.json',
+          file: `quests/${questId}.json`,
           entity: `${quest.name} (${questId})`,
           field: 'target',
           invalidId: quest.target,
-          expectedType: 'location'
+          expectedType: 'npc'
         });
       }
     }
     
-    // Check giver NPC
-    if (quest.giver && !data.npcs.has(quest.giver)) {
-      errors.push({
-        file: 'quests.json',
-        entity: `${quest.name} (${questId})`,
-        field: 'giver',
-        invalidId: quest.giver,
-        expectedType: 'npc'
-      });
+    // Check materialDrop for collect quests
+    if (quest.type === 'collect' && quest.materialDrop) {
+      if (!data.materials.has(quest.materialDrop)) {
+        errors.push({
+          file: `quests/${questId}.json`,
+          entity: `${quest.name} (${questId})`,
+          field: 'materialDrop',
+          invalidId: quest.materialDrop,
+          expectedType: 'material'
+        });
+      }
     }
     
-    // Check turnInNPC
-    if (quest.turnInNPC && !data.npcs.has(quest.turnInNPC)) {
-      errors.push({
-        file: 'quests.json',
-        entity: `${quest.name} (${questId})`,
-        field: 'turnInNPC',
-        invalidId: quest.turnInNPC,
-        expectedType: 'npc'
-      });
-    }
-    
-    // Check reward items
-    if (quest.reward && quest.reward.items && quest.reward.items.length > 0) {
-      quest.reward.items.forEach(itemId => {
-        if (!data.items.has(itemId)) {
-          errors.push({
-            file: 'quests.json',
-            entity: `${quest.name} (${questId})`,
-            field: 'reward.items',
-            invalidId: itemId,
-            expectedType: 'item'
-          });
-        }
-      });
+    // Check reward item
+    if (quest.reward && quest.reward.item) {
+      if (!data.items.has(quest.reward.item)) {
+        errors.push({
+          file: `quests/${questId}.json`,
+          entity: `${quest.name} (${questId})`,
+          field: 'reward.item',
+          invalidId: quest.reward.item,
+          expectedType: 'item'
+        });
+      }
     }
   });
   
@@ -262,11 +406,53 @@ function validateIds() {
       shop.items.forEach(itemId => {
         if (!data.items.has(itemId)) {
           errors.push({
-            file: 'shops.json',
+            file: `shops/${shopId}.json`,
             entity: `${shop.name} (${shopId})`,
             field: 'items',
             invalidId: itemId,
             expectedType: 'item'
+          });
+        }
+      });
+    }
+  });
+  
+  // Validate Recipes
+  console.log('Validating recipes...');
+  data.recipes.forEach((recipe, recipeId) => {
+    // Check result (item or material)
+    if (recipe.resultType === 'item') {
+      if (!data.items.has(recipe.result)) {
+        errors.push({
+          file: `recipes/${recipeId}.json`,
+          entity: `${recipe.name} (${recipeId})`,
+          field: 'result',
+          invalidId: recipe.result,
+          expectedType: 'item'
+        });
+      }
+    } else if (recipe.resultType === 'material') {
+      if (!data.materials.has(recipe.result)) {
+        errors.push({
+          file: `recipes/${recipeId}.json`,
+          entity: `${recipe.name} (${recipeId})`,
+          field: 'result',
+          invalidId: recipe.result,
+          expectedType: 'material'
+        });
+      }
+    }
+    
+    // Check material requirements
+    if (recipe.materials) {
+      Object.keys(recipe.materials).forEach(materialId => {
+        if (!data.materials.has(materialId)) {
+          errors.push({
+            file: `recipes/${recipeId}.json`,
+            entity: `${recipe.name} (${recipeId})`,
+            field: 'materials',
+            invalidId: materialId,
+            expectedType: 'material'
           });
         }
       });

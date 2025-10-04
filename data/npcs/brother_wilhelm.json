@@ -1,0 +1,6 @@
+{
+  "id": "brother_wilhelm",
+  "name": "Brother Wilhelm",
+  "dialogue": "The Light provides for those who help others. We always need supplies for healing the wounded.",
+  "quests": ["cloth_for_bandages"]
+}

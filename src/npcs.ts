@@ -49,42 +49,46 @@ export function talk(player: Player, npcName: string): void {
   }
   
   // Quest handling - check BEFORE showing regular dialogue
-  if (npc.quest) {
-    // Can complete quest?
-    if (canCompleteQuest(player, npc.quest)) {
-      const quest = gameState.gameData.quests.get(npc.quest);
-      if (quest) {
-        send(player, `${npc.name}: "${quest.completionDialogue}"`, 'npc');
-      } else {
-        send(player, `${npc.name}: "${npc.dialogue}"`, 'npc');
-      }
-      completeQuest(player, npc.quest);
-      return;
-    }
-    
-    // Can accept quest?
-    if (canAcceptQuest(player, npc.quest)) {
-      send(player, `${npc.name}: "${npc.dialogue}"`, 'npc');
-      acceptQuest(player, npc.quest);
-      return;
-    }
-    
-    // Quest already active - show quest dialogue again as reminder
-    if (player.activeQuests[npc.quest]) {
-      const quest = gameState.gameData.quests.get(npc.quest);
-      if (quest) {
-        send(player, `${npc.name}: "${quest.dialogue}"`, 'npc');
-        const progress = player.activeQuests[npc.quest];
-        
-        // Show different progress based on quest type
-        if (quest.type === 'collect' && quest.materialDrop) {
-          const collected = player.questItems[quest.materialDrop] || 0;
-          send(player, `Quest in progress: ${collected}/${quest.count} ${quest.materialDrop}`, 'info');
+  // NPCs can offer multiple quests - find the first available one
+  if (npc.quests && npc.quests.length > 0) {
+    // Find first quest that player can interact with (order matters!)
+    for (const questId of npc.quests) {
+      // Can complete quest?
+      if (canCompleteQuest(player, questId)) {
+        const quest = gameState.gameData.quests.get(questId);
+        if (quest) {
+          send(player, `${npc.name}: "${quest.completionDialogue}"`, 'npc');
         } else {
-          send(player, `Quest in progress: ${progress.progress}/${quest.count}`, 'info');
+          send(player, `${npc.name}: "${npc.dialogue}"`, 'npc');
         }
+        completeQuest(player, questId);
+        return;
       }
-      return;
+      
+      // Can accept quest?
+      if (canAcceptQuest(player, questId)) {
+        send(player, `${npc.name}: "${npc.dialogue}"`, 'npc');
+        acceptQuest(player, questId);
+        return;
+      }
+      
+      // Quest already active - show quest dialogue again as reminder
+      if (player.activeQuests[questId]) {
+        const quest = gameState.gameData.quests.get(questId);
+        if (quest) {
+          send(player, `${npc.name}: "${quest.dialogue}"`, 'npc');
+          const progress = player.activeQuests[questId];
+          
+          // Show different progress based on quest type
+          if (quest.type === 'collect' && quest.materialDrop) {
+            const collected = player.questItems[quest.materialDrop] || 0;
+            send(player, `Quest in progress: ${collected}/${quest.count} ${quest.materialDrop}`, 'info');
+          } else {
+            send(player, `Quest in progress: ${progress.progress}/${quest.count}`, 'info');
+          }
+        }
+        return;
+      }
     }
   }
   

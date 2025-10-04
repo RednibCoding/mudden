@@ -1,0 +1,12 @@
+{
+  "id": "goldshire",
+  "name": "Goldshire",
+  "description": "The bustling village of Goldshire serves as the main hub for adventurers in Elwynn Forest. The Lion's Pride Inn stands prominently in the center, its warm lights welcoming travelers. Shops, a blacksmith, and various townsfolk fill the streets.",
+  "exits": {
+    "north": "elwynn_road",
+    "west": "goldshire_inn",
+    "east": "blacksmith_shop",
+    "south": "goldshire_alchemy"
+  },
+  "npcs": ["marshal_dughan", "town_crier", "deputy_rainer", "maybell_maclure", "agent_kearnen", "remy_two_times", "traveling_merchant_npc"]
+}

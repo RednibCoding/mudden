@@ -1,0 +1,10 @@
+{
+  "id": "smelt_copper_bar",
+  "name": "Smelt Copper Bar",
+  "result": "copper_bar",
+  "resultType": "material",
+  "materials": {
+    "copper_ore": 2
+  },
+  "requiredLevel": 1
+}

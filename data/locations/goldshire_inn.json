@@ -1,0 +1,9 @@
+{
+  "id": "goldshire_inn",
+  "name": "The Lion's Pride Inn",
+  "description": "A cozy two-story inn filled with the aroma of roasted meat and fresh bread. Adventurers gather around tables sharing tales of their exploits. A warm fire crackles in the hearth.",
+  "exits": {
+    "east": "goldshire"
+  },
+  "npcs": ["innkeeper_farley", "storyteller_wanda"]
+}

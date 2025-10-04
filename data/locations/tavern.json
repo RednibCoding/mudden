@@ -1,9 +1,0 @@
-{
-  "id": "tavern",
-  "name": "The Prancing Pony Tavern",
-  "description": "A cozy tavern with a roaring fireplace. The scent of ale and roasted meat fills the air. Adventurers gather around wooden tables, swapping tales of their exploits.",
-  "exits": {
-    "east": "town_square"
-  },
-  "npcs": ["tavern_keeper"]
-}

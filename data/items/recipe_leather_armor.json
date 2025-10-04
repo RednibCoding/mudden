@@ -1,8 +1,0 @@
-{
-  "id": "recipe_leather_armor",
-  "name": "Recipe: Leather Armor",
-  "description": "Instructions for crafting leather armor from wolf pelts.",
-  "type": "recipe",
-  "value": 50,
-  "teachesRecipe": "leather_armor_recipe"
-}

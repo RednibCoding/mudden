@@ -1310,20 +1310,36 @@ if (enemy.materialDrops?.wolf_pelt) {
 
 Quests don't have an `npc` field in JSON - it's populated by the data loader:
 
-**NPC File (owns the relationship):**
+**NPC File with Single Quest:**
 ```json
 {
   "id": "town_guard",
   "name": "Town Guard",
   "dialogue": "Stay safe out there, citizen.",
-  "quest": "goblin_problem"
+  "quests": ["goblin_problem"]
 }
 ```
+
+**NPC File with Multiple Quests (Progressive Chain):**
+```json
+{
+  "id": "marshal",
+  "name": "Marshal Thornwood",
+  "dialogue": "I have many tasks for brave adventurers.",
+  "quests": ["kobold_menace", "deeper_into_mines", "crimson_threat"]
+}
+```
+
+**Quest Order Matters!**
+- Quests are offered in array order
+- NPC offers first quest that meets requirements (level, prerequisites, not completed)
+- Perfect for progressive difficulty chains
+- Example: Complete kobold_menace → unlock deeper_into_mines → unlock crimson_threat
 
 **Data Loader Auto-Population:**
 ```typescript
 // In enrichQuests() function:
-// 1. For each quest, find which NPC has quest field matching quest.id
+// 1. For each quest, find which NPC has that quest in their quests array
 // 2. Populate quest.npc with that NPC's id
 // 3. Validate: exactly 0 or 1 NPC per quest (error if multiple)
 
@@ -1333,10 +1349,11 @@ console.log(quest.npc);  // "town_guard" (populated by loader)
 ```
 
 **Why this design?**
-- ✅ **Single source of truth**: NPC.quest is the only place the relationship is defined
+- ✅ **Single source of truth**: NPC.quests is the only place the relationship is defined
 - ✅ **No redundancy**: Quest files don't need npc field
 - ✅ **Auto-validated**: Loader errors if multiple NPCs reference same quest
 - ✅ **Flexible**: Can create quests without NPCs (designer preview)
+- ✅ **Progressive chains**: Array order controls quest unlock progression
 
 ### **Quest Dialogue System**
 

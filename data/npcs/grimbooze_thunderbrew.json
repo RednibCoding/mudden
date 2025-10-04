@@ -1,0 +1,6 @@
+{
+  "id": "grimbooze_thunderbrew",
+  "name": "Grimbooze Thunderbrew",
+  "dialogue": "Those murlocs are getting too close to my favorite fishing spots! Someone needs to deal with them.",
+  "quests": ["murloc_threat", "lost_necklace"]
+}

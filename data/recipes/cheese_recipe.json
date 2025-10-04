@@ -1,0 +1,9 @@
+{
+  "id": "cheese_recipe",
+  "name": "Sharp Cheddar Cheese",
+  "result": "cheese",
+  "resultType": "item",
+  "materials": {
+    "linen_cloth": 2
+  }
+}

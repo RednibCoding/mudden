@@ -1,0 +1,10 @@
+{
+  "id": "northshire_abbey",
+  "name": "Northshire Abbey",
+  "description": "You stand before the ancient stone abbey where new recruits begin their training. The smell of incense drifts through open archways, and you can hear the sounds of combat training from the courtyard. This is where your journey begins.",
+  "exits": {
+    "south": "abbey_courtyard",
+    "east": "abbey_gardens"
+  },
+  "npcs": ["brother_samuel", "priestess_aleria", "brother_wilhelm"]
+}

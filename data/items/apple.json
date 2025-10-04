@@ -1,0 +1,10 @@
+{
+  "id": "apple",
+  "name": "Crisp Red Apple",
+  "description": "A fresh apple from the orchards. Restores a small amount of health.",
+  "type": "consumable",
+  "subType": "potion",
+  "healAmount": 20,
+  "useSituation": "anytime",
+  "value": 3
+}

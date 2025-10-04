@@ -1,0 +1,11 @@
+{
+  "id": "linen_robe",
+  "name": "Linen Robe",
+  "result": "linen_robe",
+  "resultType": "item",
+  "materials": {
+    "bolt_of_linen": 4,
+    "linen_cloth": 2
+  },
+  "requiredLevel": 4
+}

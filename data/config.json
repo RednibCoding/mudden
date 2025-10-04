@@ -1,8 +1,15 @@
 {
+  "gameMeta": {
+    "name": "Elwynn Adventures",
+    "version": "1.0.0",
+    "description": "A classic text-based adventure inspired by the human starting experience in World of Warcraft.",
+    "credits": "Created by Rednib using the Mudden Engine",
+    "welcomeMessage": "Welcome to the kingdom of Stormwind! Your adventure begins in the peaceful Northshire Abbey, where danger lurks just beyond the abbey walls."
+  },
   "newPlayer": {
-    "startingLocation": "town_square",
+    "startingLocation": "northshire_abbey",
     "startingLevel": 1,
-    "startingGold": 50,
+    "startingGold": 10,
     "startingHealth": 100,
     "startingMana": 50,
     "startingDamage": 5,
@@ -13,14 +20,14 @@
       "shield": null,
       "accessory": null
     },
-    "startingInventory": []
+    "startingInventory": ["refreshing_spring_water", "refreshing_spring_water"]
   },
   "gameplay": {
     "maxInventorySlots": 16,
     "fleeSuccessChance": 0.5,
-    "enemyRespawnTime": 30000,
+    "enemyRespawnTime": 45000,
     "deathGoldLossPct": 0.1,
-    "deathRespawnLocation": "town_square",
+    "deathRespawnLocation": "northshire_abbey",
     "damageVariance": 0.1
   },
   "progression": {

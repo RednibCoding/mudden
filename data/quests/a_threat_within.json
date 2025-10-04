@@ -1,0 +1,13 @@
+{
+  "id": "a_threat_within",
+  "name": "A Threat Within",
+  "type": "kill",
+  "target": "kobold_worker",
+  "count": 5,
+  "dialogue": "Welcome to Northshire Abbey. I hate to burden you so soon, but we have a problem. Kobolds have infested the camps to the west. They're multiplying and becoming bolder. Kill 5 Kobold Workers to show them we won't tolerate their presence.",
+  "completionDialogue": "Well done! You've shown those kobolds that we won't be intimidated. Here's some coin for your trouble. Marshal Thornwood will want to speak with you next.",
+  "reward": {
+    "gold": 25,
+    "xp": 75
+  }
+}

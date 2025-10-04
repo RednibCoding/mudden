@@ -1,0 +1,11 @@
+{
+  "id": "reinforced_linen_vest",
+  "name": "Reinforced Linen Vest",
+  "result": "reinforced_linen_vest",
+  "resultType": "item",
+  "materials": {
+    "bolt_of_linen": 6,
+    "light_leather": 2
+  },
+  "requiredLevel": 6
+}

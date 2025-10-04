@@ -1,0 +1,14 @@
+{
+  "id": "deeper_into_the_mines",
+  "name": "Deeper Into the Mines",
+  "type": "kill",
+  "target": "kobold_tunneler",
+  "count": 8,
+  "requiredLevel": 4,
+  "dialogue": "The kobolds have dug deep mines beneath their camps. Their Tunnelers are more dangerous than the workers. Venture into the mines and slay 8 Kobold Tunnelers. This will disrupt their operations significantly.",
+  "completionDialogue": "Impressive! The kobold mining operation has been dealt a serious blow. You're becoming quite the warrior. Here's your reward.",
+  "reward": {
+    "gold": 75,
+    "xp": 180
+  }
+}

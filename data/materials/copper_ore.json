@@ -1,0 +1,6 @@
+{
+  "id": "copper_ore",
+  "name": "Copper Ore",
+  "description": "A chunk of raw copper ore. Can be smelted into copper bars.",
+  "rarity": "common"
+}

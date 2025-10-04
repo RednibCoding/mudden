@@ -1,0 +1,10 @@
+{
+  "id": "abbey_gardens",
+  "name": "Abbey Gardens",
+  "description": "A peaceful garden maintained by the monks. Vegetables and herbs grow in neat rows. To the south, you can hear the bubbling of a stream.",
+  "exits": {
+    "west": "northshire_abbey",
+    "south": "crystal_brook"
+  },
+  "npcs": ["gardner_mara"]
+}

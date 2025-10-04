@@ -1,9 +1,0 @@
-{
-  "id": "rusty_sword",
-  "name": "Rusty Sword",
-  "description": "An old, rusty sword. Better than nothing.",
-  "type": "equipment",
-  "slot": "weapon",
-  "damage": 3,
-  "value": 5
-}

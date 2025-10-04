@@ -1,0 +1,9 @@
+{
+  "id": "light_leather_recipe",
+  "name": "Light Leather",
+  "result": "light_leather",
+  "resultType": "material",
+  "materials": {
+    "leather_scrap": 3
+  }
+}

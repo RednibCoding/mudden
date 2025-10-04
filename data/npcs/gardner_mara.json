@@ -1,0 +1,6 @@
+{
+  "id": "gardner_mara",
+  "name": "Gardener Mara",
+  "dialogue": "These gardens provide food for the abbey. It's peaceful work, though I worry about the murlocs that have moved into Crystal Brook.",
+  "quests": ["murloc_invasion"]
+}

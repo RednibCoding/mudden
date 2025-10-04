@@ -1,0 +1,10 @@
+{
+  "id": "sweet_nectar",
+  "name": "Sweet Nectar",
+  "description": "A sweet drink that restores mana. Popular among spellcasters.",
+  "type": "consumable",
+  "subType": "potion",
+  "manaAmount": 25,
+  "useSituation": "anytime",
+  "value": 12
+}

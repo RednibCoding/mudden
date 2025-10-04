@@ -1,0 +1,11 @@
+{
+  "id": "conjured_muffin",
+  "name": "Conjured Muffin",
+  "description": "A magically conjured muffin that restores both health and mana.",
+  "type": "consumable",
+  "subType": "potion",
+  "healAmount": 40,
+  "manaAmount": 20,
+  "useSituation": "anytime",
+  "value": 20
+}

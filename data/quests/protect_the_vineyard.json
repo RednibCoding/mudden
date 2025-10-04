@@ -1,0 +1,14 @@
+{
+  "id": "protect_the_vineyard",
+  "name": "Protect the Vineyard",
+  "type": "kill",
+  "target": "timber_wolf",
+  "count": 10,
+  "requiredLevel": 5,
+  "dialogue": "The wolves just keep coming back! We need a serious culling. Kill 10 Timber Wolves around the vineyard so my workers can return safely.",
+  "completionDialogue": "Finally! With that many wolves dead, we should have peace for a while. My workers can get back to making wine. Thank you!",
+  "reward": {
+    "gold": 80,
+    "xp": 190
+  }
+}

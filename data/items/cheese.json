@@ -1,0 +1,10 @@
+{
+  "id": "cheese",
+  "name": "Sharp Cheddar Cheese",
+  "description": "A wedge of aged cheddar. Restores health.",
+  "type": "consumable",
+  "subType": "potion",
+  "healAmount": 30,
+  "useSituation": "anytime",
+  "value": 7
+}

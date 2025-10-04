@@ -1,0 +1,27 @@
+{
+  "id": "murloc_scout",
+  "name": "Murloc Scout",
+  "description": "A fish-like humanoid with bulging eyes and sharp teeth. It gurgles threateningly.",
+  "health": 70,
+  "maxHealth": 70,
+  "damage": 9,
+  "defense": 2,
+  "gold": 7,
+  "xp": 40,
+  "materialDrops": {
+    "murloc_eye": {
+      "chance": 0.3,
+      "amount": "1-1"
+    },
+    "murloc_fin": {
+      "chance": 0.4,
+      "amount": "1-2"
+    }
+  },
+  "itemDrops": {
+    "refreshing_spring_water": {
+      "chance": 0.1
+    }
+  },
+  "fighters": []
+}

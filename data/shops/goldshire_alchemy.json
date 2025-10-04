@@ -1,0 +1,5 @@
+{
+  "id": "goldshire_alchemy",
+  "name": "Goldshire Alchemy Shop",
+  "items": ["minor_healing_potion", "minor_mana_potion", "sweet_nectar", "linen_bandage_item"]
+}

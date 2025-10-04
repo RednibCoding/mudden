@@ -1,0 +1,10 @@
+{
+  "id": "elwynn_forest_west",
+  "name": "Western Elwynn Forest",
+  "description": "The western forest is darker and more foreboding. The trees grow close together, creating deep shadows. You can hear voices and see campfire smoke ahead - bandits.",
+  "exits": {
+    "east": "elwynn_road",
+    "west": "bandit_camp"
+  },
+  "enemies": ["timber_wolf"]
+}

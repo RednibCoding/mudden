@@ -1,0 +1,10 @@
+{
+  "id": "general_goods",
+  "name": "Goldshire General Goods",
+  "description": "A well-stocked general store with shelves full of supplies. Everything an adventurer might need for their journeys can be found here.",
+  "exits": {
+    "north": "goldshire_alchemy"
+  },
+  "npcs": ["merchant_tessa"],
+  "shop": "goldshire_general_store"
+}

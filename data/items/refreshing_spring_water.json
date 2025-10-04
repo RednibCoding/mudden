@@ -1,0 +1,11 @@
+{
+  "id": "refreshing_spring_water",
+  "name": "Refreshing Spring Water",
+  "description": "Cool water from a mountain spring. Restores 20 health and 20 mana.",
+  "type": "consumable",
+  "subType": "potion",
+  "health": 20,
+  "mana": 20,
+  "usableIn": "any",
+  "value": 5
+}

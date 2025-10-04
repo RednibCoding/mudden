@@ -1,0 +1,16 @@
+{
+  "id": "leather_for_the_smith",
+  "name": "Leather for the Smith",
+  "type": "collect",
+  "target": "young_wolf",
+  "count": 10,
+  "materialDrop": "leather_scrap",
+  "requiredLevel": 2,
+  "dialogue": "I need leather scraps for armor repairs. Young wolves have been spotted all over the valley. Bring me 10 Leather Scraps and I'll make it worth your while.",
+  "completionDialogue": "Perfect! These scraps will keep our recruits protected. Here's your payment, and take this extra gear.",
+  "reward": {
+    "gold": 45,
+    "xp": 110,
+    "item": "recruit_tunic"
+  }
+}

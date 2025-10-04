@@ -1,0 +1,9 @@
+{
+  "id": "chainmail_armor",
+  "name": "Chainmail Armor",
+  "description": "Sturdy chainmail providing excellent protection.",
+  "type": "equipment",
+  "slot": "armor",
+  "defense": 8,
+  "value": 80
+}

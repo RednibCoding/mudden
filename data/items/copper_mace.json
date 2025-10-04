@@ -1,0 +1,9 @@
+{
+  "id": "copper_mace",
+  "name": "Copper Mace",
+  "description": "A sturdy copper mace with a solid head.",
+  "type": "equipment",
+  "slot": "weapon",
+  "damage": 7,
+  "value": 55
+}

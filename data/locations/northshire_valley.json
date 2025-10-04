@@ -1,0 +1,12 @@
+{
+  "id": "northshire_valley",
+  "name": "Northshire Valley",
+  "description": "A grassy valley stretching south from the abbey. Young wolves prowl the area, and you can see the road leading toward Goldshire in the distance. Kobold activity has been reported to the west.",
+  "exits": {
+    "north": "abbey_courtyard",
+    "south": "elwynn_road",
+    "west": "kobold_camps",
+    "east": "vineyards"
+  },
+  "enemies": ["young_wolf"]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "kobold_camps",
+  "name": "Kobold Camps",
+  "description": "Crude kobold tents dot this rocky area. The rat-like creatures scurry about, clutching their precious candles. You can hear the sound of pickaxes from deeper within their territory.",
+  "exits": {
+    "east": "northshire_valley",
+    "down": "kobold_mines"
+  },
+  "enemies": ["kobold_worker"],
+  "npcs": ["guard_thomas"]
+}

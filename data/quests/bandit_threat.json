@@ -1,0 +1,14 @@
+{
+  "id": "bandit_threat",
+  "name": "The Bandit Threat",
+  "type": "kill",
+  "target": "crimson_thug",
+  "count": 8,
+  "requiredLevel": 6,
+  "dialogue": "The Crimson Brotherhood has been terrorizing travelers on the roads. We need to send them a message. Kill 8 of their thugs to show them Goldshire won't tolerate their criminal activities.",
+  "completionDialogue": "Good work! Those bandits are cowards at heart. Once they realize we're fighting back, they'll think twice about attacking innocents.",
+  "reward": {
+    "gold": 95,
+    "xp": 215
+  }
+}

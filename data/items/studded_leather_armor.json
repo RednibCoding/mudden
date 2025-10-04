@@ -1,0 +1,10 @@
+{
+  "id": "studded_leather_armor",
+  "name": "Studded Leather Armor",
+  "description": "Thick leather armor reinforced with copper studs. Provides excellent protection.",
+  "type": "equipment",
+  "slot": "armor",
+  "defense": 10,
+  "health": 25,
+  "value": 250
+}

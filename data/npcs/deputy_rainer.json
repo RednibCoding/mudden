@@ -1,0 +1,6 @@
+{
+  "id": "deputy_rainer",
+  "name": "Deputy Rainer",
+  "dialogue": "The Marshal keeps me busy with bounties and investigations. Always work to be done keeping the valley safe.",
+  "quests": ["wanted_kobold_tunneler", "bandit_threat"]
+}

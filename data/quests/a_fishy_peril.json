@@ -1,0 +1,16 @@
+{
+  "id": "a_fishy_peril",
+  "name": "A Fishy Peril",
+  "type": "collect",
+  "target": "murloc_scout",
+  "count": 8,
+  "materialDrop": "murloc_eye",
+  "requiredLevel": 6,
+  "dialogue": "I'm studying the murloc population and their unusual properties. I need murloc eyes for my research. Bring me 8 Murloc Eyes and I'll compensate you generously.",
+  "completionDialogue": "Fascinating specimens! These eyes have unique magical properties. Your contribution to research is appreciated.",
+  "reward": {
+    "gold": 90,
+    "xp": 200,
+    "item": "minor_mana_potion"
+  }
+}

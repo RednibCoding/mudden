@@ -1,0 +1,15 @@
+{
+  "id": "kobold_menace",
+  "name": "Kobold Menace",
+  "type": "collect",
+  "target": "kobold_worker",
+  "count": 8,
+  "materialDrop": "kobold_candle",
+  "dialogue": "Those kobolds are obsessed with their candles. If we take enough of them, maybe they'll get the message and leave. Bring me 8 Kobold Candles. You can find them on the kobolds to the west.",
+  "completionDialogue": "Excellent work! These candles will serve as proof of your combat readiness. You're shaping up to be a fine warrior. Continue training and taking on challenges.",
+  "reward": {
+    "gold": 40,
+    "xp": 120,
+    "item": "worn_shortsword"
+  }
+}

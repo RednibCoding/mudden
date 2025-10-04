@@ -1,0 +1,18 @@
+{
+  "id": "young_wolf",
+  "name": "Young Wolf",
+  "description": "A juvenile wolf with patchy fur. It growls menacingly but looks inexperienced.",
+  "health": 45,
+  "maxHealth": 45,
+  "damage": 5,
+  "defense": 2,
+  "gold": 4,
+  "xp": 20,
+  "materialDrops": {
+    "leather_scrap": {
+      "chance": 0.6,
+      "amount": "1-2"
+    }
+  },
+  "fighters": []
+}

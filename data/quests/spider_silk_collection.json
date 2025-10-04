@@ -1,0 +1,15 @@
+{
+  "id": "spider_silk_collection",
+  "name": "Spider Silk Collection",
+  "type": "collect",
+  "target": "forest_spider",
+  "count": 6,
+  "materialDrop": "spider_silk",
+  "requiredLevel": 7,
+  "dialogue": "I'm researching the properties of spider silk from the Forest Spiders in Eastern Elwynn. The silk is remarkably strong and has many uses. Bring me 6 pieces of Spider Silk, would you?",
+  "completionDialogue": "Marvelous! This silk is exactly what I needed. The quality is exceptional. Thank you for braving those spiders. Here's your reward.",
+  "reward": {
+    "gold": 100,
+    "xp": 220
+  }
+}

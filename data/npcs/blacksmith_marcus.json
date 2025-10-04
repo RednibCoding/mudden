@@ -1,0 +1,6 @@
+{
+  "id": "blacksmith_marcus",
+  "name": "Blacksmith Marcus",
+  "dialogue": "Need leather for repairs. Those wolves have good hides - bring me scraps and I'll pay well.",
+  "quests": ["leather_for_the_smith", "the_fargodeep_mine"]
+}

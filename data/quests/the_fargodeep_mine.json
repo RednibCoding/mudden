@@ -1,0 +1,15 @@
+{
+  "id": "the_fargodeep_mine",
+  "name": "The Fargodeep Mine",
+  "type": "collect",
+  "target": "kobold_tunneler",
+  "count": 5,
+  "materialDrop": "copper_ore",
+  "requiredLevel": 4,
+  "dialogue": "The kobolds have taken over what we used to call Fargodeep Mine. They're stealing our copper! Go into those mines and bring back 5 pieces of Copper Ore to prove we can still access our resources.",
+  "completionDialogue": "You got the copper! This proves the mine isn't lost to us. With brave souls like you, we can reclaim what's ours.",
+  "reward": {
+    "gold": 70,
+    "xp": 170
+  }
+}

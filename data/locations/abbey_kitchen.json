@@ -1,0 +1,10 @@
+{
+  "id": "abbey_kitchen",
+  "name": "Abbey Kitchen",
+  "description": "The warm kitchen smells of fresh bread and herbs. Cook Maria tends to her ovens, preparing meals for the abbey residents and weary travelers.",
+  "exits": {
+    "west": "abbey_courtyard"
+  },
+  "npcs": ["cook_maria"],
+  "shop": "abbey_kitchen"
+}

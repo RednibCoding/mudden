@@ -1,8 +1,0 @@
-{
-  "id": "recipe_smelt_iron",
-  "name": "Recipe: Smelt Iron Bar",
-  "description": "Instructions for smelting iron ore into refined iron bars.",
-  "type": "recipe",
-  "value": 25,
-  "teachesRecipe": "smelt_iron_bar"
-}

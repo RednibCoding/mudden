@@ -1,0 +1,16 @@
+{
+  "id": "webwood_silk",
+  "name": "Webwood Silk",
+  "type": "collect",
+  "target": "forest_spider",
+  "count": 10,
+  "materialDrop": "spider_silk",
+  "requiredLevel": 8,
+  "dialogue": "Spider silk from the eastern forest is the finest material for making reinforced cloth armor. I need 10 pieces of Spider Silk. It's dangerous work, but the pay is good.",
+  "completionDialogue": "Perfect quality! This silk will make excellent armor. You've got steady hands and a brave heart. Here's your payment.",
+  "reward": {
+    "gold": 120,
+    "xp": 260,
+    "item": "leather_armor"
+  }
+}

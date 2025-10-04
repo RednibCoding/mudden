@@ -1,0 +1,10 @@
+{
+  "id": "minor_mana_potion",
+  "name": "Minor Mana Potion",
+  "description": "A small vial of blue liquid that restores 30 mana.",
+  "type": "consumable",
+  "subType": "potion",
+  "mana": 30,
+  "usableIn": "any",
+  "value": 10
+}

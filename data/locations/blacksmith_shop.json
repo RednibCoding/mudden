@@ -1,0 +1,10 @@
+{
+  "id": "blacksmith_shop",
+  "name": "Goldshire Smithy",
+  "description": "The rhythmic clanging of hammer on anvil fills this smoke-filled shop. Weapons and armor hang on the walls, and the forge glows red-hot. The smell of hot metal and coal is overwhelming.",
+  "exits": {
+    "west": "goldshire"
+  },
+  "npcs": ["smith_argus", "blacksmith_marcus", "sara_timberlain"],
+  "shop": "goldshire_smithy"
+}

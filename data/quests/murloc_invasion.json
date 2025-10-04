@@ -1,0 +1,15 @@
+{
+  "id": "murloc_invasion",
+  "name": "Murloc Invasion",
+  "type": "collect",
+  "target": "murloc_scout",
+  "count": 4,
+  "materialDrop": "murloc_fin",
+  "dialogue": "Murlocs have moved into Crystal Brook, just south of the gardens. They're fouling the water and making the area dangerous. Bring me 4 Murloc Fins as proof you've dealt with them.",
+  "completionDialogue": "Wonderful! The brook should be safer now. These fins will make excellent components for healing salves. Thank you for your help!",
+  "reward": {
+    "gold": 50,
+    "xp": 140,
+    "item": "minor_healing_potion"
+  }
+}

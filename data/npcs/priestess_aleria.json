@@ -1,0 +1,6 @@
+{
+  "id": "priestess_aleria",
+  "name": "Priestess Aleria",
+  "dialogue": "I tend to the wounded and offer blessings to those in need. The Light provides healing for those who seek it.",
+  "healer": true
+}

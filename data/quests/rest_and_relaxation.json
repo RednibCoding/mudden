@@ -1,0 +1,16 @@
+{
+  "id": "rest_and_relaxation",
+  "name": "Rest and Relaxation",
+  "type": "visit",
+  "target": "innkeeper_farley",
+  "count": 1,
+  "requiredLevel": 3,
+  "dialogue": "You've been working hard, recruit. Take a break - head south to Goldshire and visit the Lion's Pride Inn. Tell Innkeeper Farley I sent you. You've earned some rest.",
+  "completionDialogue": "Ah, another brave soul sent by the Marshal! Welcome to Goldshire, friend. The inn is always open to heroes. Here, have a drink on the house!",
+  "reward": {
+    "gold": 30,
+    "xp": 90,
+    "item": "refreshing_spring_water"
+  },
+  "questDialogue": "Welcome to the Lion's Pride! Marshal Thornwood speaks highly of you. Rest up and enjoy the hospitality!"
+}

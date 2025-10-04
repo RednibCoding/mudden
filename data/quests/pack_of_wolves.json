@@ -1,0 +1,13 @@
+{
+  "id": "pack_of_wolves",
+  "name": "Pack of Wolves",
+  "type": "kill",
+  "target": "young_wolf",
+  "count": 6,
+  "dialogue": "My vineyard has been overrun by wolves! They're eating the grapes and terrorizing my workers. I need you to thin their numbers. Kill 6 Young Wolves so we can reclaim the vineyard.",
+  "completionDialogue": "Thank the Light! With fewer wolves prowling about, my workers can return to the fields. Please, take this as payment for your bravery.",
+  "reward": {
+    "gold": 35,
+    "xp": 100
+  }
+}
