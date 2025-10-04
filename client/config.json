@@ -1,0 +1,27 @@
+{
+  "connection": {
+    "host": "localhost",
+    "port": 3000,
+    "protocol": "http"
+  },
+  "ui": {
+    "titleBar": "⚔ World Terminal ⚔",
+    "loginTitle": "Enter the Realm",
+    "primaryColor": "#ffd700",
+    "backgroundColor": "#0a0e14",
+    "headerBackground": "#1a1f2e",
+    "inputBackground": "#1a1f2e"
+  },
+  "messageColors": {
+    "echo": "#888888",
+    "info": "#ffffff",
+    "success": "#1eff00",
+    "error": "#ff2020",
+    "combat": "#ffff00",
+    "say": "#ffffff",
+    "whisper": "#ff7fff",
+    "npc": "#ffd100",
+    "system": "#ffff00",
+    "loot": "#0070dd"
+  }
+}

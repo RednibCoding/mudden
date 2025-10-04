@@ -5,10 +5,48 @@ class MudClient {
         this.authenticated = false;
         this.commandHistory = [];
         this.historyIndex = -1;
+        this.config = null;
         
-        this.initializeElements();
-        this.setupEventListeners();
-        this.connect();
+        // Load config first, then initialize
+        this.loadConfig().then(() => {
+            this.applyConfig();
+            this.initializeElements();
+            this.setupEventListeners();
+            this.connect();
+        }).catch(error => {
+            console.error('Failed to load config:', error);
+            alert('Failed to load client configuration. Please refresh the page.');
+        });
+    }
+    
+    async loadConfig() {
+        const response = await fetch('config.json');
+        this.config = await response.json();
+    }
+    
+    applyConfig() {
+        // Apply UI text
+        document.getElementById('title-text').textContent = this.config.ui.titleBar;
+        document.getElementById('login-title').textContent = this.config.ui.loginTitle;
+        
+        // Apply CSS variables for colors
+        const root = document.documentElement;
+        root.style.setProperty('--primary-color', this.config.ui.primaryColor);
+        root.style.setProperty('--bg-color', this.config.ui.backgroundColor);
+        root.style.setProperty('--header-bg', this.config.ui.headerBackground);
+        root.style.setProperty('--input-bg', this.config.ui.inputBackground);
+        
+        // Apply message colors
+        root.style.setProperty('--color-echo', this.config.messageColors.echo);
+        root.style.setProperty('--color-info', this.config.messageColors.info);
+        root.style.setProperty('--color-success', this.config.messageColors.success);
+        root.style.setProperty('--color-error', this.config.messageColors.error);
+        root.style.setProperty('--color-combat', this.config.messageColors.combat);
+        root.style.setProperty('--color-say', this.config.messageColors.say);
+        root.style.setProperty('--color-whisper', this.config.messageColors.whisper);
+        root.style.setProperty('--color-npc', this.config.messageColors.npc);
+        root.style.setProperty('--color-system', this.config.messageColors.system);
+        root.style.setProperty('--color-loot', this.config.messageColors.loot);
     }
     
     initializeElements() {
@@ -21,16 +59,12 @@ class MudClient {
         this.loginError = document.getElementById('login-error');
         this.output = document.getElementById('output');
         this.commandInput = document.getElementById('command-input');
-        this.logoutBtn = document.getElementById('logout-btn');
     }
     
     setupEventListeners() {
         // Login form
         this.loginBtn.addEventListener('click', () => this.login());
         this.registerBtn.addEventListener('click', () => this.register());
-        
-        // Logout button
-        this.logoutBtn.addEventListener('click', () => this.logout());
         
         this.usernameInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -81,48 +115,61 @@ class MudClient {
     }
     
     connect() {
-        this.socket = io('http://localhost:3000', {
-            autoConnect: true,
-            reconnection: true,
-            reconnectionDelay: 1000,
-            reconnectionAttempts: 5,
-            timeout: 20000
-        });
+        // Build connection URL from config
+        const { protocol, host, port } = this.config.connection;
+        const serverUrl = `${protocol}://${host}:${port}`;
         
-        this.socket.on('connect', () => {
-            this.addMessage('Connected to Mudden server.', 'success');
-        });
-        
-        this.socket.on('disconnect', (reason) => {
-            this.addMessage('Disconnected from server.', 'error');
-            this.authenticated = false;
-            this.showLoginScreen();
+        // Load Socket.IO dynamically
+        const script = document.createElement('script');
+        script.src = `${serverUrl}/socket.io/socket.io.js`;
+        script.onload = () => {
+            this.socket = io(serverUrl, {
+                autoConnect: true,
+                reconnection: true,
+                reconnectionDelay: 1000,
+                reconnectionAttempts: 5,
+                timeout: 20000
+            });
             
-            // Auto-reconnect after a short delay if not a voluntary disconnect
-            if (reason !== 'io client disconnect') {
-                this.addMessage('Attempting to reconnect...', 'system');
-            }
-        });
-        
-        this.socket.on('reconnect', (attemptNumber) => {
-            this.addMessage(`Reconnected to server (attempt ${attemptNumber}).`, 'success');
-        });
-        
-        this.socket.on('reconnect_attempt', (attemptNumber) => {
-            this.addMessage(`Reconnection attempt ${attemptNumber}...`, 'system');
-        });
-        
-        this.socket.on('reconnect_failed', () => {
-            this.addMessage('Failed to reconnect to server. Please refresh the page.', 'error');
-        });
-        
-        this.socket.on('message', (msg) => {
-            this.handleServerMessage(msg);
-        });
-        
-        this.socket.on('connect_error', (error) => {
-            this.addMessage('Connection failed: ' + error.message, 'error');
-        });
+            this.socket.on('connect', () => {
+                this.addMessage('Connected to Mudden server.', 'success');
+            });
+            
+            this.socket.on('disconnect', (reason) => {
+                this.addMessage('Disconnected from server.', 'error');
+                this.authenticated = false;
+                this.showLoginScreen();
+                
+                // Auto-reconnect after a short delay if not a voluntary disconnect
+                if (reason !== 'io client disconnect') {
+                    this.addMessage('Attempting to reconnect...', 'system');
+                }
+            });
+            
+            this.socket.on('reconnect', (attemptNumber) => {
+                this.addMessage(`Reconnected to server (attempt ${attemptNumber}).`, 'success');
+            });
+            
+            this.socket.on('reconnect_attempt', (attemptNumber) => {
+                this.addMessage(`Reconnection attempt ${attemptNumber}...`, 'system');
+            });
+            
+            this.socket.on('reconnect_failed', () => {
+                this.addMessage('Failed to reconnect to server. Please refresh the page.', 'error');
+            });
+            
+            this.socket.on('message', (msg) => {
+                this.handleServerMessage(msg);
+            });
+            
+            this.socket.on('connect_error', (error) => {
+                this.addMessage('Connection failed: ' + error.message, 'error');
+            });
+        };
+        script.onerror = () => {
+            this.addMessage(`Failed to load Socket.IO from ${serverUrl}`, 'error');
+        };
+        document.head.appendChild(script);
     }
     
     login() {
@@ -253,7 +300,6 @@ class MudClient {
     showLoginScreen() {
         this.loginScreen.style.display = 'flex';
         this.gameScreen.style.display = 'none';
-        this.logoutBtn.style.display = 'none';
         this.usernameInput.focus();
         this.clearLoginError();
     }
@@ -261,7 +307,6 @@ class MudClient {
     showGameScreen() {
         this.loginScreen.style.display = 'none';
         this.gameScreen.style.display = 'flex';
-        this.logoutBtn.style.display = 'block';
         this.commandInput.focus();
     }
     

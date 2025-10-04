@@ -1,4 +1,25 @@
 /* Terminal-style MUD client */
+
+/* CSS Variables - Set dynamically from config.json */
+:root {
+    --primary-color: #6bcf7f;
+    --bg-color: #1a1a1a;
+    --header-bg: #2a2a2a;
+    --input-bg: #2a2a2a;
+    
+    /* Message colors - Set dynamically from config.json */
+    --color-echo: #9d9d9d;
+    --color-info: #aaa;
+    --color-success: #0f0;
+    --color-error: #f00;
+    --color-combat: #ff0;
+    --color-say: #0ff;
+    --color-whisper: #f0f;
+    --color-npc: #fff;
+    --color-system: #888;
+    --color-loot: #fa0;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -7,8 +28,8 @@
 
 body {
     font-family: 'Courier New', monospace;
-    background-color: #1a1a1a;
-    color: #6bcf7f;
+    background-color: var(--bg-color);
+    color: var(--primary-color);
     height: 100vh;
     overflow: hidden;
 }
@@ -20,39 +41,19 @@ body {
 }
 
 #header {
-    background-color: #2a2a2a;
+    background-color: var(--header-bg);
     padding: 8px;
-    border-bottom: 1px solid #6bcf7f;
+    border-bottom: 1px solid var(--primary-color);
     text-align: center;
     position: relative;
 }
 
 #header h1 {
-    color: #6bcf7f;
+    color: var(--primary-color);
     font-size: 16px;
     font-weight: normal;
     text-transform: uppercase;
     letter-spacing: 2px;
-}
-
-#logout-btn {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: 1px solid #6bcf7f;
-    color: #6bcf7f;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    padding: 4px 8px;
-    cursor: pointer;
-    text-transform: uppercase;
-}
-
-#logout-btn:hover {
-    background-color: #6bcf7f;
-    color: #2a2a2a;
 }
 
 /* Login Screen */
@@ -61,18 +62,18 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #1a1a1a;
+    background-color: var(--bg-color);
 }
 
 .login-form {
-    background-color: #2a2a2a;
+    background-color: var(--header-bg);
     padding: 20px;
-    border: 1px solid #6bcf7f;
+    border: 1px solid var(--primary-color);
     width: 300px;
 }
 
 .login-form h2 {
-    color: #6bcf7f;
+    color: var(--primary-color);
     margin-bottom: 20px;
     text-align: center;
     font-weight: normal;
@@ -87,9 +88,9 @@ body {
 .login-form input {
     width: 100%;
     padding: 6px;
-    background-color: #1a1a1a;
-    border: 1px solid #6bcf7f;
-    color: #6bcf7f;
+    background-color: var(--bg-color);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
     font-family: 'Courier New', monospace;
     font-size: 14px;
 }
@@ -107,21 +108,21 @@ body {
 
 .login-form button {
     padding: 6px 12px;
-    background-color: #1a1a1a;
-    border: 1px solid #6bcf7f;
-    color: #6bcf7f;
+    background-color: var(--bg-color);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
     font-family: 'Courier New', monospace;
     cursor: pointer;
     text-transform: uppercase;
 }
 
 .login-form button:hover {
-    background-color: #6bcf7f;
+    background-color: var(--primary-color);
     color: #000;
 }
 
 .login-error {
-    color: #ff0000;
+    color: var(--color-error);
     text-align: center;
     margin-top: 10px;
     font-size: 12px;
@@ -140,7 +141,7 @@ body {
     flex: 1;
     padding: 10px;
     overflow-y: auto;
-    background-color: #1a1a1a;
+    background-color: var(--bg-color);
     border-bottom: 1px solid #333;
     font-size: 14px;
     line-height: 1.4;
@@ -161,11 +162,11 @@ body {
 }
 
 #output::-webkit-scrollbar-thumb:hover {
-    background: #6bcf7f;
+    background: var(--primary-color);
 }
 
 #input-area {
-    background-color: #2a2a2a;
+    background-color: var(--input-bg);
     padding: 10px;
     display: flex;
     align-items: center;
@@ -174,17 +175,17 @@ body {
 }
 
 .prompt {
-    color: #6bcf7f;
+    color: var(--primary-color);
     margin-right: 5px;
     font-weight: bold;
-    text-shadow: 0 0 5px #6bcf7f;
+    text-shadow: 0 0 5px var(--primary-color);
 }
 
 #command-input {
     flex: 1;
     background-color: transparent;
     border: none;
-    color: #6bcf7f;
+    color: var(--primary-color);
     font-family: 'Courier New', monospace;
     font-size: 14px;
     outline: none;
@@ -199,37 +200,37 @@ body {
 
 /* Client-only echo */
 .message.echo { 
-    color: #9d9d9d; 
+    color: var(--color-echo); 
 }
 
 /* Server message types (matching types.ts MessageType) */
 .message.info { 
-    color: #aaa;          /* Gray - general information */
+    color: var(--color-info);
 }
 .message.success { 
-    color: #0f0;          /* Green - positive actions */
+    color: var(--color-success);
 }
 .message.error { 
-    color: #f00;          /* Red - failed actions */
+    color: var(--color-error);
 }
 .message.combat { 
-    color: #ff0;          /* Yellow - combat messages */
+    color: var(--color-combat);
 }
 .message.say { 
-    color: #0ff;          /* Cyan - public chat */
+    color: var(--color-say);
 }
 .message.whisper { 
-    color: #f0f;          /* Magenta - private messages */
+    color: var(--color-whisper);
 }
 .message.npc { 
-    color: #fff;          /* White - NPC dialogue */
+    color: var(--color-npc);
     font-weight: bold;
 }
 .message.system { 
-    color: #888;          /* Dark gray - server announcements */
+    color: var(--color-system);
 }
 .message.loot { 
-    color: #fa0;          /* Gold - rewards/drops */
+    color: var(--color-loot);
 }
 
 /* Scrollbar animation */

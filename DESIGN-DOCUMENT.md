@@ -3985,16 +3985,107 @@ if (data.isGm === true) {
 
 ---
 
+## Client Configuration
+
+### Configurable Terminal Client
+
+**Purpose:** Provide a clean, minimal web-based terminal client that's fully customizable without code changes
+
+**Configuration File:** `client/config.json`
+
+**Three Configuration Sections:**
+
+1. **Connection Settings**
+   ```json
+   {
+     "connection": {
+       "host": "localhost",
+       "port": 3000,
+       "protocol": "http"
+     }
+   }
+   ```
+   - Host: Server hostname or IP
+   - Port: Server port number
+   - Protocol: `"http"` or `"https"`
+
+2. **UI Settings**
+   ```json
+   {
+     "ui": {
+       "titleBar": "Mudden Terminal",
+       "loginTitle": "Connect to Mudden",
+       "primaryColor": "#6bcf7f",
+       "backgroundColor": "#1a1a1a",
+       "headerBackground": "#2a2a2a",
+       "inputBackground": "#2a2a2a"
+     }
+   }
+   ```
+   - Text labels (title bar, login screen)
+   - Color scheme (primary accent, backgrounds)
+   - All colors in hex format
+
+3. **Message Colors**
+   ```json
+   {
+     "messageColors": {
+       "echo": "#9d9d9d",
+       "info": "#aaa",
+       "success": "#0f0",
+       "error": "#f00",
+       "combat": "#ff0",
+       "say": "#0ff",
+       "whisper": "#f0f",
+       "npc": "#fff",
+       "system": "#888",
+       "loot": "#fa0"
+     }
+   }
+   ```
+   - Each message type has configurable color
+   - Matches server MessageType enum
+
+**Features:**
+- ✅ No code changes needed for customization
+- ✅ Edit config, refresh browser - instant theme change
+- ✅ Perfect for branding/customization
+- ✅ Multiple deployment configurations (local, LAN, production)
+- ✅ Complete visual theming support
+
+**Example Themes:**
+- Classic Green Terminal (Matrix style)
+- Amber Monochrome (retro terminal)
+- Blue Cyber (futuristic)
+- Dark Purple (modern aesthetic)
+
+**Implementation:**
+- Client loads `config.json` on startup
+- Applies CSS variables dynamically
+- Updates UI text elements
+- Builds connection URL from config
+- Dynamically loads Socket.IO from configured server
+
+**Usage:**
+1. Edit `client/config.json`
+2. Refresh browser
+3. New theme/connection applies immediately
+
+---
+
 ## Documentation Reference
 
-All security features documented in:
+All features documented in:
 - `RATE-LIMITING.md` - Complete rate limiting guide
 - `ACCOUNT-MANAGEMENT.md` - Account command documentation
+- `GAMEMASTER-COMMANDS.md` - GM command documentation
+- `CLIENT-CONFIG.md` - Client configuration guide with example themes
 
 ---
 
 *This is a living document - pure traditional MUD design with zero legacy bloat.*
 
 **Last Updated:** October 4, 2025  
-**Status:** Phase 8 Complete - Rate Limiting, Account Management & GM Commands Implemented! Full admin tooling with ban system, kick, and teleport commands!
+**Status:** Phase 8 Complete - Rate Limiting, Account Management, GM Commands & Configurable Client Implemented! Full production-ready MUD engine!
+
 
