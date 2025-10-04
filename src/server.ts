@@ -17,7 +17,7 @@ import { showQuests } from './quests';
 import { harvest, showRecipes, examineRecipe, craft } from './crafting';
 import { handleFriendCommand } from './social';
 import { Player } from './types';
-import { calculateStats } from './utils';
+import { calculateStats, generateMap } from './utils';
 
 const PORT = 3000;
 
@@ -250,6 +250,10 @@ function handleCommand(player: Player, input: string): void {
       look(player);
       break;
       
+    case 'map':
+      cmdMap(player);
+      break;
+      
     case 'stats':
     case 'score':
       cmdStats(player);
@@ -455,6 +459,11 @@ function handleCommand(player: Player, input: string): void {
 
 // Basic command implementations
 
+function cmdMap(player: Player): void {
+  const mapDisplay = generateMap(player);
+  send(player, mapDisplay, 'info');
+}
+
 function cmdWho(player: Player): void {
   const onlinePlayers = Array.from(gameState.players.values())
     .filter(p => p.socket);
@@ -536,6 +545,7 @@ NPCs:
 
 Information:
   look (l)           - Look at your surroundings
+  map                - View a visual map of nearby locations
   stats              - View your character stats
 
 Social:

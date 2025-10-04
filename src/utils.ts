@@ -194,3 +194,128 @@ export function formatEquipmentList(player: Player): string {
   
   return equipped.length > 0 ? equipped.join('\n') + '\n' : '';
 }
+
+/**
+ * Generate a visual map centered on the player's current location
+ * Shows locations up to 5 steps away with connections (ignores up/down)
+ * @param player - The player whose map to generate
+ * @returns ASCII art map string
+ */
+export function generateMap(player: Player): string {
+  const currentLoc = getLocation(player);
+  if (!currentLoc) return 'You are nowhere!';
+  
+  // Build graph of reachable locations (BFS to depth 2, excluding up/down)
+  const visited = new Map<string, { loc: Location; depth: number; x: number; y: number }>();
+  const queue: Array<{ id: string; depth: number; x: number; y: number }> = [
+    { id: currentLoc.id, depth: 0, x: 0, y: 0 }
+  ];
+  
+  // Direction to coordinate offset (ignoring up/down)
+  const dirToOffset: { [key: string]: { dx: number; dy: number } } = {
+    north: { dx: 0, dy: -1 },
+    south: { dx: 0, dy: 1 },
+    east: { dx: 1, dy: 0 },
+    west: { dx: -1, dy: 0 }
+  };
+  
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    
+    if (visited.has(current.id) || current.depth > 2) continue;
+    
+    const loc = gameState.gameData.locations.get(current.id);
+    if (!loc) continue;
+    
+    visited.set(current.id, { loc, depth: current.depth, x: current.x, y: current.y });
+    
+    // Explore neighbors
+    for (const [direction, targetId] of Object.entries(loc.exits)) {
+      if (direction === 'up' || direction === 'down') continue; // Ignore vertical
+      
+      const offset = dirToOffset[direction];
+      if (offset && !visited.has(targetId)) {
+        queue.push({
+          id: targetId,
+          depth: current.depth + 1,
+          x: current.x + offset.dx,
+          y: current.y + offset.dy
+        });
+      }
+    }
+  }
+  
+  // Find grid bounds
+  let minX = 0, maxX = 0, minY = 0, maxY = 0;
+  for (const { x, y } of visited.values()) {
+    minX = Math.min(minX, x);
+    maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y);
+    maxY = Math.max(maxY, y);
+  }
+  
+  // Build grid (each location cell is 17 chars wide, 3 rows tall)
+  const CELL_WIDTH = 17;
+  const CELL_HEIGHT = 3;
+  const gridWidth = (maxX - minX + 1) * CELL_WIDTH;
+  const gridHeight = (maxY - minY + 1) * CELL_HEIGHT;
+  const grid: string[][] = Array.from({ length: gridHeight }, () => 
+    Array(gridWidth).fill(' ')
+  );
+  
+  // Helper to write string to grid safely
+  const writeToGrid = (row: number, col: number, text: string) => {
+    for (let i = 0; i < text.length; i++) {
+      if (row >= 0 && row < gridHeight && col + i >= 0 && col + i < gridWidth) {
+        grid[row][col + i] = text[i];
+      }
+    }
+  };
+  
+  // Place locations and connections
+  for (const [locId, { loc, x, y }] of visited.entries()) {
+    const cellX = (x - minX) * CELL_WIDTH;
+    const cellY = (y - minY) * CELL_HEIGHT;
+    const centerRow = cellY + 1; // Middle row of the cell
+    
+    // Format location name (max 11 chars inside brackets = 13 total)
+    const isCurrent = locId === currentLoc.id;
+    let displayName = loc.name;
+    
+    // Truncate if needed
+    if (isCurrent && displayName.length > 9) {
+      displayName = displayName.substring(0, 9);
+    } else if (!isCurrent && displayName.length > 11) {
+      displayName = displayName.substring(0, 11);
+    }
+    
+    // Add current location markers
+    if (isCurrent) {
+      displayName = `*${displayName}*`;
+    }
+    
+    // Pad to 11 chars (or 11 for current with asterisks)
+    const paddedName = displayName.padEnd(11, ' ');
+    const locationText = `[${paddedName}]`;
+    
+    // Write location name centered in cell
+    writeToGrid(centerRow, cellX, locationText);
+    
+    // Draw east connection (after the location name)
+    if (loc.exits.east && visited.has(loc.exits.east)) {
+      writeToGrid(centerRow, cellX + 13, ' -- ');
+    }
+    
+    // Draw south connection (below the location)
+    if (loc.exits.south && visited.has(loc.exits.south)) {
+      writeToGrid(centerRow + 1, cellX + 6, '|');
+    }
+  }
+  
+  // Convert grid to string, trim trailing whitespace, and remove empty lines
+  const lines = grid
+    .map(row => row.join('').trimEnd())
+    .filter(line => line.trim().length > 0);
+  
+  return '\n' + lines.join('\n') + '\n';
+}
