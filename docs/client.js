@@ -119,57 +119,49 @@ class MudClient {
         const { protocol, host, port } = this.config.connection;
         const serverUrl = `${protocol}://${host}:${port}`;
         
-        // Load Socket.IO dynamically
-        const script = document.createElement('script');
-        script.src = `${serverUrl}/socket.io/socket.io.js`;
-        script.onload = () => {
-            this.socket = io(serverUrl, {
-                autoConnect: true,
-                reconnection: true,
-                reconnectionDelay: 1000,
-                reconnectionAttempts: 5,
-                timeout: 20000
-            });
+        // Socket.IO is already loaded from socket.io.min.js
+        this.socket = io(serverUrl, {
+            autoConnect: true,
+            reconnection: true,
+            reconnectionDelay: 1000,
+            reconnectionAttempts: 5,
+            timeout: 20000
+        });
+        
+        this.socket.on('connect', () => {
+            this.addMessage('Connected to Mudden server.', 'success');
+        });
+        
+        this.socket.on('disconnect', (reason) => {
+            this.addMessage('Disconnected from server.', 'error');
+            this.authenticated = false;
+            this.showLoginScreen();
             
-            this.socket.on('connect', () => {
-                this.addMessage('Connected to Mudden server.', 'success');
-            });
-            
-            this.socket.on('disconnect', (reason) => {
-                this.addMessage('Disconnected from server.', 'error');
-                this.authenticated = false;
-                this.showLoginScreen();
-                
-                // Auto-reconnect after a short delay if not a voluntary disconnect
-                if (reason !== 'io client disconnect') {
-                    this.addMessage('Attempting to reconnect...', 'system');
-                }
-            });
-            
-            this.socket.on('reconnect', (attemptNumber) => {
-                this.addMessage(`Reconnected to server (attempt ${attemptNumber}).`, 'success');
-            });
-            
-            this.socket.on('reconnect_attempt', (attemptNumber) => {
-                this.addMessage(`Reconnection attempt ${attemptNumber}...`, 'system');
-            });
-            
-            this.socket.on('reconnect_failed', () => {
-                this.addMessage('Failed to reconnect to server. Please refresh the page.', 'error');
-            });
-            
-            this.socket.on('message', (msg) => {
-                this.handleServerMessage(msg);
-            });
-            
-            this.socket.on('connect_error', (error) => {
-                this.addMessage('Connection failed: ' + error.message, 'error');
-            });
-        };
-        script.onerror = () => {
-            this.addMessage(`Failed to load Socket.IO from ${serverUrl}`, 'error');
-        };
-        document.head.appendChild(script);
+            // Auto-reconnect after a short delay if not a voluntary disconnect
+            if (reason !== 'io client disconnect') {
+                this.addMessage('Attempting to reconnect...', 'system');
+            }
+        });
+        
+        this.socket.on('reconnect', (attemptNumber) => {
+            this.addMessage(`Reconnected to server (attempt ${attemptNumber}).`, 'success');
+        });
+        
+        this.socket.on('reconnect_attempt', (attemptNumber) => {
+            this.addMessage(`Reconnection attempt ${attemptNumber}...`, 'system');
+        });
+        
+        this.socket.on('reconnect_failed', () => {
+            this.addMessage('Failed to reconnect to server. Please refresh the page.', 'error');
+        });
+        
+        this.socket.on('message', (msg) => {
+            this.handleServerMessage(msg);
+        });
+        
+        this.socket.on('connect_error', (error) => {
+            this.addMessage('Connection failed: ' + error.message, 'error');
+        });
     }
     
     login() {

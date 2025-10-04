@@ -1,6 +1,6 @@
 {
   "connection": {
-    "host": "185.163.119.178",
+    "host": "localhost",
     "port": 3000,
     "protocol": "http"
   },

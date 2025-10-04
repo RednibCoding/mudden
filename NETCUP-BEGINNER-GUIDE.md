@@ -222,6 +222,19 @@ ufw allow 22/tcp
 # Allow Mudden
 ufw allow 3000/tcp
 
+# Allow HTTPS (for Caddy)
+ufw allow 443/tcp
+
+# Allow HTTP (Caddy redirects to HTTPS)
+ufw allow 80/tcp
+
+```bash
+# Allow SSH (so you don't lock yourself out!)
+ufw allow 22/tcp
+
+# Allow Mudden
+ufw allow 3000/tcp
+
 # Enable firewall
 ufw enable
 ```
@@ -251,7 +264,20 @@ To                         Action      From
 ### From Your Web Browser:
 Open: `http://YOUR_SERVER_IP:3000`
 
-You should see... nothing! That's OK - the server doesn't serve web pages directly.
+You should see: "Cannot GET /" (that's OK - server doesn't serve web pages directly)
+
+### Test Server Logs:
+```bash
+pm2 logs mudden
+```
+
+You should see:
+```
+✓ Server running on 0.0.0.0:3000
+✓ Ready for connections!
+```
+
+Press `Ctrl+C` to exit logs.
 
 ### From Your Client:
 
@@ -278,7 +304,7 @@ python3 -m http.server 8080
 
 ---
 
-## Part 7: Deploy Client to Netlify (Optional)
+## Part 7: Deploy Client to GitHub Pages
 
 Make your client accessible to everyone:
 
@@ -356,7 +382,27 @@ pm2 restart mudden
 
 ### "Can't connect to server"
 ```bash
-# Check if it's running
+# Check if PM2 is running
+pm2 status
+
+# Check if Caddy is running
+systemctl status caddy
+
+# Check logs for errors
+pm2 logs mudden
+journalctl -u caddy -f
+
+# Check firewall
+ufw status
+
+# Check if ports are listening
+netstat -tlnp | grep 3000
+netstat -tlnp | grep 443
+```
+
+### "Can't connect to server"
+```bash
+# Check if PM2 is running
 pm2 status
 
 # Check logs for errors
@@ -424,3 +470,5 @@ If stuck:
 ---
 
 *You did it! Your MUD is live on the internet!* 🎉
+
+
