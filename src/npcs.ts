@@ -77,9 +77,9 @@ export function talk(player: Player, npcName: string): void {
         const progress = player.activeQuests[npc.quest];
         
         // Show different progress based on quest type
-        if (quest.type === 'collect' && quest.itemDrop) {
-          const collected = player.questItems[quest.itemDrop] || 0;
-          send(player, `Quest in progress: ${collected}/${quest.count} ${quest.itemDrop}`, 'info');
+        if (quest.type === 'collect' && quest.materialDrop) {
+          const collected = player.questItems[quest.materialDrop] || 0;
+          send(player, `Quest in progress: ${collected}/${quest.count} ${quest.materialDrop}`, 'info');
         } else {
           send(player, `Quest in progress: ${progress.progress}/${quest.count}`, 'info');
         }

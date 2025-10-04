@@ -78,9 +78,9 @@ export function canCompleteQuest(player: Player, questId: string): boolean {
   // Check if progress meets requirement
   if (progress.progress < quest.count) return false;
   
-  // For collect quests, also check questItems using itemDrop field
-  if (quest.type === 'collect' && quest.itemDrop) {
-    const collected = player.questItems[quest.itemDrop] || 0;
+  // For collect quests, also check questItems using materialDrop field
+  if (quest.type === 'collect' && quest.materialDrop) {
+    const collected = player.questItems[quest.materialDrop] || 0;
     if (collected < quest.count) return false;
   }
   
@@ -108,9 +108,9 @@ export function completeQuest(player: Player, questId: string): void {
   // Add to completed
   player.completed.push(questId);
   
-  // Clear quest items if collect quest (using itemDrop field)
-  if (quest.type === 'collect' && quest.itemDrop) {
-    delete player.questItems[quest.itemDrop];
+  // Clear quest items if collect quest (using materialDrop field)
+  if (quest.type === 'collect' && quest.materialDrop) {
+    delete player.questItems[quest.materialDrop];
   }
   
   // Give rewards
@@ -121,8 +121,21 @@ export function completeQuest(player: Player, questId: string): void {
   if (quest.reward.item) {
     const item = gameState.gameData.items.get(quest.reward.item);
     if (item) {
-      player.inventory.push({ ...item });
-      send(player, `You receive ${item.name}!`, 'loot');
+      const config = getConfig();
+      // If inventory full, drop to ground
+      if (player.inventory.length >= config.gameplay.maxInventorySlots) {
+        const location = getLocation(player);
+        if (location) {
+          if (!location.items) {
+            location.items = [];
+          }
+          location.items.push({ ...item });
+          send(player, `You receive ${item.name}, but your inventory is full! It drops to the ground.`, 'loot');
+        }
+      } else {
+        player.inventory.push({ ...item });
+        send(player, `You receive ${item.name}!`, 'loot');
+      }
     }
   }
   
@@ -148,19 +161,19 @@ export function updateQuestProgress(player: Player, type: 'kill' | 'collect' | '
       progress.progress++;
       
       // For collect quests, track quest items and show pickup message
-      if (type === 'collect' && quest.itemDrop) {
-        if (!player.questItems[quest.itemDrop]) {
-          player.questItems[quest.itemDrop] = 0;
+      if (type === 'collect' && quest.materialDrop) {
+        if (!player.questItems[quest.materialDrop]) {
+          player.questItems[quest.materialDrop] = 0;
         }
-        player.questItems[quest.itemDrop]++;
+        player.questItems[quest.materialDrop]++;
         
         // Try to get the material name, fallback to ID if not found
-        const material = gameState.gameData.materials.get(quest.itemDrop);
-        const itemName = material ? material.name : quest.itemDrop;
+        const material = gameState.gameData.materials.get(quest.materialDrop);
+        const itemName = material ? material.name : quest.materialDrop;
         
         // Show quest item pickup message
         send(player, `You obtain ${itemName}! (Quest)`, 'loot');
-        send(player, `Quest progress: ${player.questItems[quest.itemDrop]}/${quest.count} ${itemName}`, 'info');
+        send(player, `Quest progress: ${player.questItems[quest.materialDrop]}/${quest.count} ${itemName}`, 'info');
         
         // Check if complete
         if (progress.progress >= quest.count) {
@@ -205,12 +218,12 @@ export function showQuests(player: Player): void {
       message += `\n${quest.name}:\n`;
       message += `  ${quest.dialogue}\n`;
       
-      if (quest.type === 'collect' && quest.itemDrop) {
-        const collected = player.questItems[quest.itemDrop] || 0;
+      if (quest.type === 'collect' && quest.materialDrop) {
+        const collected = player.questItems[quest.materialDrop] || 0;
         
         // Try to get the material name, fallback to ID if not found
-        const material = gameState.gameData.materials.get(quest.itemDrop);
-        const itemName = material ? material.name : quest.itemDrop;
+        const material = gameState.gameData.materials.get(quest.materialDrop);
+        const itemName = material ? material.name : quest.materialDrop;
         
         message += `  Progress: ${collected}/${quest.count} ${itemName}\n`;
       } else {

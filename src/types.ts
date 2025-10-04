@@ -151,7 +151,7 @@ export interface Quest {
   type: 'kill' | 'collect' | 'visit';
   target: string;          // Enemy ID (kill/collect) or NPC ID (visit)
   count: number;           // How many to kill/collect
-  itemDrop?: string;       // Quest item ID (for collect quests)
+  materialDrop?: string;   // Material ID to track for collect quests
   dialogue: string;        // Quest description
   completionDialogue: string; // What NPC says when quest is completed
   reward: {

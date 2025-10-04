@@ -1229,7 +1229,7 @@ export function sell(player: Player, itemName: string): void {
   "type": "collect",
   "target": "wolf",
   "count": 3,
-  "itemDrop": "wolf_pelt",
+  "materialDrop": "wolf_pelt",
   "dialogue": "Bring me 3 wolf pelts.",
   "completionDialogue": "Perfect pelts! You're a skilled hunter.",
   "reward": { "gold": 150, "xp": 100 }
