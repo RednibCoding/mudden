@@ -67,6 +67,7 @@ export async function createPlayer(username: string, password: string): Promise<
     gold: config.newPlayer.startingGold,
     deaths: 0,
     combats: 0,
+    lastLogin: Date.now(),
     inventory: startingInventory,
     equipped: startingEquipment,
     questItems: {},
@@ -92,21 +93,6 @@ export async function loadPlayer(username: string): Promise<Player | null> {
   
   try {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    
-    // Backward compatibility: Add deaths field if missing
-    if (data.deaths === undefined) {
-      data.deaths = 0;
-    }
-    
-    // Backward compatibility: Add combats field if missing
-    if (data.combats === undefined) {
-      data.combats = 0;
-    }
-    
-    // Backward compatibility: Add displayName field if missing
-    if (!data.displayName) {
-      data.displayName = data.username.charAt(0).toUpperCase() + data.username.slice(1);
-    }
     
     // Enrich inventory: convert item IDs to full Item objects
     if (data.inventory && Array.isArray(data.inventory)) {
@@ -190,10 +176,53 @@ export async function authenticatePlayer(username: string, password: string): Pr
   
   const isValid = await bcrypt.compare(password, player.passwordHash);
   
+  if (isValid) {
+    // Update last login timestamp
+    player.lastLogin = Date.now();
+  }
+  
   return isValid ? player : null;
 }
 
 export function playerExists(username: string): boolean {
   const filePath = path.join(PERSIST_DIR, `${username}.json`);
   return fs.existsSync(filePath);
+}
+
+export async function cleanupInactivePlayers(config: any): Promise<number> {
+  if (!config.server.autoDeleteInactivePlayers) {
+    return 0;
+  }
+  
+  const maxInactiveMs = config.server.inactivePlayerDays * 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  let deletedCount = 0;
+  
+  if (!fs.existsSync(PERSIST_DIR)) {
+    return 0;
+  }
+  
+  const files = fs.readdirSync(PERSIST_DIR).filter(f => f.endsWith('.json'));
+  
+  for (const file of files) {
+    try {
+      const filePath = path.join(PERSIST_DIR, file);
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      
+      // Check if player has lastLogin field (for backward compatibility)
+      if (data.lastLogin !== undefined) {
+        const inactiveMs = now - data.lastLogin;
+        
+        if (inactiveMs > maxInactiveMs) {
+          fs.unlinkSync(filePath);
+          deletedCount++;
+          console.log(`  Deleted inactive player: ${data.username} (last login: ${Math.floor(inactiveMs / (24 * 60 * 60 * 1000))} days ago)`);
+        }
+      }
+    } catch (error) {
+      console.error(`Error processing player file ${file}:`, error);
+    }
+  }
+  
+  return deletedCount;
 }

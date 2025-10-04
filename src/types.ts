@@ -40,6 +40,7 @@ export interface Player {
   gold: number;
   deaths: number;                              // Death counter
   combats: number;                             // Combat counter
+  lastLogin: number;                           // Timestamp of last login (for auto-deletion)
   inventory: Item[];
   equipped: {
     weapon: Item | null;
@@ -214,6 +215,8 @@ export interface Config {
     port: number;
     host: string;
     corsOrigin: string;
+    autoDeleteInactivePlayers: boolean;
+    inactivePlayerDays: number;
   };
   gameMeta: {
     name: string;

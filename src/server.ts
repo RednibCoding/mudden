@@ -4,7 +4,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import { loadGameData } from './data';
 import { gameState, addPlayer, removePlayer } from './game';
-import { createPlayer, authenticatePlayer, playerExists, savePlayer } from './player';
+import { createPlayer, authenticatePlayer, playerExists, savePlayer, cleanupInactivePlayers } from './player';
 import { send, sendToAll, whisper, reply } from './messaging';
 import { move, look } from './movement';
 import { attack, flee, isInCombat } from './combat';
@@ -25,6 +25,15 @@ const MUDDEN_VERSION = packageJson.version;
 async function startServer() {
   // Load game data
   gameState.gameData = await loadGameData();
+  
+  // Cleanup inactive players if configured
+  console.log('Checking for inactive players...');
+  const deletedCount = await cleanupInactivePlayers(gameState.gameData.config);
+  if (deletedCount > 0) {
+    console.log(`✓ Deleted ${deletedCount} inactive player(s)\n`);
+  } else if (gameState.gameData.config.server.autoDeleteInactivePlayers) {
+    console.log('✓ No inactive players to delete\n');
+  }
   
   // Get server config
   const serverConfig = gameState.gameData.config.server;

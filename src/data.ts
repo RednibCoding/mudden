@@ -203,7 +203,9 @@ function getDefaultConfig(): Config {
     server: {
       port: 3000,
       host: '0.0.0.0',
-      corsOrigin: '*'
+      corsOrigin: '*',
+      autoDeleteInactivePlayers: false,
+      inactivePlayerDays: 90
     },
     gameMeta: {
       name: 'Mudden MUD',
