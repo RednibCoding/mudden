@@ -1,0 +1,6 @@
+{
+  "id": "tavern_keeper",
+  "name": "Bjorn the Innkeeper",
+  "dialogue": "Welcome to the Rusty Tankard! Ale's cold and the stories are warm.",
+  "quest": "find_hermit"
+}

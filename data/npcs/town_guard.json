@@ -1,0 +1,6 @@
+{
+  "id": "town_guard",
+  "name": "Captain Aldric",
+  "dialogue": "Stay alert, citizen. Dangerous creatures roam these lands.",
+  "quest": "goblin_problem"
+}

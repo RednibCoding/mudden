@@ -130,7 +130,8 @@ export interface Location {
 export interface NPC {
   id: string;
   name: string;
-  dialogue: string;
+  dialogue: string;        // Default dialogue
+  questDialogue?: string;  // Dialogue when player has active visit quest targeting this NPC
   quest?: string;          // Quest ID this NPC offers
   healer?: boolean;        // Can heal players for gold
   portals?: {
@@ -147,8 +148,9 @@ export interface Quest {
   id: string;
   name: string;
   type: 'kill' | 'collect' | 'visit';
-  target: string;          // Enemy ID, item ID, or NPC ID
+  target: string;          // Enemy ID (kill/collect) or NPC ID (visit)
   count: number;           // How many to kill/collect
+  itemDrop?: string;       // Quest item ID (for collect quests)
   npc: string;             // NPC ID who gives this quest
   dialogue: string;        // Quest description
   reward: {

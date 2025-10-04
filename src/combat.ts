@@ -4,6 +4,7 @@ import { Player, Enemy } from './types';
 import { gameState } from './game';
 import { send, broadcast } from './messaging';
 import { savePlayer } from './player';
+import { updateQuestProgress } from './quests';
 
 /**
  * Apply damage variance to make combat less predictable
@@ -132,6 +133,9 @@ function handleEnemyDeath(player: Player, enemy: Enemy, locationId: string): voi
   const goldEach = Math.floor(enemy.gold / numFighters);
   const xpEach = Math.floor(enemy.xp / numFighters);
   
+  // Announce death FIRST
+  broadcast(locationId, `${enemy.name} dies!`, 'combat');
+  
   // Distribute rewards to all fighters
   enemy.fighters.forEach(username => {
     const fighter = gameState.players.get(username);
@@ -158,15 +162,18 @@ function handleEnemyDeath(player: Player, enemy: Enemy, locationId: string): voi
       }
     }
     
+    // Update kill quests
+    updateQuestProgress(fighter, 'kill', enemy.id);
+    
+    // Update collect quests (quest items)
+    updateQuestProgress(fighter, 'collect', enemy.id);
+    
     // Check for level up
     checkLevel(fighter);
     
     // Save player
     savePlayer(fighter);
   });
-  
-  // Announce death
-  broadcast(locationId, `${enemy.name} dies!`, 'combat');
   
   // Remove enemy from location
   const index = location.enemies.indexOf(enemy);

@@ -1,0 +1,13 @@
+{
+  "id": "goblin_problem",
+  "name": "Goblin Problem",
+  "type": "kill",
+  "target": "goblin",
+  "count": 5,
+  "npc": "town_guard",
+  "dialogue": "Those goblins have been terrorizing travelers! Kill 5 of them and I'll reward you.",
+  "reward": {
+    "gold": 100,
+    "xp": 75
+  }
+}

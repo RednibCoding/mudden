@@ -1,0 +1,14 @@
+{
+  "id": "wolf_pelts",
+  "name": "Wolf Pelts",
+  "type": "collect",
+  "target": "wolf",
+  "count": 3,
+  "itemDrop": "wolf_pelt",
+  "npc": "tanner",
+  "dialogue": "I need wolf pelts for my leather work. Bring me 3 and I'll pay you well.",
+  "reward": {
+    "gold": 150,
+    "xp": 100
+  }
+}

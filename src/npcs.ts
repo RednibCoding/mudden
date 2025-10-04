@@ -4,6 +4,7 @@ import { Player, NPC } from './types';
 import { gameState } from './game';
 import { send, broadcast } from './messaging';
 import { savePlayer } from './player';
+import { canAcceptQuest, canCompleteQuest, acceptQuest, completeQuest, updateQuestProgress } from './quests';
 
 // Talk to NPC command
 export function talk(player: Player, npcName: string): void {
@@ -27,7 +28,66 @@ export function talk(player: Player, npcName: string): void {
     return;
   }
   
-  // Regular dialogue
+  // Check if this NPC is a visit quest target and has questDialogue
+  let hasActiveVisitQuest = false;
+  for (const [questId, progress] of Object.entries(player.activeQuests)) {
+    const quest = gameState.gameData.quests.get(questId);
+    if (quest && quest.type === 'visit' && quest.target === npc.id) {
+      hasActiveVisitQuest = true;
+      break;
+    }
+  }
+  
+  // Show quest-specific dialogue if NPC is a visit quest target
+  if (hasActiveVisitQuest && npc.questDialogue) {
+    send(player, `${npc.name}: "${npc.questDialogue}"`, 'npc');
+    // Update quest progress
+    updateQuestProgress(player, 'visit', npc.id);
+    return;
+  }
+  
+  // Quest handling - check BEFORE showing regular dialogue
+  if (npc.quest) {
+    // Can complete quest?
+    if (canCompleteQuest(player, npc.quest)) {
+      send(player, `${npc.name}: "${npc.dialogue}"`, 'npc');
+      completeQuest(player, npc.quest);
+      return;
+    }
+    
+    // Can accept quest?
+    if (canAcceptQuest(player, npc.quest)) {
+      send(player, `${npc.name}: "${npc.dialogue}"`, 'npc');
+      acceptQuest(player, npc.quest);
+      return;
+    }
+    
+    // Quest already active - show quest dialogue again as reminder
+    if (player.activeQuests[npc.quest]) {
+      const quest = gameState.gameData.quests.get(npc.quest);
+      if (quest) {
+        send(player, `${npc.name}: "${quest.dialogue}"`, 'npc');
+        const progress = player.activeQuests[npc.quest];
+        
+        // Show different progress based on quest type
+        if (quest.type === 'collect' && quest.itemDrop) {
+          const collected = player.questItems[quest.itemDrop] || 0;
+          send(player, `Quest in progress: ${collected}/${quest.count} ${quest.itemDrop}`, 'info');
+        } else {
+          send(player, `Quest in progress: ${progress.progress}/${quest.count}`, 'info');
+        }
+      }
+      return;
+    }
+    
+    // Quest already completed
+    if (player.completed.includes(npc.quest)) {
+      send(player, `${npc.name}: "Thank you again for your help!"`, 'npc');
+      return;
+    }
+  }
+  
+  // Regular dialogue (only if no quest interaction)
   send(player, `${npc.name}: "${npc.dialogue}"`, 'npc');
   
   // Healer NPC?
@@ -45,8 +105,6 @@ export function talk(player: Player, npcName: string): void {
     }
     send(player, portalList, 'info');
   }
-  
-  // Quest interactions will be added in Phase 5
 }
 
 // Say to Portal Master NPC (for portals)

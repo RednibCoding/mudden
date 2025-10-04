@@ -13,6 +13,7 @@ import { inventory, equipment, equip, unequip, drop, get, use, examine } from '.
 import { talk } from './npcs';
 import { list, buy, sell } from './shops';
 import { give } from './give';
+import { showQuests } from './quests';
 import { Player } from './types';
 
 const PORT = 3000;
@@ -263,6 +264,12 @@ function handleCommand(player: Player, input: string): void {
       equipment(player);
       break;
       
+    case 'materials':
+    case 'mats':
+    case 'm':
+      cmdMaterials(player);
+      break;
+      
     case 'equip':
     case 'wear':
     case 'wield':
@@ -368,6 +375,13 @@ function handleCommand(player: Player, input: string): void {
       }
       break;
       
+    // Quests
+    case 'quests':
+    case 'quest':
+    case 'q':
+      showQuests(player);
+      break;
+      
     // Help
     case 'help':
       cmdHelp(player);
@@ -400,6 +414,25 @@ function cmdWho(player: Player): void {
   send(player, message, 'info');
 }
 
+function cmdMaterials(player: Player): void {
+  let message = '\n=== Crafting Materials ===\n';
+  
+  const materialEntries = Object.entries(player.materials);
+  
+  if (materialEntries.length === 0) {
+    message += 'You have no materials.\n';
+  } else {
+    materialEntries.forEach(([materialId, amount]) => {
+      const material = gameState.gameData.materials.get(materialId);
+      const name = material ? material.name : materialId;
+      const rarity = material ? ` [${material.rarity}]` : '';
+      message += `  ${amount}x ${name}${rarity}\n`;
+    });
+  }
+  
+  send(player, message, 'info');
+}
+
 function cmdHelp(player: Player): void {
   const message = `
 === Mudden MUD Commands ===
@@ -415,12 +448,17 @@ Combat:
 Items & Equipment:
   inventory (inv, i) - View your inventory
   equipment (eq)     - View equipped items
+  materials (mats, m) - View your crafting materials
   examine <item>     - View detailed item info (exam, ex, x)
   equip <item>       - Equip an item (shortcuts: wear, wield)
   unequip <item>     - Unequip an item (shortcuts: remove)
   drop <item>        - Drop an item on the ground
   get <item>         - Pick up an item (shortcuts: take)
   use <item>         - Use a consumable item
+
+Quests:
+  quests (q)         - View active and completed quests
+  talk <npc>         - Talk to NPCs to accept/complete quests
 
 Shop:
   list               - View shop inventory
