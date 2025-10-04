@@ -18,6 +18,11 @@ export function canAcceptQuest(player: Player, questId: string): boolean {
   // Already completed?
   if (player.completed.includes(questId)) return false;
   
+  // Check level requirement
+  if (quest.levelRequirement && player.level < quest.levelRequirement) {
+    return false;
+  }
+  
   // Check prerequisite
   if (quest.requiresQuest && !player.completed.includes(quest.requiresQuest)) {
     return false;

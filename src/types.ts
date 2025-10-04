@@ -159,6 +159,7 @@ export interface Quest {
     item?: string;         // Optional item reward
   };
   requiresQuest?: string;  // Optional prerequisite quest ID
+  levelRequirement?: number; // Optional minimum level to accept quest
   npc?: string;            // NPC ID (populated by data loader from NPC.quest)
 }
 

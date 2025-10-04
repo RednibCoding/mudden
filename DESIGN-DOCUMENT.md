@@ -1211,11 +1211,12 @@ export function sell(player: Player, itemName: string): void {
 ```json
 {
   "id": "goblin_problem",
+  "name": "Goblin Problem",
   "type": "kill",
   "target": "goblin",
   "count": 5,
-  "npc": "guard",
   "dialogue": "Kill 5 goblins for me.",
+  "completionDialogue": "Excellent work! The roads are safer now.",
   "reward": { "gold": 100, "xp": 75 }
 }
 ```
@@ -1224,12 +1225,13 @@ export function sell(player: Player, itemName: string): void {
 ```json
 {
   "id": "wolf_pelts",
+  "name": "Wolf Pelts",
   "type": "collect",
   "target": "wolf",
   "count": 3,
   "itemDrop": "wolf_pelt",
-  "npc": "tanner",
   "dialogue": "Bring me 3 wolf pelts.",
+  "completionDialogue": "Perfect pelts! You're a skilled hunter.",
   "reward": { "gold": 150, "xp": 100 }
 }
 ```
@@ -1291,46 +1293,123 @@ if (enemy.materialDrops?.wolf_pelt) {
 **3. Visit Quests:**
 ```json
 {
-  "id": "find_daughter",
+  "id": "find_hermit",
+  "name": "Find the Hermit",
   "type": "visit",
-  "target": "daughter_npc",
-  "npc": "farmer",
-  "dialogue": "Find my daughter in the forest!",
+  "target": "hermit",
+  "count": 1,
+  "dialogue": "Find the hermit deep in the forest!",
+  "completionDialogue": "You found him! Thank you for checking on the hermit.",
   "reward": { "gold": 50, "xp": 50 }
 }
 ```
 
-### **Quest Chains (Simple Dialogue-State)**
+### **Quest-NPC Data Relationship**
 
-**NO prerequisite arrays!** Use NPC dialogue checks:
+**Important: NPCs own the quest relationship, not quests!**
 
-```typescript
-// Farmer NPC
+Quests don't have an `npc` field in JSON - it's populated by the data loader:
+
+**NPC File (owns the relationship):**
+```json
 {
-  "id": "farmer",
-  "dialogue": "My daughter is missing!",
-  "quest": "find_daughter"
-}
-
-// Daughter NPC - only offers quest if player completed previous
-{
-  "id": "daughter", 
-  "defaultDialogue": "Who are you?",  // No quest
-  "questDialogue": "Tell father I'm safe!",  // After find_daughter complete
-  "quest": "return_to_father",
-  "requiresQuest": "find_daughter"  // Simple check
-}
-
-// In code
-function getQuest(npc: NPC, player: Player): Quest | null {
-  if (npc.requiresQuest && !player.completed.includes(npc.requiresQuest)) {
-    return null;  // Not ready yet
-  }
-  return npc.quest;
+  "id": "town_guard",
+  "name": "Town Guard",
+  "dialogue": "Stay safe out there, citizen.",
+  "quest": "goblin_problem"
 }
 ```
 
-**Code (~120 lines total):**
+**Data Loader Auto-Population:**
+```typescript
+// In enrichQuests() function:
+// 1. For each quest, find which NPC has quest field matching quest.id
+// 2. Populate quest.npc with that NPC's id
+// 3. Validate: exactly 0 or 1 NPC per quest (error if multiple)
+
+// Result: quest.npc is auto-populated at load time
+const quest = gameData.quests.get('goblin_problem');
+console.log(quest.npc);  // "town_guard" (populated by loader)
+```
+
+**Why this design?**
+- ✅ **Single source of truth**: NPC.quest is the only place the relationship is defined
+- ✅ **No redundancy**: Quest files don't need npc field
+- ✅ **Auto-validated**: Loader errors if multiple NPCs reference same quest
+- ✅ **Flexible**: Can create quests without NPCs (designer preview)
+
+### **Quest Dialogue System**
+
+**Three dialogue types:**
+
+1. **Regular NPC dialogue**: Default conversation
+2. **Quest dialogue**: Shown when accepting/reminder about active quest
+3. **Completion dialogue**: Shown when turning in completed quest
+
+**NPC with questDialogue (for visit quests):**
+```json
+{
+  "id": "hermit",
+  "name": "Forest Hermit",
+  "dialogue": "Leave me be, traveler.",
+  "questDialogue": "Ah, someone finally found me! Tell the tavern keeper I'm fine."
+}
+```
+
+**Dialogue flow:**
+```
+1. Player has no quest → Shows NPC.dialogue
+2. Player accepts quest → Shows Quest.dialogue
+3. Player talks to visit target → Shows NPC.questDialogue
+4. Player completes quest → Shows Quest.completionDialogue
+```
+
+### **Quest Chains (Simple Prerequisite Check)**
+
+Use `requiresQuest` and `levelRequirement` fields for quest gating:
+
+```json
+{
+  "id": "advanced_quest",
+  "name": "Advanced Quest",
+  "type": "kill",
+  "target": "dragon",
+  "count": 1,
+  "dialogue": "Now that you've proven yourself, slay the dragon!",
+  "completionDialogue": "You are truly a hero!",
+  "reward": { "gold": 1000, "xp": 500 },
+  "requiresQuest": "goblin_problem",
+  "levelRequirement": 5
+}
+```
+
+**Quest acceptance logic:**
+```typescript
+export function canAcceptQuest(player: Player, questId: string): boolean {
+  const quest = gameState.gameData.quests.get(questId);
+  if (!quest) return false;
+  
+  // Already active?
+  if (player.activeQuests[questId]) return false;
+  
+  // Already completed?
+  if (player.completed.includes(questId)) return false;
+  
+  // Check level requirement
+  if (quest.levelRequirement && player.level < quest.levelRequirement) {
+    return false;
+  }
+  
+  // Check prerequisite
+  if (quest.requiresQuest && !player.completed.includes(quest.requiresQuest)) {
+    return false;
+  }
+  
+  return true;
+}
+```
+
+**Code (~256 lines total - src/quests.ts):**
 ```typescript
 export function acceptQuest(player: Player, quest: Quest): void {
   player.activeQuests[quest.id] = { progress: 0 };
@@ -2767,10 +2846,61 @@ export async function loadGameData(): Promise<GameData> {
   };
   
   enrichLocations(gameData);  // Convert IDs to objects
+  enrichQuests(gameData);     // Populate quest.npc field
   
   return gameData;
 }
 ```
+
+### **Data Validation (Fail-Fast)**
+
+**All enrichment functions throw errors on invalid data:**
+
+```typescript
+function enrichLocations(gameData: GameData): void {
+  for (const location of gameData.locations.values()) {
+    // Validate NPC IDs
+    for (const npcId of location.npcs) {
+      const npc = gameData.npcs.get(npcId);
+      if (!npc) {
+        throw new Error(`NPC ID "${npcId}" not found in location "${location.id}"`);
+      }
+      enrichedNPCs.push({ ...npc });
+    }
+    
+    // Same for enemies, items, shops - all throw on missing IDs
+  }
+}
+
+function enrichQuests(gameData: GameData): void {
+  for (const quest of gameData.quests.values()) {
+    let questGiverCount = 0;
+    let questGiverId: string | undefined;
+    
+    // Find which NPC gives this quest
+    for (const npc of gameData.npcs.values()) {
+      if (npc.quest === quest.id) {
+        questGiverCount++;
+        questGiverId = npc.id;
+      }
+    }
+    
+    // Validate: at most one quest giver
+    if (questGiverCount === 0) {
+      console.warn(`Quest "${quest.id}" has no NPC quest giver (not yet assigned).`);
+    } else if (questGiverCount > 1) {
+      throw new Error(`Quest "${quest.id}" has multiple quest givers!`);
+    } else {
+      quest.npc = questGiverId;  // Auto-populate from NPC.quest
+    }
+  }
+}
+```
+
+**Validation Rules:**
+- ❌ **Missing ID reference** → Server fails to start
+- ❌ **Multiple quest givers** → Server fails to start  
+- ⚠️ **Quest without NPC** → Warning only (designer preview)
 
 **Benefits:**
 - ✅ **DRY**: Enemy stats defined once in enemies/wolf.json
@@ -3174,7 +3304,7 @@ src/
 ├── player.ts         # Auth/save (~100 lines)
 ├── combat.ts         # Combat system (~200 lines)
 ├── items.ts          # Items/equipment (~150 lines)
-├── quests.ts         # Quest system (~120 lines)
+├── quests.ts         # Quest system (~256 lines)
 ├── movement.ts       # Move/flee (~60 lines)
 ├── shops.ts          # Buy/sell (~150 lines)
 ├── npcs.ts           # NPC interaction (~60 lines)
@@ -3299,40 +3429,44 @@ Total: ~1,520 lines
 22. Portal masters (fast travel)
 23. Direct give command
 
-### Phase 5: Quests & Progression (~250 lines)
-24. Quest system (kill/collect/visit)
-25. Quest items (separate from inventory)
-26. Quest chains (simple dialogue-state)
-27. Quest completion rewards
+### Phase 5: Quests & Progression (~256 lines) ✅ COMPLETE
+24. Quest system (kill/collect/visit) ✅
+25. Quest items (separate from inventory) ✅
+26. Quest dialogue system (dialogue + completionDialogue + questDialogue) ✅
+27. Quest chains (requiresQuest + levelRequirement) ✅
+28. Quest completion rewards (gold + XP + level up) ✅
+29. Materials command (view collected crafting materials) ✅
+30. Quest-NPC auto-linking (data loader enrichment) ✅
+31. Data validation (fail-fast on invalid references) ✅
 
 ### Phase 6: Crafting & Materials (~250 lines)
-28. Materials system (separate data type with rarity)
-29. Material harvesting (per-player nodes with cooldowns)
-30. Material drops from enemies (chance-based, on death)
-31. Materials storage (separate from inventory, unlimited)
-32. Recipe items (find & learn)
-33. Recipe learning system
-34. Crafting system (consume materials, create items)
+32. Materials system (separate data type with rarity)
+33. Material harvesting (per-player nodes with cooldowns)
+34. Material drops from enemies (chance-based, on death)
+35. Materials storage (separate from inventory, unlimited)
+36. Recipe items (find & learn)
+37. Recipe learning system
+38. Crafting system (consume materials, create items)
 
 ### Phase 7: Social & Polish (~300 lines)
-33. Say/whisper/reply commands
-34. Friend system
-35. Who command
-36. Command shortcuts (n/s/e/w/i/eq/w/r/f)
-37. Help system
-38. Error handling & validation
+39. Say/whisper/reply commands
+40. Friend system
+41. Who command
+42. Command shortcuts (n/s/e/w/i/eq/w/r/f)
+43. Help system
+44. Error handling & validation
 
 ### Phase 8: Configuration & Admin (~100 lines)
-39. Config.json loader
-40. Starting player setup
-41. XP progression calculator
-42. Admin commands (optional)
+45. Config.json loader
+46. Starting player setup
+47. XP progression calculator
+48. Admin commands (optional)
 
-**Total: ~2,450 lines** (with materials system)
+**Total: ~2,506 lines** (with Phase 5 complete at 256 lines)
 
 ---
 
 *This is a living document - pure traditional MUD design with zero legacy bloat.*
 
-**Last Updated:** October 3, 2025  
-**Status:** Clean Slate Design - Ready to Build
+**Last Updated:** October 4, 2025  
+**Status:** Phase 5 Complete - Quest System Fully Implemented
