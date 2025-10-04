@@ -63,8 +63,8 @@ function giveGold(player: Player, targetName: string, args: string[]): void {
   player.gold -= amount;
   target.gold += amount;
   
-  send(player, `You give ${amount} gold to ${target.username}.`, 'success');
-  send(target, `${player.username} gives you ${amount} gold.`, 'success');
+  send(player, `You give ${amount} gold to ${target.displayName}.`, 'success');
+  send(target, `${player.displayName} gives you ${amount} gold.`, 'success');
   
   // Save both players
   savePlayer(player);
@@ -102,7 +102,7 @@ function giveItem(player: Player, targetName: string, args: string[]): void {
   // Check if target has inventory space
   const maxSlots = gameState.gameData.config.gameplay.maxInventorySlots;
   if (target.inventory.length >= maxSlots) {
-    send(player, `${target.username}'s inventory is full!`, 'error');
+    send(player, `${target.displayName}'s inventory is full!`, 'error');
     return;
   }
   
@@ -111,8 +111,8 @@ function giveItem(player: Player, targetName: string, args: string[]): void {
   player.inventory.splice(index, 1);
   target.inventory.push(item);
   
-  send(player, `You give ${item.name} to ${target.username}.`, 'success');
-  send(target, `${player.username} gives you ${item.name}.`, 'success');
+  send(player, `You give ${item.name} to ${target.displayName}.`, 'success');
+  send(target, `${player.displayName} gives you ${item.name}.`, 'success');
   
   // Save both players
   savePlayer(player);

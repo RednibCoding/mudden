@@ -25,7 +25,8 @@ export interface GameMessage {
 
 export interface Player {
   id: string;
-  username: string;
+  username: string;                            // Lowercase for login/lookups
+  displayName: string;                         // Capitalized for display
   passwordHash: string;
   location: string;
   level: number;

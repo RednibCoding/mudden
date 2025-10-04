@@ -27,7 +27,7 @@ export function addFriend(player: Player, username: string): void {
   // Add friend
   player.friends.push(username);
   send(player, `You are now friends with ${username}.`, 'success');
-  send(target, `${player.username} has added you as a friend.`, 'info');
+  send(target, `${player.displayName} has added you as a friend.`, 'info');
 }
 
 export function removeFriend(player: Player, username: string): void {
@@ -53,8 +53,14 @@ export function listFriends(player: Player): void {
   
   player.friends.forEach(username => {
     const friend = gameState.players.get(username);
-    const status = friend && friend.socket ? '[Online]' : '[Offline]';
-    message += `  ${username} ${status}\n`;
+    if (friend && friend.socket) {
+      // Online: use their displayName
+      message += `  ${friend.displayName} [Online]\n`;
+    } else {
+      // Offline: capitalize the username
+      const displayName = username.charAt(0).toUpperCase() + username.slice(1);
+      message += `  ${displayName} [Offline]\n`;
+    }
   });
   
   message += `\nTotal: ${player.friends.length} friend(s)\n`;

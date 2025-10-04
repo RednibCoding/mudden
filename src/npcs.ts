@@ -155,14 +155,14 @@ export function sayToNPC(player: Player, message: string): void {
   // Announce departure
   const oldLocation = player.location;
   send(player, `${portalMaster.name}: "Step into the portal..."`, 'npc');
-  broadcast(oldLocation, `${player.username} steps into a shimmering portal and vanishes!`, 'system', player.id);
+  broadcast(oldLocation, `${player.displayName} steps into a shimmering portal and vanishes!`, 'system', player.id);
   
   // Teleport
   player.location = portal.destination;
   
   // Announce arrival
   send(player, 'You step through the portal...', 'success');
-  broadcast(portal.destination, `A portal shimmers into existence and ${player.username} steps through!`, 'system', player.id);
+  broadcast(portal.destination, `A portal shimmers into existence and ${player.displayName} steps through!`, 'system', player.id);
   
   // Save and show location
   savePlayer(player);
@@ -238,7 +238,7 @@ function handleHealer(player: Player, npc: NPC): void {
   player.mana = totalMaxMana;
   
   send(player, `You are healed for ${totalCost} gold!`, 'success');
-  broadcast(player.location, `${npc.name} heals ${player.username}.`, 'system', player.id);
+  broadcast(player.location, `${npc.name} heals ${player.displayName}.`, 'system', player.id);
   
   savePlayer(player);
 }

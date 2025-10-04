@@ -3716,11 +3716,8 @@ Comprehensive help command showing all available commands organized by category:
 45. Help system ✅
 46. Error handling & validation ✅
 
-### Phase 8: Configuration & Admin (~100 lines)
-47. Config.json loader
-48. Starting player setup
-49. XP progression calculator
-50. Admin commands (optional)
+### Phase 8: Admin (~100 lines)
+47. Admin commands (optional)
 
 ---
 

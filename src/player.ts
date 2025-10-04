@@ -53,6 +53,7 @@ export async function createPlayer(username: string, password: string): Promise<
   const player: Player = {
     id: uuidv4(),
     username,
+    displayName: username.charAt(0).toUpperCase() + username.slice(1),
     passwordHash,
     location: config.newPlayer.startingLocation,
     level: config.newPlayer.startingLevel,
@@ -100,6 +101,11 @@ export async function loadPlayer(username: string): Promise<Player | null> {
     // Backward compatibility: Add combats field if missing
     if (data.combats === undefined) {
       data.combats = 0;
+    }
+    
+    // Backward compatibility: Add displayName field if missing
+    if (!data.displayName) {
+      data.displayName = data.username.charAt(0).toUpperCase() + data.username.slice(1);
     }
     
     // Enrich inventory: convert item IDs to full Item objects

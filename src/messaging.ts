@@ -38,8 +38,8 @@ export function whisper(from: Player, toUsername: string, message: string): void
     return;
   }
   
-  send(to, `${from.username} whispers: ${message}`, 'whisper');
-  send(from, `You whisper to ${to.username}: ${message}`, 'whisper');
+  send(to, `${from.displayName} whispers: ${message}`, 'whisper');
+  send(from, `You whisper to ${to.displayName}: ${message}`, 'whisper');
   
   // Track for reply system
   to.lastWhisperFrom = from.username;
@@ -58,8 +58,8 @@ export function reply(player: Player, message: string): void {
     return;
   }
   
-  send(target, `${player.username} whispers: ${message}`, 'whisper');
-  send(player, `You whisper to ${target.username}: ${message}`, 'whisper');
+  send(target, `${player.displayName} whispers: ${message}`, 'whisper');
+  send(player, `You whisper to ${target.displayName}: ${message}`, 'whisper');
   
   // Allow them to reply back
   target.lastWhisperFrom = player.username;
@@ -93,5 +93,5 @@ export function say(player: Player, message: string): void {
   }
   
   send(player, `You say: ${message}`, 'say');
-  broadcast(player.location, `${player.username} says: ${message}`, 'say', player.id);
+  broadcast(player.location, `${player.displayName} says: ${message}`, 'say', player.id);
 }

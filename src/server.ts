@@ -142,7 +142,7 @@ async function startServer() {
         savePlayer(player);
         
         // Announce to others
-        sendToAll(`${player.username} has left the realm.`, 'system');
+        sendToAll(`${player.displayName} has left the realm.`, 'system');
         
         // Remove from game
         removePlayer(player.username);
@@ -464,7 +464,7 @@ function cmdWho(player: Player): void {
     message += 'No players online.\n';
   } else {
     onlinePlayers.forEach(p => {
-      message += `  ${p.username} [Level ${p.level}]\n`;
+      message += `  ${p.displayName} [Level ${p.level}]\n`;
     });
   }
   
@@ -584,7 +584,7 @@ function cmdStats(player: Player): void {
     (player.equipped.accessory?.mana || 0);
   const totalMaxMana = player.maxMana + equipmentMana;
   
-  let message = `\n=== Character Stats ===\nName:     ${player.username}\nLevel:    ${player.level}\nXP:       ${player.xp}\nGold:     ${player.gold}\nDeaths:   ${player.deaths}\nCombats:  ${player.combats}\n\n`;
+  let message = `\n=== Character Stats ===\nName:     ${player.displayName}\nLevel:    ${player.level}\nXP:       ${player.xp}\nGold:     ${player.gold}\nDeaths:   ${player.deaths}\nCombats:  ${player.combats}\n\n`;
   
   // Show current/max with equipment bonuses
   if (equipmentHealth > 0) {

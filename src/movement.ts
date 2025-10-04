@@ -58,13 +58,13 @@ export function move(player: Player, direction: string): void {
   
   // Announce departure
   const oldLocation = player.location;
-  broadcast(oldLocation, `${player.username} leaves ${normalizedDir}.`, 'system', player.id);
+  broadcast(oldLocation, `${player.displayName} leaves ${normalizedDir}.`, 'system', player.id);
   
   // Move player
   player.location = exitId;
   
   // Announce arrival
-  broadcast(exitId, `${player.username} arrives.`, 'system', player.id);
+  broadcast(exitId, `${player.displayName} arrives.`, 'system', player.id);
   
   // Show new location
   look(player);
@@ -94,10 +94,26 @@ export function look(player: Player): void {
     }
   }
   
-  // NPCs
+  // NPCs and Players (People)
+  const people: string[] = [];
+  
+  // Add NPCs
   if (location.npcs && location.npcs.length > 0) {
-    const npcNames = location.npcs.map(npc => npc.name).join(', ');
-    message += `\nNPCs:\n  - ${npcNames}\n`;
+    location.npcs.forEach(npc => people.push(npc.name));
+  }
+  
+  // Add Players in location (excluding self)
+  const playersHere = Array.from(gameState.players.values())
+    .filter(p => p.location === player.location && p.id !== player.id && p.socket);
+  
+  // Add player display names
+  playersHere.forEach(p => {
+    people.push(p.displayName);
+  });
+  
+  // Display people if any
+  if (people.length > 0) {
+    message += '\nPeople:\n  - ' + people.join(', ') + '\n';
   }
   
   // Enemies
@@ -125,22 +141,12 @@ export function look(player: Player): void {
       const timeLeft = node.cooldown - (now - lastHarvest);
       
       if (timeLeft <= 0) {
-        message += `  - ${material.name} (ready to harvest!)\\n`;
+        message += `  - ${material.name} (ready to harvest!)\n`;
       } else {
         const mins = Math.ceil(timeLeft / 60000);
-        message += `  - ${material.name} (available in ${mins} minutes)\\n`;
+        message += `  - ${material.name} (available in ${mins} minutes)\n`;
       }
     }
-  }
-  
-  // Players in location (excluding self)
-  const players = gameState.players;
-  const playersHere = Array.from(players.values())
-    .filter(p => p.location === player.location && p.id !== player.id && p.socket);
-  
-  if (playersHere.length > 0) {
-    const playerNames = playersHere.map(p => p.username).join(', ');
-    message += `\\nPlayers:\\n  - ${playerNames}\\n`;
   }
   
   send(player, message, 'info');

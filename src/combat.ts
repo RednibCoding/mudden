@@ -67,7 +67,7 @@ export function attack(player: Player, targetName: string): void {
   if (!enemy.fighters.includes(player.username)) {
     enemy.fighters.push(player.username);
     player.combats++;  // Increment combat counter
-    broadcast(player.location, `${player.username} attacks ${enemy.name}!`, 'combat');
+    broadcast(player.location, `${player.displayName} attacks ${enemy.name}!`, 'combat');
   }
   
   // Calculate player damage (base + ALL equipment)
@@ -84,7 +84,7 @@ export function attack(player: Player, targetName: string): void {
   enemy.health -= damageDealt;
   
   send(player, `You hit ${enemy.name} for ${damageDealt} damage.`, 'combat');
-  broadcast(player.location, `${player.username} hits ${enemy.name} for ${damageDealt} damage.`, 'combat', player.id);
+  broadcast(player.location, `${player.displayName} hits ${enemy.name} for ${damageDealt} damage.`, 'combat', player.id);
   
   // Check if enemy died
   if (enemy.health <= 0) {
@@ -112,7 +112,7 @@ function enemyAttack(player: Player, enemy: Enemy): void {
   player.health -= damageTaken;
   
   send(player, `${enemy.name} hits you for ${damageTaken} damage.`, 'combat');
-  broadcast(player.location, `${enemy.name} hits ${player.username} for ${damageTaken} damage.`, 'combat', player.id);
+  broadcast(player.location, `${enemy.name} hits ${player.displayName} for ${damageTaken} damage.`, 'combat', player.id);
   
   // Check if player died
   if (player.health <= 0) {
@@ -247,10 +247,10 @@ function handlePlayerDeath(player: Player): void {
   
   // Announce death
   send(player, `\nYou died! Lost ${goldLost} gold.`, 'error');
-  broadcast(oldLocation, `${player.username} has died!`, 'system', player.id);
+  broadcast(oldLocation, `${player.displayName} has died!`, 'system', player.id);
   
   // Announce respawn
-  broadcast(player.location, `${player.username} has respawned here.`, 'system', player.id);
+  broadcast(player.location, `${player.displayName} has respawned here.`, 'system', player.id);
   
   // Save player
   savePlayer(player);
@@ -280,7 +280,7 @@ export function checkLevel(player: Player): void {
     player.mana = player.maxMana;
     
     send(player, `\nLevel up! You are now level ${player.level}. +${config.progression.healthPerLevel} HP, +${config.progression.manaPerLevel} Mana, +${config.progression.damagePerLevel} Damage, +${config.progression.defensePerLevel} Defense`, 'success');
-    broadcast(player.location, `${player.username} has reached level ${player.level}!`, 'system', player.id);
+    broadcast(player.location, `${player.displayName} has reached level ${player.level}!`, 'system', player.id);
     
     // Save player
     savePlayer(player);
