@@ -132,3 +132,15 @@ export function hasInventorySpace(player: Player): boolean {
   const maxSlots = getConfig().gameplay.maxInventorySlots;
   return player.inventory.length < maxSlots;
 }
+
+// Format equipment display (used in inventory/equipment commands)
+export function formatEquipmentList(player: Player): string {
+  const equipped = [
+    player.equipped.weapon && `  - ${player.equipped.weapon.name} (weapon)`,
+    player.equipped.armor && `  - ${player.equipped.armor.name} (armor)`,
+    player.equipped.shield && `  - ${player.equipped.shield.name} (shield)`,
+    player.equipped.accessory && `  - ${player.equipped.accessory.name} (accessory)`
+  ].filter(Boolean);
+  
+  return equipped.length > 0 ? equipped.join('\n') + '\n' : '';
+}
