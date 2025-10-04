@@ -205,7 +205,14 @@ function getDefaultConfig(): Config {
       host: '0.0.0.0',
       corsOrigin: '*',
       autoDeleteInactivePlayers: false,
-      inactivePlayerDays: 90
+      inactivePlayerDays: 90,
+      rateLimit: {
+        enabled: true,
+        maxAccountsPerIP: 3,
+        accountCreationCooldown: 300,
+        loginAttemptWindow: 300,
+        maxLoginAttempts: 5
+      }
     },
     gameMeta: {
       name: 'Mudden MUD',

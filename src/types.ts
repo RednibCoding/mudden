@@ -217,6 +217,13 @@ export interface Config {
     corsOrigin: string;
     autoDeleteInactivePlayers: boolean;
     inactivePlayerDays: number;
+    rateLimit: {
+      enabled: boolean;
+      maxAccountsPerIP: number;
+      accountCreationCooldown: number;
+      loginAttemptWindow: number;
+      maxLoginAttempts: number;
+    };
   };
   gameMeta: {
     name: string;

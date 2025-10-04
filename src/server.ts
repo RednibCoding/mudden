@@ -51,10 +51,19 @@ async function startServer() {
   
   console.log(`\n🎮 Mudden Engine v${MUDDEN_VERSION} starting...\n`);
   
+  // Rate limiting tracking (in-memory)
+  const ipRegistrations = new Map<string, { count: number; timestamps: number[] }>();
+  const ipLoginAttempts = new Map<string, { failedAttempts: number[]; blockedUntil?: number }>();
+  
   // Socket.IO connection handling
   io.on('connection', (socket) => {
     console.log(`Socket connected: ${socket.id}`);
     let player: Player | null = null;
+    
+    // Get client IP address
+    const clientIP = (socket.handshake.headers['x-forwarded-for'] as string)?.split(',')[0].trim() 
+      || socket.handshake.address 
+      || 'unknown';
     
     // Login handler
     socket.on('login', async (data: { username: string; password: string }, callback) => {
@@ -64,6 +73,23 @@ async function startServer() {
       if (!username || !password) {
         callback({ success: false, message: 'Username and password required.' });
         return;
+      }
+      
+      // Check rate limiting if enabled
+      const rateLimitConfig = gameState.gameData.config.server.rateLimit;
+      if (rateLimitConfig.enabled) {
+        const now = Date.now();
+        const loginData = ipLoginAttempts.get(clientIP);
+        
+        // Check if IP is blocked
+        if (loginData?.blockedUntil && loginData.blockedUntil > now) {
+          const waitSeconds = Math.ceil((loginData.blockedUntil - now) / 1000);
+          callback({ 
+            success: false, 
+            message: `Too many failed login attempts. Try again in ${waitSeconds} seconds.` 
+          });
+          return;
+        }
       }
       
       // Check if already logged in
@@ -76,8 +102,35 @@ async function startServer() {
       player = await authenticatePlayer(username, password);
       
       if (!player) {
+        // Track failed login attempt
+        if (rateLimitConfig.enabled) {
+          const now = Date.now();
+          const loginData = ipLoginAttempts.get(clientIP) || { failedAttempts: [] };
+          
+          // Remove old attempts outside the window
+          loginData.failedAttempts = loginData.failedAttempts.filter(
+            timestamp => now - timestamp < rateLimitConfig.loginAttemptWindow * 1000
+          );
+          
+          // Add this failed attempt
+          loginData.failedAttempts.push(now);
+          
+          // Block if too many attempts
+          if (loginData.failedAttempts.length >= rateLimitConfig.maxLoginAttempts) {
+            loginData.blockedUntil = now + (rateLimitConfig.loginAttemptWindow * 1000);
+            console.log(`⚠ IP ${clientIP} blocked for ${rateLimitConfig.loginAttemptWindow}s (too many failed logins)`);
+          }
+          
+          ipLoginAttempts.set(clientIP, loginData);
+        }
+        
         callback({ success: false, message: 'Invalid username or password.' });
         return;
+      }
+      
+      // Clear failed attempts on successful login
+      if (rateLimitConfig.enabled) {
+        ipLoginAttempts.delete(clientIP);
       }
       
       // Attach socket and add to game
@@ -116,6 +169,44 @@ async function startServer() {
         return;
       }
       
+      // Check rate limiting if enabled
+      const rateLimitConfig = gameState.gameData.config.server.rateLimit;
+      if (rateLimitConfig.enabled) {
+        const now = Date.now();
+        const regData = ipRegistrations.get(clientIP) || { count: 0, timestamps: [] };
+        
+        // Remove timestamps outside the cooldown window
+        regData.timestamps = regData.timestamps.filter(
+          timestamp => now - timestamp < rateLimitConfig.accountCreationCooldown * 1000
+        );
+        
+        // Check if we're still in cooldown from last registration
+        if (regData.timestamps.length > 0) {
+          const lastRegistration = Math.max(...regData.timestamps);
+          const timeSinceLastReg = now - lastRegistration;
+          const cooldownMs = rateLimitConfig.accountCreationCooldown * 1000;
+          
+          if (timeSinceLastReg < cooldownMs) {
+            const waitSeconds = Math.ceil((cooldownMs - timeSinceLastReg) / 1000);
+            callback({ 
+              success: false, 
+              message: `Please wait ${waitSeconds} seconds before creating another account.` 
+            });
+            return;
+          }
+        }
+        
+        // Check max accounts per IP
+        if (regData.count >= rateLimitConfig.maxAccountsPerIP) {
+          callback({ 
+            success: false, 
+            message: `Maximum number of accounts (${rateLimitConfig.maxAccountsPerIP}) reached for this connection.` 
+          });
+          console.log(`⚠ IP ${clientIP} blocked (max accounts reached: ${regData.count})`);
+          return;
+        }
+      }
+      
       // Check if exists
       if (playerExists(username)) {
         callback({ success: false, message: 'Username already taken.' });
@@ -127,7 +218,17 @@ async function startServer() {
       player.socket = socket;
       addPlayer(player);
       
-      console.log(`✓ ${username} registered`);
+      // Track successful registration for rate limiting
+      if (rateLimitConfig.enabled) {
+        const now = Date.now();
+        const regData = ipRegistrations.get(clientIP) || { count: 0, timestamps: [] };
+        regData.count++;
+        regData.timestamps.push(now);
+        ipRegistrations.set(clientIP, regData);
+        console.log(`✓ ${username} registered (IP: ${clientIP}, total accounts: ${regData.count})`);
+      } else {
+        console.log(`✓ ${username} registered`);
+      }
       
       callback({ success: true, message: 'Registration successful!' });
       
