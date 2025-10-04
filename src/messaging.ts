@@ -2,6 +2,7 @@
 
 import { Player, MessageType, GameMessage } from './types';
 import { gameState, getPlayersInLocation } from './game';
+import { sayToNPC } from './npcs';
 
 export function send(player: Player, text: string, type: MessageType = 'info'): void {
   if (!player.socket) {
@@ -82,7 +83,6 @@ export function say(player: Player, message: string): void {
   }
   
   // Check if there's a portal master here (portal interaction)
-  const { sayToNPC } = require('./npcs');
   sayToNPC(player, message);
   
   // If sayToNPC handled it (portal master found and valid keyword), it will teleport

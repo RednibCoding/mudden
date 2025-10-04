@@ -4,7 +4,9 @@ import { Player, Item } from './types';
 import { gameState } from './game';
 import { send, broadcast } from './messaging';
 import { savePlayer } from './player';
-import { isInCombat } from './combat';
+import { isInCombat, handleEnemyDeath } from './combat';
+import { learnRecipe } from './crafting';
+import { look } from './movement';
 
 // Inventory command
 export function inventory(player: Player): void {
@@ -312,7 +314,6 @@ export function use(player: Player, itemName: string): void {
   
   // Handle recipe items
   if (item.type === 'recipe') {
-    const { learnRecipe } = require('./crafting');
     const learned = learnRecipe(player, item);
     if (learned) {
       removeItemFromInventory(player, item);
@@ -416,7 +417,6 @@ function useConsumable(player: Player, item: Item): void {
     
     // Check if enemy died
     if (enemy.health <= 0) {
-      const { handleEnemyDeath } = require('./combat');
       handleEnemyDeath(player, enemy, player.location);
     }
     
@@ -436,13 +436,12 @@ function useConsumable(player: Player, item: Item): void {
     player.location = item.destination;
     
     send(player, `You use ${item.name} and are teleported! (-${item.manaCost} mana)`, 'success');
-    broadcast(oldLocation, `${player.username} vanishes in a flash of light!`, 'system', player.id);
-    broadcast(item.destination, `${player.username} appears in a flash of light!`, 'system', player.id);
+    broadcast(oldLocation, `${player.displayName} vanishes in a flash of light!`, 'system', player.id);
+    broadcast(item.destination, `${player.displayName} appears in a flash of light!`, 'system', player.id);
     
     removeItemFromInventory(player, item);
     savePlayer(player);
     
-    const { look } = require('./movement');
     look(player);
     return;
   }

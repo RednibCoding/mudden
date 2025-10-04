@@ -5,6 +5,7 @@ import { gameState } from './game';
 import { send, broadcast } from './messaging';
 import { savePlayer } from './player';
 import { canAcceptQuest, canCompleteQuest, acceptQuest, completeQuest, updateQuestProgress } from './quests';
+import { look } from './movement';
 
 // Talk to NPC command
 export function talk(player: Player, npcName: string): void {
@@ -167,7 +168,6 @@ export function sayToNPC(player: Player, message: string): void {
   // Save and show location
   savePlayer(player);
   
-  const { look } = require('./movement');
   look(player);
 }
 

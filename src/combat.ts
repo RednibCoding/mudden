@@ -5,6 +5,7 @@ import { gameState } from './game';
 import { send, broadcast } from './messaging';
 import { savePlayer } from './player';
 import { updateQuestProgress } from './quests';
+import { look } from './movement';
 
 /**
  * Apply damage variance to make combat less predictable
@@ -121,7 +122,7 @@ function enemyAttack(player: Player, enemy: Enemy): void {
 }
 
 // Handle enemy death
-function handleEnemyDeath(player: Player, enemy: Enemy, locationId: string): void {
+export function handleEnemyDeath(player: Player, enemy: Enemy, locationId: string): void {
   const location = gameState.gameData.locations.get(locationId);
   
   if (!location || !location.enemies) {
@@ -256,7 +257,6 @@ function handlePlayerDeath(player: Player): void {
   savePlayer(player);
   
   // Show respawn location
-  const { look } = require('./movement');
   look(player);
 }
 
@@ -358,10 +358,9 @@ export function flee(player: Player): void {
   player.location = destination;
   
   send(player, `You flee ${randomExit}!`, 'success');
-  broadcast(oldLocation, `${player.username} flees ${randomExit}!`, 'system', player.id);
-  broadcast(destination, `${player.username} arrives in a hurry!`, 'system', player.id);
+  broadcast(oldLocation, `${player.displayName} flees ${randomExit}!`, 'system', player.id);
+  broadcast(destination, `${player.displayName} arrives in a hurry!`, 'system', player.id);
   
   // Auto-look at new location
-  const { look } = require('./movement');
   look(player);
 }
